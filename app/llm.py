@@ -49,49 +49,41 @@ class LocalLLMConnector:
 
     def run(self, user_input: str) -> Dict[str, Any]:
         """
-        Runs the local LLM model with a given prompt and parses JSON output.
+        Runs the local LLM model via Ollama CLI and returns structured output.
+        Compatible with older Ollama versions (no --no-stream flag).
         """
         prompt = self.build_prompt(user_input)
 
         try:
-            # Execute ollama CLI process
+            # Run Ollama CLI (simplest possible call)
             result = subprocess.run(
-                [
-                    "ollama",
-                    "run",
-                    self.model_name,
-                    "--temperature",
-                    str(self.temperature),
-                ],
-                input=prompt.encode("utf-8"),
+                ["ollama", "run", self.model_name, prompt],
                 capture_output=True,
+                text=True,
                 timeout=self.timeout,
             )
 
-            # Read model output
-            output = result.stdout.decode("utf-8").strip()
+            # Merge stdout and stderr in case the model prints there
+            output = (result.stdout + result.stderr).strip()
+            print(f"Model output:\n{output}")
 
-            # If the process returned an error
             if result.returncode != 0:
-                error_msg = result.stderr.decode("utf-8").strip()
-                return {"error": f"Ollama execution failed: {error_msg or output}"}
+                return {"error": f"Ollama failed: {output}"}
 
-            # Try to parse as JSON
+            # Try to parse JSON
             if self.format_json:
                 try:
                     return json.loads(output)
                 except json.JSONDecodeError:
-                    # Model returned non-JSON text
+                    # Model did not return valid JSON
                     return {"sql": None, "explanation": output}
 
-            # Return raw text if not JSON mode
             return {"raw_output": output}
 
         except subprocess.TimeoutExpired:
-            return {"error": f"Model execution timed out after {self.timeout} seconds."}
+            return {"error": f"Model execution timed out after {self.timeout}s."}
         except FileNotFoundError:
-            return {
-                "error": "Ollama executable not found. Make sure Ollama is installed and in PATH."
-            }
+            return {"error": "Ollama executable not found. Ensure it's installed and in PATH."}
         except Exception as e:
             return {"error": str(e)}
+
