@@ -1,6 +1,8 @@
-class PGDBConnector:
-    user: str
-    password: str
+from pydantic import BaseModel
+
+class PGDBConnector(BaseModel):
     host: str
     port: int
-    database_name: str
+    user: str
+    password: str
+    database: str
