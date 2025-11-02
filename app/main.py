@@ -11,3 +11,4 @@ def test_connection_db( config: PGDBConnector):
     db_connector = DBConnector(config)
     is_connected = db_connector.test_connection()
     return {"is_connected": is_connected}
+
