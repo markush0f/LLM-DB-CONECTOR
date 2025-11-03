@@ -60,3 +60,4 @@ def execute_sql(req: ExecuteRequest):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
