@@ -14,7 +14,7 @@ export default function Input() {
     };
 
     return (
-        <div className="w-full border-t border-gray-100 bg-white/50 backdrop-blur-sm p-4">
+        <div className="w-full border-t border-gray-100 bg-slate-50 backdrop-blur-sm p-4">
             <div className="max-w-4xl mx-auto">
                 <form onSubmit={handleSubmit} className="relative">
                     <input
