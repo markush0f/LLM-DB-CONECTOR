@@ -1,12 +1,14 @@
 from fastapi import FastAPI, HTTPException
-from app.llm import LocalLLMConnector
+from app.internal_db import init_internal_db
+from app.services.internal_database_service import DatabaseService
+from app.services.llm_service import LocalLLMConnector
 from app.models.execute_sql_request import ExecuteRequest
 from app.models.models_db_connector import PGDBConnector
 from app.models.query_request import QueryRequest
-from app.database_service import DatabaseService
+
+init_internal_db()
 
 app = FastAPI(title="LLM-DB CONNECTOR API", version="1.0.0")
-
 llm = LocalLLMConnector(model_name="deepseek-r1", temperature=0.1)
 db_service = DatabaseService()
 
@@ -60,4 +62,3 @@ def execute_sql(req: ExecuteRequest):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
