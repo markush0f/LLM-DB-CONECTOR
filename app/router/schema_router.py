@@ -4,10 +4,10 @@ from app.services.schema_service import SchemaService
 router = APIRouter(prefix="/db", tags=["Database Schema"])
 
 @router.get("/schema")
-def get_schema():
-    """Get schema from currently active database connection."""
+def get_schema_grouped():
+    """Return schema grouped by table."""
     try:
         service = SchemaService()
-        return service.get_schema()
+        return service.get_schema_grouped()
     except ConnectionError as e:
         raise HTTPException(status_code=400, detail=str(e))
