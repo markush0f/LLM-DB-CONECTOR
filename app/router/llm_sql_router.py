@@ -11,7 +11,7 @@ router = APIRouter(
     tags=["SQL Generation"],
     responses={404: {"description": "Not found"}},
 )
-llm = LocalLLMConnector(model_name="deepseek-r1", temperature=0.1)
+llm = LocalLLMConnector(model_name="mistral:7b-instruct", use_gpu=True)
 db_service = DatabaseService()
 
 

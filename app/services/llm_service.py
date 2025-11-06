@@ -1,7 +1,9 @@
+import os
 import subprocess
 from typing import Optional, Dict, Any
 import re
 import json
+
 
 class LocalLLMConnector:
     """
@@ -11,23 +13,38 @@ class LocalLLMConnector:
     by sending formatted prompts directly to the model installed on your system.
 
     Example:
-        llm = LocalLLMConnector(model_name="deepseek-r1", temperature=0.1)
+        llm = LocalLLMConnector(model_name="mistral:7b-instruct", temperature=0.1)
         response = llm.run("Create a SQL table for products with id, name, and price")
     """
 
     def __init__(
         self,
-        model_name: str = "deepseek-r1",
+        model_name: str = "mistral:7b-instruct",
         temperature: float = 0.2,
         max_tokens: int = 1024,
         format_json: bool = True,
         timeout: int = 60,
+        use_gpu: bool = True,
     ):
         self.model_name = model_name
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.format_json = format_json
         self.timeout = timeout
+        self.use_gpu = use_gpu
+
+        # 🔧 Configura el entorno para Ollama
+        os.environ["OLLAMA_NUM_THREAD"] = "8"
+        os.environ["OLLAMA_MAX_LOADED_MODELS"] = "1"
+
+        if self.use_gpu:
+            os.environ["OLLAMA_USE_GPU"] = "1"
+            os.environ["OLLAMA_KV_CACHE_TYPE"] = "cuda"
+        else:
+            os.environ["OLLAMA_USE_GPU"] = "0"
+            os.environ["OLLAMA_KV_CACHE_TYPE"] = "cpu"
+
+        print(f"🚀 Initialized LLM: {self.model_name} | GPU={'ON' if self.use_gpu else 'OFF'}")
 
     def build_prompt(self, user_input: str) -> str:
         """
@@ -47,38 +64,39 @@ class LocalLLMConnector:
         {user_input}
         """
 
-    
-
-    def run(self, user_input: str) -> dict:
+    def run(self, user_input: str) -> Dict[str, Any]:
         """
         Runs the local LLM model via Ollama CLI and extracts JSON even if surrounded by extra text.
         """
         prompt = self.build_prompt(user_input)
 
         try:
+            # Ejecutar Ollama
             result = subprocess.run(
-                ["ollama", "run", self.model_name, prompt],
+                ["ollama", "run", self.model_name],
+                input=prompt.encode("utf-8"),
                 capture_output=True,
-                text=True,
                 timeout=self.timeout,
             )
 
-            output = (result.stdout + result.stderr).strip()
-            print(f"Model output:\n{output}")
+            # Combinar salida estándar y errores
+            output = (result.stdout + result.stderr).decode("utf-8", errors="ignore").strip()
+            print(f"\n🧠 [MODEL OUTPUT BEGIN]\n{output}\n🧠 [MODEL OUTPUT END]\n")
 
+            # Si Ollama falla
             if result.returncode != 0:
                 return {"error": f"Ollama failed: {output}"}
 
-            # 🧠 Try to isolate the JSON block in the output
+            # 🧩 Intentar aislar un bloque JSON en la respuesta
             json_match = re.search(r"\{[\s\S]*\}", output)
             if json_match:
                 try:
                     parsed = json.loads(json_match.group(0))
                     return parsed
                 except json.JSONDecodeError:
-                    pass  # fall back below
+                    pass  # Fallback si el JSON está roto
 
-            # If no valid JSON found
+            # Si no se encuentra JSON válido
             return {"sql": None, "explanation": output}
 
         except subprocess.TimeoutExpired:
