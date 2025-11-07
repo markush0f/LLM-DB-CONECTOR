@@ -50,7 +50,6 @@ export default function Chat() {
                 <DatabaseDiagram />
             </div>
 
-            {/* Input fijo en la parte inferior */}
             <div className="border-t border-gray-100">
                 <Input />
             </div>
