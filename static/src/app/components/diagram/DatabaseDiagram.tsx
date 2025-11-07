@@ -1,5 +1,6 @@
 "use client";
-import React, { useMemo } from "react";
+import { useSchema } from "@/app/context/SchemaContext";
+import { useMemo } from "react";
 import {
   ReactFlow,
   Background,
@@ -7,11 +8,10 @@ import {
   useNodesState,
   useEdgesState,
 } from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
+import "@xyflow/react/dist/style.css"; 
 
 import TableNode from "./TableNode";
 import { getLayoutedElements } from "./layout";
-import { useSchema } from "@/app/context/SchemaContext";
 
 export default function DatabaseDiagram() {
   const { schema, loading, error } = useSchema();
