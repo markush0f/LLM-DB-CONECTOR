@@ -2,10 +2,10 @@
 import Input from "./Input";
 import DatabaseDiagram from "../diagram/DatabaseDiagram";
 import Image from "next/image";
-import { useSchema } from "@/app/context/SchemaContext";
+import { useSchemas } from "@/app/context/SchemaContext";
 
 export default function Chat() {
-    const { schema, loading, error } = useSchema();
+    const { loading, error } = useSchemas();
 
     // 🔸 Pantalla de carga centrada
     if (loading)

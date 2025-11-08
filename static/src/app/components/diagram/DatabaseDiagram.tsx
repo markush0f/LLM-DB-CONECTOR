@@ -1,5 +1,4 @@
 "use client";
-import { useSchema } from "@/app/context/SchemaContext";
 import { useMemo } from "react";
 import {
   ReactFlow,
@@ -8,13 +7,14 @@ import {
   useNodesState,
   useEdgesState,
 } from "@xyflow/react";
-import "@xyflow/react/dist/style.css"; 
+import "@xyflow/react/dist/style.css";
 
 import TableNode from "./TableNode";
 import { getLayoutedElements } from "./layout";
+import { useSchemas } from "@/app/context/SchemaContext";
 
 export default function DatabaseDiagram() {
-  const { schema, loading, error } = useSchema();
+  const { loading, error } = useSchemas();
 
   // 1️⃣ Mostrar estados de carga o error
   if (loading) return <div className="text-gray-400 p-4">Cargando esquema...</div>;
