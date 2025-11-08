@@ -40,3 +40,20 @@ export async function createConnection(data: Omit<DBConnection, "id" | "created_
     if (!res.ok) throw new Error("Error creating connection");
     return res.json();
 }
+
+
+export async function activateConnection(id: number, password?: string): Promise<void> {
+    console.log(`🎯 [ConnectionService] Activando conexión ID=${id}...`);
+
+    const res = await fetch(`${API_URL}/connections/use/${id}?password=${password || ""}`, {
+        method: "POST",
+    });
+
+    if (!res.ok) {
+        const msg = await res.text();
+        throw new Error(`Error activating connection: ${msg}`);
+    }
+
+    console.log(`✅ [ConnectionService] Conexión ${id} activada correctamente.`);
+}
+

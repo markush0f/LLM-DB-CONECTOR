@@ -1,67 +1,62 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { SchemaResponse } from "../services/SchemaService";
-import { fetchDatabaseSchema } from "../api/schema";
+import { useConnections } from "./ConnectionsContext";
+import { fetchSchemas } from "../services/SchemaService";
 
-interface SchemaContextType {
-    schema: SchemaResponse | null;
+interface SchemasContextType {
+    schemas: string[];
+    selectedSchema: string | null;
+    setSelectedSchema: (s: string) => void;
     loading: boolean;
     error: string | null;
     reload: () => Promise<void>;
 }
 
-const SchemaContext = createContext<SchemaContextType>({
-    schema: null,
-    loading: true,
+const SchemasContext = createContext<SchemasContextType>({
+    schemas: [],
+    selectedSchema: null,
+    setSelectedSchema: () => { },
+    loading: false,
     error: null,
     reload: async () => { },
 });
 
-export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [schema, setSchema] = useState<SchemaResponse | null>(null);
-    const [loading, setLoading] = useState(true);
+export const SchemasProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { activeConnection } = useConnections();
+    const [schemas, setSchemas] = useState<string[]>([]);
+    const [selectedSchema, setSelectedSchema] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const loadSchema = async () => {
-        console.log("🌀 [SchemaContext] Iniciando carga del esquema...");
+    const loadSchemas = async () => {
+        if (!activeConnection) return;
+        console.log("🌀 Cargando schemas para:", activeConnection.name);
         setLoading(true);
         try {
-            console.log("📡 [SchemaContext] Haciendo fetch a /db/schema...");
-            const data = await fetchDatabaseSchema();
-
-            console.log("✅ [SchemaContext] Esquema recibido:", data);
-            console.log("📊 [SchemaContext] Número de tablas:", Object.keys(data).length);
-
-            setSchema(data);
+            const data = await fetchSchemas();
+            setSchemas(data);
             setError(null);
+            if (data.includes("public")) setSelectedSchema("public");
         } catch (err: any) {
-            console.error("❌ [SchemaContext] Error al cargar el esquema:", err);
-            setError(err.message || "Error fetching schema");
-            setSchema(null);
+            console.error("❌ Error al cargar schemas:", err);
+            setError(err.message);
+            setSchemas([]);
         } finally {
-            console.log("⏳ [SchemaContext] Finalizando carga. Estado -> loading = false");
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        console.log("🚀 [SchemaContext] useEffect inicial ejecutado (montaje del provider)");
-        loadSchema();
-    }, []);
-
-    // Para debug visual, puedes ver en consola cada render:
-    console.log(
-        "🔁 [SchemaContext Render] Estado actual:",
-        "\n  loading =", loading,
-        "\n  error =", error,
-        "\n  schema =", schema ? Object.keys(schema) : "null"
-    );
+        loadSchemas();
+    }, [activeConnection]);
 
     return (
-        <SchemaContext.Provider value={{ schema, loading, error, reload: loadSchema }}>
+        <SchemasContext.Provider
+            value={{ schemas, selectedSchema, setSelectedSchema, loading, error, reload: loadSchemas }}
+        >
             {children}
-        </SchemaContext.Provider>
+        </SchemasContext.Provider>
     );
 };
 
-export const useSchema = () => useContext(SchemaContext);
+export const useSchemas = () => useContext(SchemasContext);

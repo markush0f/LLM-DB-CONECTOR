@@ -74,3 +74,14 @@ class SchemaService:
             fks = self._fetch_foreign_keys(conn)
 
         return self._group_schema(columns, pks, fks)
+    
+    def get_schemas(self):
+        with self.engine.connect() as conn:
+            result = conn.execute(text("""
+                SELECT schema_name
+                FROM information_schema.schemata
+                WHERE schema_name NOT LIKE 'pg_%'
+                AND schema_name NOT IN ('information_schema')
+                ORDER BY schema_name;
+            """))
+            return [r[0] for r in result.fetchall()]

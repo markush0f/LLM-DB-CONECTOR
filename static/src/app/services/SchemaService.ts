@@ -10,3 +10,9 @@ export async function fetchDatabaseSchema(): Promise<SchemaResponse> {
     if (!res.ok) throw new Error("Failed to fetch schema");
     return await res.json();
 }
+
+export async function fetchSchemas(): Promise<string[]> {
+    const res = await fetch(`${API_URL}/db/schemas`);
+    if (!res.ok) throw new Error("Failed to fetch schemas");
+    return await res.json();
+}
