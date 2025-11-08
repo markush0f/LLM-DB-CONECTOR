@@ -7,4 +7,5 @@ JOIN information_schema.key_column_usage kc
   ON tc.constraint_name = kc.constraint_name
 WHERE tc.constraint_type = 'PRIMARY KEY'
   AND tc.table_schema NOT IN ('information_schema', 'pg_catalog', 'pg_toast')
-ORDER BY table_schema, table_name;
+  AND (:schema_name IS NULL OR tc.table_schema = :schema_name)
+ORDER BY tc.table_schema, tc.table_name;

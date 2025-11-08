@@ -11,4 +11,5 @@ JOIN information_schema.constraint_column_usage ccu
   ON ccu.constraint_name = tc.constraint_name
 WHERE tc.constraint_type = 'FOREIGN KEY'
   AND tc.table_schema NOT IN ('information_schema', 'pg_catalog', 'pg_toast')
-ORDER BY table_schema, table_name;
+  AND (:schema_name IS NULL OR tc.table_schema = :schema_name)
+ORDER BY tc.table_schema, tc.table_name;
