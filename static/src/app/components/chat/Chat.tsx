@@ -3,11 +3,31 @@ import Input from "./Input";
 import DatabaseDiagram from "../diagram/DatabaseDiagram";
 import Image from "next/image";
 import { useSchemas } from "@/app/context/SchemaContext";
+import { useConnections } from "@/app/context/ConnectionsContext";
 
 export default function Chat() {
-    const { loading, error } = useSchemas();
+    const { loading, error, schema } = useSchemas();
+    const { activeConnection } = useConnections();
 
-    // 🔸 Pantalla de carga centrada
+    // 🔸 Si no hay conexión seleccionada
+    if (!activeConnection)
+        return (
+            <div className="flex flex-col items-center justify-center h-screen bg-slate-50 text-gray-500">
+                <Image
+                    src="/logo.png"
+                    alt="Logo"
+                    width={100}
+                    height={100}
+                    className="mb-4 opacity-90"
+                />
+                <p className="text-lg font-semibold">Selecciona una conexión</p>
+                <p className="text-sm mt-1 text-gray-400">
+                    Elige una base de datos desde la barra lateral
+                </p>
+            </div>
+        );
+
+    // 🔸 Pantalla de carga
     if (loading)
         return (
             <div className="flex flex-col items-center justify-center h-screen bg-slate-50">
@@ -25,6 +45,7 @@ export default function Chat() {
             </div>
         );
 
+    // 🔸 Errores
     if (error)
         return (
             <div className="flex items-center justify-center h-screen bg-slate-50">
@@ -32,7 +53,18 @@ export default function Chat() {
             </div>
         );
 
+    // 🔸 Sin esquema aún
+    if (!schema)
+        return (
+            <div className="flex flex-col items-center justify-center h-screen bg-slate-50 text-gray-500">
+                <p className="text-lg font-semibold">Selecciona un esquema</p>
+                <p className="text-sm mt-1 text-gray-400">
+                    Escoge el esquema desde la conexión activa
+                </p>
+            </div>
+        );
 
+    // 🔸 Diagrama principal
     return (
         <div className="relative flex flex-col h-full bg-white">
             <div className="absolute top-1 right-4 z-30">

@@ -22,7 +22,7 @@ const SchemaContext = createContext<SchemaContextType>({
 });
 
 export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { activeConnection } = useConnections(); // ✅ Saber si hay conexión activa
+    const { activeConnection } = useConnections(); // Saber si hay conexión activa
     const [schema, setSchema] = useState<any>(null);
     const [schemasList, setSchemasList] = useState<string[]>([]);
     const [selectedSchema, setSelectedSchema] = useState<string | null>(null);
@@ -30,12 +30,11 @@ export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [error, setError] = useState<string | null>(null);
 
     const loadSchemas = async () => {
-        if (!activeConnection) return; // 🚫 No hay conexión, no hagas nada
+        if (!activeConnection) return;
         setLoading(true);
         try {
             const list = await fetchSchemasList();
             setSchemasList(list);
-            if (list.includes("public")) setSelectedSchema("public");
             setError(null);
         } catch (err: any) {
             setError(err.message || "Error loading schemas");
@@ -43,6 +42,7 @@ export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             setLoading(false);
         }
     };
+
 
     const loadSchema = async (schemaName?: string) => {
         if (!activeConnection || !schemaName) return;
@@ -57,12 +57,10 @@ export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
     };
 
-    // 🔹 Cargar lista de schemas solo cuando haya conexión activa
     useEffect(() => {
         if (activeConnection) loadSchemas();
     }, [activeConnection]);
 
-    // 🔹 Cargar tablas solo cuando se seleccione un schema
     useEffect(() => {
         if (activeConnection && selectedSchema) loadSchema(selectedSchema);
     }, [selectedSchema, activeConnection]);
