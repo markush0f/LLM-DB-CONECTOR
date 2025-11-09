@@ -18,3 +18,9 @@ export async function fetchSchemasList() {
     if (!res.ok) throw new Error("Error fetching schemas");
     return res.json();
 }
+
+export async function fetchTablesBySchema(schema: string = "public") {
+    const res = await fetch(`http://localhost:8000/db/tables`);
+    if (!res.ok) throw new Error("Failed to fetch tables");
+    return await res.json();
+}

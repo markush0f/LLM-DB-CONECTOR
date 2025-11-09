@@ -16,3 +16,9 @@ export async function fetchSchemas(): Promise<string[]> {
     if (!res.ok) throw new Error("Failed to fetch schemas");
     return await res.json();
 }
+
+export async function fetchTablesBySchema(schema: string = "public") {
+    const res = await fetch(`${API_URL}/db/tables`);
+    if (!res.ok) throw new Error("Failed to fetch tables");
+    return await res.json();
+}

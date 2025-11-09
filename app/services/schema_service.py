@@ -103,3 +103,23 @@ class SchemaService:
                 )
             )
             return [r[0] for r in result.fetchall()]
+        
+    def get_table_names(self, schema_name: str = "public") -> list[str]:
+        """Return all table names from the given schema."""
+        if not self.engine:
+            raise ConnectionError("No active database connection.")
+
+        with self.engine.connect() as conn:
+            result = conn.execute(
+                text("""
+                    SELECT table_name
+                    FROM information_schema.tables
+                    WHERE table_schema = :schema_name
+                    AND table_type = 'BASE TABLE'
+                    ORDER BY table_name;
+                """),
+                {"schema_name": schema_name},
+            )
+            return [row[0] for row in result.fetchall()]
+
+        

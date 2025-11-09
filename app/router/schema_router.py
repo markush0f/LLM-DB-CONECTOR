@@ -31,3 +31,13 @@ def list_schemas():
         return service.get_schemas()
     except ConnectionError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/tables")
+def list_tables(schema: str = "public"):
+    """Return all table names from the given schema."""
+    try:
+        service = SchemaService()
+        return service.get_table_names(schema)
+    except ConnectionError as e:
+        raise HTTPException(status_code=400, detail=str(e))

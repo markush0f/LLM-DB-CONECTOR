@@ -58,7 +58,11 @@ export default function Sidebar() {
                         </h3>
                         {loading && <p className="text-gray-400 text-xs">Cargando...</p>}
                         {error && <p className="text-red-500 text-xs">{error}</p>}
-                        <ConnectionList isOpen={isOpen} onSelect={handleSelectConnection} />
+                        {isOpen ?
+                            <ConnectionList isOpen={isOpen} onSelect={handleSelectConnection} />
+                            :
+                            <p>Cambiar</p>
+                        }
                     </div>
                 </div>
 
