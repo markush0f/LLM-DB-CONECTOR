@@ -14,17 +14,15 @@ import { getLayoutedElements } from "./layout";
 import { useSchemas } from "@/app/context/SchemaContext";
 
 export default function DatabaseDiagram() {
-  const { loading, error } = useSchemas();
+  const { schema, loading, error } = useSchemas(); // ✅ ahora usamos schema del contexto
 
-  // 1️⃣ Mostrar estados de carga o error
-  if (loading) return <div className="text-gray-400 p-4">Cargando esquema...</div>;
-  if (error) return <div className="text-red-500 p-4">{error}</div>;
-  if (!schema) return <div className="text-gray-400 p-4">Sin datos de esquema</div>;
+  if (loading) return <div className="text-gray-400 p-4 text-center">Cargando esquema...</div>;
+  if (error) return <div className="text-red-500 p-4 text-center">{error}</div>;
+  if (!schema) return <div className="text-gray-400 p-4 text-center">Sin datos de esquema</div>;
 
-  // 2️⃣ Transformar el JSON del backend → nodos
   const initialNodes = useMemo(() => {
-    const nodes = Object.entries(schema).map(([tableKey, tableData]) => {
-      const [, tableName] = tableKey.split("."); // quita el "public."
+    return Object.entries(schema).map(([tableKey, tableData]) => {
+      const [, tableName] = tableKey.split(".");
       const data = {
         name: tableName,
         columns: tableData.columns.map((col) => ({
@@ -34,20 +32,12 @@ export default function DatabaseDiagram() {
           isFK: tableData.foreign_keys.some((fk) => fk.column === col.name),
         })),
       };
-      return {
-        id: tableName,
-        type: "tableNode",
-        data,
-        position: { x: 0, y: 0 },
-      };
+      return { id: tableName, type: "tableNode", data, position: { x: 0, y: 0 } };
     });
-    return nodes;
   }, [schema]);
 
-  // 3️⃣ Transformar relaciones del backend → edges
   const initialEdges = useMemo(() => {
     const edges: any[] = [];
-
     Object.entries(schema).forEach(([tableKey, tableData]) => {
       const [, sourceTable] = tableKey.split(".");
       tableData.foreign_keys.forEach((fk, i) => {
@@ -64,22 +54,19 @@ export default function DatabaseDiagram() {
         });
       });
     });
-
     return edges;
   }, [schema]);
 
-  // 4️⃣ Aplicar layout automático
   const { nodes: layoutedNodes, edges: layoutedEdges } = useMemo(
     () => getLayoutedElements(initialNodes, initialEdges),
     [initialNodes, initialEdges]
   );
 
-  // 5️⃣ Estados controlados por ReactFlow
   const [nodes, , onNodesChange] = useNodesState(layoutedNodes);
   const [edges, , onEdgesChange] = useEdgesState(layoutedEdges);
 
   return (
-    <div className="h-full w-full bg-slate-50">
+    <div className="h-full w-full bg-slate-50 flex items-center justify-center">
       <ReactFlow
         nodes={nodes}
         edges={edges}

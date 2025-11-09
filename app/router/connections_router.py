@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import Optional
+
+from pydantic import BaseModel
 from app.models.models_db_connector import PGDBConnector
 from app.services.connections import (
     create_connection,
@@ -34,8 +36,9 @@ def list_connections():
     return {"total": len(connections), "connections": connections}
 
 
+
 @router.post("/use/{connection_id}")
-def use_connection(connection_id: int, password: str):
+def use_connection(connection_id: int, password):
     """Activate and persist a connection by ID."""
     return activate_connection(connection_id, password)
 

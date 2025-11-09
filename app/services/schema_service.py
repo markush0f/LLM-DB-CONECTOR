@@ -21,21 +21,18 @@ class SchemaService:
 
     def _fetch_columns(self, conn, schema_name: str | None = None) -> list[dict]:
         """Fetches all table columns from the active database."""
-        # CHANGE: ahora usamos el parámetro schema_name directamente dentro del SQL con placeholder
         query = text(self._load_sql("columns.sql"))
         result = conn.execute(query, {"schema_name": schema_name})
         return [dict(row._mapping) for row in result]
 
     def _fetch_primary_keys(self, conn, schema_name: str | None = None) -> list[dict]:
         """Fetches all primary keys."""
-        # CHANGE: se aplica el mismo patrón de ejecución parametrizada
         query = text(self._load_sql("primary_keys.sql"))
         result = conn.execute(query, {"schema_name": schema_name})
         return [dict(row._mapping) for row in result]
 
     def _fetch_foreign_keys(self, conn, schema_name: str | None = None) -> list[dict]:
         """Fetches all foreign key relationships."""
-        # CHANGE: también parametrizado igual para schema_name
         query = text(self._load_sql("foreign_keys.sql"))
         result = conn.execute(query, {"schema_name": schema_name})
         return [dict(row._mapping) for row in result]
@@ -85,7 +82,6 @@ class SchemaService:
             raise ConnectionError("No active database connection.")
 
         with self.engine.connect() as conn:
-            # CHANGE: ahora cada fetch pasa el parámetro schema_name al ejecutar
             columns = self._fetch_columns(conn, schema_name)
             pks = self._fetch_primary_keys(conn, schema_name)
             fks = self._fetch_foreign_keys(conn, schema_name)

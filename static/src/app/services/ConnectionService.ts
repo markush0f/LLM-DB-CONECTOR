@@ -8,52 +8,51 @@ export interface DBConnection {
     created_at: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "http://localhost:8000";
 
+/* 🔹 Obtener todas las conexiones guardadas */
 export async function fetchConnections(): Promise<DBConnection[]> {
-    console.log("📡 [ConnectionService] Fetching connections from backend...");
-    const res = await fetch(`${API_URL}/connections/list`, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Error fetching connections: ${res.status}`);
+    const res = await fetch(`${API_BASE}/connections/list`);
+    if (!res.ok) throw new Error("Error fetching connections");
 
     const data = await res.json();
-    console.log("🧩 [ConnectionService] Raw response:", data);
-
-    // ✅ Adaptamos al formato del backend
-    if (Array.isArray(data)) return data;
-    if (data.connections && Array.isArray(data.connections)) return data.connections;
-
-    console.warn("⚠️ [ConnectionService] Unexpected format, returning empty array");
-    return [];
+    return data.connections || [];
 }
 
-export async function deleteConnection(id: number): Promise<void> {
-    const res = await fetch(`${API_URL}/connections/${id}`, { method: "DELETE" });
-    if (!res.ok) throw new Error("Error deleting connection");
-}
-
-export async function createConnection(data: Omit<DBConnection, "id" | "created_at">): Promise<DBConnection> {
-    const res = await fetch(`${API_URL}/connections`, {
+/* 🔹 Crear una nueva conexión */
+export async function createConnection(conn: Omit<DBConnection, "id" | "created_at">) {
+    const res = await fetch(`${API_BASE}/connections/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(conn),
     });
+
     if (!res.ok) throw new Error("Error creating connection");
     return res.json();
 }
 
+/* 🔹 Eliminar una conexión */
+export async function deleteConnection(id: number) {
+    const res = await fetch(`${API_BASE}/connections/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Error deleting connection");
+}
 
-export async function activateConnection(id: number, password?: string): Promise<void> {
-    console.log(`🎯 [ConnectionService] Activando conexión ID=${id}...`);
+/* 🔹 Activar una conexión existente */
+export async function activateConnection(id: number) {
+    console.log(`⚙️ Activando conexión ${id} con password fijo`);
 
-    const res = await fetch(`${API_URL}/connections/use/${id}?password=${password || ""}`, {
+    const res = await fetch(`http://localhost:8000/connections/use/${id}`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: "password" }), 
     });
 
     if (!res.ok) {
-        const msg = await res.text();
-        throw new Error(`Error activating connection: ${msg}`);
+        const err = await res.text();
+        throw new Error(`Error activating connection: ${err}`);
     }
 
-    console.log(`✅ [ConnectionService] Conexión ${id} activada correctamente.`);
+    const data = await res.json();
+    console.log("✅ Conexión activada:", data);
+    return data;
 }
-
