@@ -1,5 +1,3 @@
-// components/diagram/mockSchema.ts
-
 export const mockSchema = {
     tables: [
         {

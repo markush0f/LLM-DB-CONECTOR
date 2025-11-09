@@ -1,2 +1,44 @@
-venv
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
+# Virtual environment
+venv/
+.env/
+.env.bak/
+.venv/
+
+# Environment variables
+*.env
+*.env.*
+
+# SQLite database files
+*.db
+*.sqlite3
+
+# FastAPI / Uvicorn logs
+*.log
+
+# VSCode and IDE settings
+.vscode/
+.idea/
+
+# Build and distribution files
+build/
+dist/
+*.egg-info/
+
+# Testing and coverage
+.coverage
+htmlcov/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+.cache/
+
+
+# macOS and Windows system files
+.DS_Store
+Thumbs.db

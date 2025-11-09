@@ -71,3 +71,20 @@ def disconnect_connection():
     if db_session.disconnect():
         return {"message": "Disconnected successfully."}
     raise HTTPException(status_code=400, detail="No active connection to close.")
+
+
+def delete_connection_by_id(connection_id: int):
+    """Delete a connection by ID."""
+    session = SessionLocal()
+    try:
+        conn = session.query(Connection).filter(Connection.id == connection_id).first()
+        if not conn:
+            return {"error": "Connection not found."}
+        session.delete(conn)
+        session.commit()
+        return {"message": "Connection deleted successfully."}
+    except Exception as e:
+        session.rollback()
+        return {"error": str(e)}
+    finally:
+        session.close()
