@@ -25,7 +25,6 @@ export default function Chat() {
             </div>
         );
 
-    // 🔸 Error visualizado en toda la pantalla
     if (error)
         return (
             <div className="flex items-center justify-center h-screen bg-slate-50">
@@ -33,7 +32,7 @@ export default function Chat() {
             </div>
         );
 
-    // 🔸 Vista normal del chat
+
     return (
         <div className="relative flex flex-col h-full bg-white">
             <div className="absolute top-1 right-4 z-30">

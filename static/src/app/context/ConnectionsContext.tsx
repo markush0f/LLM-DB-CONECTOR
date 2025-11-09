@@ -43,12 +43,6 @@ export const ConnectionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
             console.log("✅ [ConnectionsContext] Conexiones recibidas:", data);
             setConnections(data);
             setError(null);
-
-            // ✅ Si no hay activa, usa la primera (opcional)
-            if (!activeConnection && data.length > 0) {
-                setActiveConnection(data[0]);
-                console.log("🎯 [ConnectionsContext] Conexión activa por defecto:", data[0].name);
-            }
         } catch (err: any) {
             console.error("❌ [ConnectionsContext] Error al cargar conexiones:", err);
             setError(err.message || "Error loading connections");
