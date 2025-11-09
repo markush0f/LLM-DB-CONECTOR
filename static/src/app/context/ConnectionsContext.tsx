@@ -59,7 +59,7 @@ export const ConnectionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
     };
 
     const removeConnection = async (id: number) => {
-        console.log(`🗑️ [ConnectionsContext] Eliminando conexión ID=${id}...`);
+        console.log(`[ConnectionsContext] Eliminando conexión ID=${id}...`);
         await deleteConnection(id);
         setConnections((prev) => prev.filter((c) => c.id !== id));
         if (activeConnection?.id === id) {

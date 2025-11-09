@@ -42,7 +42,7 @@ export default function Sidebar() {
 
             const newConnection = {
                 ...data,
-                id: connections[0].id + 1
+                id: connections && connections.length > 0 ? connections[0].id + 1 : 1
             };
 
             addConnection(newConnection);

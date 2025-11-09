@@ -1,9 +1,14 @@
 import { ConnectionData } from "../types/connectionData";
 
-
+interface NewConnection {
+    host: string;
+    port: string;
+    database: string;
+    user: string;
+    password: string;
+}
 const API_BASE = "http://localhost:8000";
 
-/* 🔹 Obtener todas las conexiones guardadas */
 export async function fetchConnections(): Promise<ConnectionData[]> {
     const res = await fetch(`${API_BASE}/connections/list`);
     if (!res.ok) throw new Error("Error fetching connections");
@@ -12,27 +17,31 @@ export async function fetchConnections(): Promise<ConnectionData[]> {
     return data.connections || [];
 }
 
-/* 🔹 Crear una nueva conexión */
-export async function createConnection(conn: Omit<ConnectionData, "id" | "created_at">) {
+export async function createConnection(conn: ConnectionData) {
+    const newConnection: NewConnection = {
+        host: conn.host,
+        port: conn.port,
+        database: conn.database,
+        user: conn.username,
+        password: conn.password
+    }
     const res = await fetch(`${API_BASE}/connections/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(conn),
+        body: JSON.stringify(newConnection),
     });
 
     if (!res.ok) throw new Error("Error creating connection");
     return res.json();
 }
 
-/* 🔹 Eliminar una conexión */
 export async function deleteConnection(id: number) {
     const res = await fetch(`${API_BASE}/connections/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Error deleting connection");
 }
 
-/* 🔹 Activar una conexión existente */
 export async function activateConnection(id: number, password: string) {
-    console.log(`⚙️ Activando conexión ${id} con password fijo`);
+    console.log(`Activando conexión ${id} con password fijo`);
 
     const res = await fetch(`http://localhost:8000/connections/use/${id}`, {
         method: "POST",

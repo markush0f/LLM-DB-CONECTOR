@@ -11,12 +11,11 @@ interface NewConnectionModalProps {
 }
 
 
-
 export default function NewConnectionModal({ isOpen, onClose, onSubmit }: NewConnectionModalProps) {
     const { connections } = useConnections();
 
     const [formData, setFormData] = useState<ConnectionData>({
-        id: connections[0].id + 1,
+        id: connections && connections.length > 0 ? connections[0].id + 1 : 1,
         name: "",
         host: "localhost",
         port: "5432",
@@ -41,7 +40,7 @@ export default function NewConnectionModal({ isOpen, onClose, onSubmit }: NewCon
         try {
             onSubmit(formData);
             setFormData({
-                id: connections[0].id + 1,
+                id: connections && connections.length > 0 ? connections[0].id + 1 : 1,
                 name: "",
                 host: "localhost",
                 port: "5432",
