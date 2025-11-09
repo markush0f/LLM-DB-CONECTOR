@@ -107,7 +107,7 @@ export default function ConnectionItem({
                 {/* Schemas expandibles */}
                 {expanded && isActive && (
                     <div className="border-t border-orange-200 bg-orange-50/50 px-4 py-2">
-                        <SchemaDropdown schemas={schemasList} onSelect={setSelectedSchema} />
+                        <SchemaDropdown schemas={schemasList} onTableSelect={setSelectedSchema} />
                     </div>
                 )}
 

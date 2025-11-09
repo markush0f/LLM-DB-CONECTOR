@@ -37,7 +37,7 @@ def list_connections():
     return {"total": len(connections), "connections": connections}
 
 
-@router.delete("/delete/{connection_id}")
+@router.delete("/{connection_id}")
 def delete_connection(connection_id: int):
     """Delete a connection by ID."""
     result = delete_connection_by_id(connection_id)
