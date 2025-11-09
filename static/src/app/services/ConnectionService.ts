@@ -38,13 +38,13 @@ export async function deleteConnection(id: number) {
 }
 
 /* 🔹 Activar una conexión existente */
-export async function activateConnection(id: number) {
+export async function activateConnection(id: number, password: string) {
     console.log(`⚙️ Activando conexión ${id} con password fijo`);
 
     const res = await fetch(`http://localhost:8000/connections/use/${id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: "password" }), 
+        body: JSON.stringify({ password: "password" }),
     });
 
     if (!res.ok) {

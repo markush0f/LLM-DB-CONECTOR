@@ -3,7 +3,12 @@ import React from "react";
 import { useConnections } from "@/app/context/ConnectionsContext";
 import ConnectionItem from "./ConnectionItem";
 
-export default function ConnectionList({ isOpen }: { isOpen: boolean }) {
+interface Props {
+    isOpen: boolean;
+    onSelect: (conn: any) => void;
+}
+
+export default function ConnectionList({ isOpen, onSelect }: Props) {
     const { connections, activeConnection } = useConnections();
 
     if (!connections.length)
@@ -17,6 +22,7 @@ export default function ConnectionList({ isOpen }: { isOpen: boolean }) {
                     conn={conn}
                     isActive={activeConnection?.id === conn.id}
                     isOpen={isOpen}
+                    onSelect={() => onSelect(conn)} // ✅ pasa evento al Sidebar
                 />
             ))}
         </ul>
