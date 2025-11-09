@@ -6,6 +6,7 @@ interface NewConnection {
     database: string;
     user: string;
     password: string;
+    name: string
 }
 const API_BASE = "http://localhost:8000";
 
@@ -23,7 +24,8 @@ export async function createConnection(conn: ConnectionData) {
         port: conn.port,
         database: conn.database,
         user: conn.username,
-        password: conn.password
+        password: conn.password,
+        name: conn.name
     }
     const res = await fetch(`${API_BASE}/connections/save`, {
         method: "POST",

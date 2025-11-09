@@ -31,7 +31,7 @@ export default function Sidebar() {
             setActiveConnection(selectedConnection);
             setShowPasswordModal(false);
             setSelectedSection("connections");
-            console.log("✅ Conexión activada:", selectedConnection.name);
+            console.log("Conexión activada:", selectedConnection.name);
         } catch (err: any) {
             alert(`Error al activar la conexión: ${err.message || err}`);
         }
@@ -47,7 +47,8 @@ export default function Sidebar() {
 
             addConnection(newConnection);
             setShowNewConnectionModal(false);
-            console.log("✅ Nueva conexión creada:", data.name);
+            setSelectedSection("connections");
+            console.log("Nueva conexión creada:", data.name);
         } catch (err: any) {
             alert(`Error al crear conexión: ${err.message || err}`);
             throw err;

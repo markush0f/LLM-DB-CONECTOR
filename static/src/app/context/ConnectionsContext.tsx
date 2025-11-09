@@ -54,9 +54,11 @@ export const ConnectionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
     const addConnection = async (conn: ConnectionData) => {
         console.log(" [ConnectionsContext] Creando nueva conexión:", conn);
-        const newConn = await createConnection(conn);
+        const response = await createConnection(conn);
+        const newConn = response.connection;
         setConnections((prev) => [...prev, newConn]);
     };
+
 
     const removeConnection = async (id: number) => {
         console.log(`[ConnectionsContext] Eliminando conexión ID=${id}...`);
