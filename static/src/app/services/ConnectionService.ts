@@ -1,17 +1,10 @@
-export interface DBConnection {
-    id: number;
-    name: string;
-    host: string;
-    port: number;
-    user: string;
-    database: string;
-    created_at: string;
-}
+import { ConnectionData } from "../types/connectionData";
+
 
 const API_BASE = "http://localhost:8000";
 
 /* 🔹 Obtener todas las conexiones guardadas */
-export async function fetchConnections(): Promise<DBConnection[]> {
+export async function fetchConnections(): Promise<ConnectionData[]> {
     const res = await fetch(`${API_BASE}/connections/list`);
     if (!res.ok) throw new Error("Error fetching connections");
 
@@ -20,7 +13,7 @@ export async function fetchConnections(): Promise<DBConnection[]> {
 }
 
 /* 🔹 Crear una nueva conexión */
-export async function createConnection(conn: Omit<DBConnection, "id" | "created_at">) {
+export async function createConnection(conn: Omit<ConnectionData, "id" | "created_at">) {
     const res = await fetch(`${API_BASE}/connections/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
