@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState } from "react";
+import { Section } from "../types/sectionType";
 
-type Section = "connections" | "new" | "history" | "settings" | null;
 
 interface SidebarContextType {
     selectedSection: Section;
