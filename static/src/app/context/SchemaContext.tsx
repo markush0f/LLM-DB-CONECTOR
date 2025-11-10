@@ -3,12 +3,13 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import {
     fetchDatabaseSchema,
     fetchSchemasList,
-    fetchTablesBySchema
+    fetchTablesBySchema,
 } from "../api/schema";
 import { useConnections } from "./ConnectionsContext";
+import { DatabaseSchema } from "@/app/types/diagramData"; // ✅ Import your types
 
 interface SchemaContextType {
-    schema: any;
+    schema: DatabaseSchema | null; // ✅ Correct type
     schemasList: string[];
     selectedSchema: string | null;
     setSelectedSchema: (schema: string) => void;
@@ -33,7 +34,7 @@ const SchemaContext = createContext<SchemaContextType>({
 
 export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { activeConnection } = useConnections();
-    const [schema, setSchema] = useState<any>(null);
+    const [schema, setSchema] = useState<DatabaseSchema | null>(null); // ✅ Typed
     const [schemasList, setSchemasList] = useState<string[]>([]);
     const [selectedSchema, setSelectedSchema] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -41,7 +42,6 @@ export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [tables, setTables] = useState<string[]>([]);
     const [isLoadingTables, setIsLoadingTables] = useState(false);
 
-    // 🧩 Cargar todos los schemas al conectar
     const loadSchemas = async () => {
         if (!activeConnection) return;
         setLoading(true);
@@ -56,13 +56,12 @@ export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
     };
 
-    // 🧩 Cargar estructura del schema
     const loadSchema = async (schemaName?: string) => {
         if (!activeConnection || !schemaName) return;
         setLoading(true);
         try {
             const data = await fetchDatabaseSchema(schemaName);
-            setSchema(data);
+            setSchema(data as DatabaseSchema); // ✅ Typed safely
         } catch (err: any) {
             setError(err.message || "Error fetching schema");
         } finally {
@@ -70,7 +69,6 @@ export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
     };
 
-    // 🧩 Cargar las tablas de un schema
     const loadTables = async (schemaName: string) => {
         if (!activeConnection) return;
         setIsLoadingTables(true);
@@ -107,7 +105,7 @@ export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 error,
                 tables,
                 isLoadingTables,
-                setTables
+                setTables,
             }}
         >
             {children}

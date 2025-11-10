@@ -6,11 +6,11 @@ import { useSidebar } from "@/app/context/SidebarConnection";
 import SidebarHeader from "./SidebarHeader";
 import SidebarNav from "./SidebarNav";
 import SidebarFooter from "./SidebarFooter";
-import ConnectionList from "./ConnectionList";
-import ConnectionPasswordModal from "./ConnectionPasswordModal";
+import ConnectionPasswordModal from "./connections/ConnectionPasswordModal";
 import NewConnectionModal from "../../connection/AddConnectionModal";
 import { activateConnection } from "@/app/services/ConnectionService";
 import { ConnectionData } from "@/app/types/connectionData";
+import ConnectionList from "./connections/ConnectionList";
 
 export default function Sidebar() {
     const { selectedSection, setSelectedSection, isSidebarOpen, toggleSidebar } = useSidebar();

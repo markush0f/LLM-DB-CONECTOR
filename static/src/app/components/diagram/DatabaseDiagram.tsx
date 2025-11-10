@@ -1,5 +1,6 @@
 "use client";
 import { useMemo } from "react";
+import { useSchemas } from "@/app/context/SchemaContext";
 import {
   ReactFlow,
   Background,
@@ -11,10 +12,9 @@ import "@xyflow/react/dist/style.css";
 
 import TableNode from "./TableNode";
 import { getLayoutedElements } from "./layout";
-import { useSchemas } from "@/app/context/SchemaContext";
 
 export default function DatabaseDiagram() {
-  const { schema, loading, error } = useSchemas(); // ✅ ahora usamos schema del contexto
+  const { schema, loading, error } = useSchemas();
 
   if (loading) return <div className="text-gray-400 p-4 text-center">Cargando esquema...</div>;
   if (error) return <div className="text-red-500 p-4 text-center">{error}</div>;
