@@ -15,8 +15,8 @@ router = APIRouter(prefix="/connections", tags=["Database Connections"])
 
 
 @router.post("/save")
-def save_connection(config: PGDBConnector, name: Optional[str] = None):
-    connection_name = name or f"{config.database}@{config.host}"
+def save_connection(config: PGDBConnector):
+    connection_name = config.name or f"{config.database}@{config.host}"
     result = create_connection(
         name=connection_name,
         host=config.host,

@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+
+
+/* Success toast */
+.Toastify__toast--success {
+    border-left: 4px solid #16a34a;
+    /* verde suave */
+    background-color: #f0fdf4;
+    /* verde muy claro */
+    color: #166534;
+}
+
+/* Error toast */
+.Toastify__toast--error {
+    border-left: 4px solid #dc2626;
+    /* rojo suave */
+    background-color: #fef2f2;
+    /* rojo muy claro */
+    color: #991b1b;
+}

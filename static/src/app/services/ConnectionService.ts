@@ -1,58 +1,92 @@
-export interface DBConnection {
-    id: number;
-    name: string;
+import { ConnectionData } from "../types/connectionData";
+import { notifySuccess, notifyError, notifyInfo } from "@/lib/notify";
+
+interface NewConnection {
     host: string;
-    port: number;
-    user: string;
+    port: string;
     database: string;
-    created_at: string;
+    user: string;
+    password: string;
+    name: string;
 }
 
 const API_BASE = "http://localhost:8000";
 
-/* 🔹 Obtener todas las conexiones guardadas */
-export async function fetchConnections(): Promise<DBConnection[]> {
-    const res = await fetch(`${API_BASE}/connections/list`);
-    if (!res.ok) throw new Error("Error fetching connections");
+/** 🔹 Fetch all saved connections */
+export async function fetchConnections(): Promise<ConnectionData[]> {
+    try {
+        const res = await fetch(`${API_BASE}/connections/list`);
+        if (!res.ok) throw new Error("Error fetching connections");
 
-    const data = await res.json();
-    return data.connections || [];
-}
-
-/* 🔹 Crear una nueva conexión */
-export async function createConnection(conn: Omit<DBConnection, "id" | "created_at">) {
-    const res = await fetch(`${API_BASE}/connections/save`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(conn),
-    });
-
-    if (!res.ok) throw new Error("Error creating connection");
-    return res.json();
-}
-
-/* 🔹 Eliminar una conexión */
-export async function deleteConnection(id: number) {
-    const res = await fetch(`${API_BASE}/connections/${id}`, { method: "DELETE" });
-    if (!res.ok) throw new Error("Error deleting connection");
-}
-
-/* 🔹 Activar una conexión existente */
-export async function activateConnection(id: number, password: string) {
-    console.log(`⚙️ Activando conexión ${id} con password fijo`);
-
-    const res = await fetch(`http://localhost:8000/connections/use/${id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: "password" }),
-    });
-
-    if (!res.ok) {
-        const err = await res.text();
-        throw new Error(`Error activating connection: ${err}`);
+        const data = await res.json();
+        notifyInfo("Connections loaded successfully");
+        return data.connections || [];
+    } catch (error: any) {
+        notifyError(`Failed to load connections: ${error.message}`);
+        throw error;
     }
+}
 
-    const data = await res.json();
-    console.log("✅ Conexión activada:", data);
-    return data;
+/** 🔹 Create a new connection */
+export async function createConnection(conn: ConnectionData) {
+    const newConnection: NewConnection = {
+        host: conn.host,
+        port: conn.port,
+        database: conn.database,
+        user: conn.username,
+        password: conn.password,
+        name: conn.name,
+    };
+
+    try {
+        const res = await fetch(`${API_BASE}/connections/save`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newConnection),
+        });
+
+        if (!res.ok) throw new Error("Error creating connection");
+
+        const data = await res.json();
+        notifySuccess(`Connection "${conn.name}" created successfully`);
+        return data.connection || data;
+    } catch (error: any) {
+        notifyError(`Failed to create connection: ${error.message}`);
+        throw error;
+    }
+}
+
+/** 🔹 Delete a connection */
+export async function deleteConnection(id: number, name?: string) {
+    try {
+        const res = await fetch(`${API_BASE}/connections/${id}`, { method: "DELETE" });
+        if (!res.ok) throw new Error("Error deleting connection");
+        notifySuccess(`Connection "${name || id}" deleted successfully`);
+    } catch (error: any) {
+        notifyError(`Failed to delete connection: ${error.message}`);
+        throw error;
+    }
+}
+
+/** 🔹 Activate an existing connection */
+export async function activateConnection(id: number, password: string, name?: string) {
+    try {
+        const res = await fetch(`${API_BASE}/connections/use/${id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password }),
+        });
+
+        if (!res.ok) {
+            const err = await res.text();
+            throw new Error(err);
+        }
+
+        const data = await res.json();
+        notifySuccess(`Connected to "${name || "database"}" successfully`);
+        return data;
+    } catch (error: any) {
+        notifyError(`Error activating connection: ${error.message}`);
+        throw error;
+    }
 }

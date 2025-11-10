@@ -1,20 +1,21 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import {
-    DBConnection,
     fetchConnections,
     createConnection,
     deleteConnection,
 } from "../services/ConnectionService";
+import { ConnectionData } from "../types/connectionData";
+
 
 interface ConnectionsContextType {
-    connections: DBConnection[];
+    connections: ConnectionData[];
     loading: boolean;
     error: string | null;
-    activeConnection: DBConnection | null;
-    setActiveConnection: (conn: DBConnection) => void;
+    activeConnection: ConnectionData | null;
+    setActiveConnection: (conn: ConnectionData) => void;
     reload: () => Promise<void>;
-    addConnection: (conn: Omit<DBConnection, "id" | "created_at">) => Promise<void>;
+    addConnection: (conn: ConnectionData) => Promise<void>;
     removeConnection: (id: number) => Promise<void>;
 }
 
@@ -30,8 +31,8 @@ const ConnectionsContext = createContext<ConnectionsContextType>({
 });
 
 export const ConnectionsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [connections, setConnections] = useState<DBConnection[]>([]);
-    const [activeConnection, setActiveConnection] = useState<DBConnection | null>(null);
+    const [connections, setConnections] = useState<ConnectionData[]>([]);
+    const [activeConnection, setActiveConnection] = useState<ConnectionData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -51,14 +52,16 @@ export const ConnectionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
     };
 
-    const addConnection = async (conn: Omit<DBConnection, "id" | "created_at">) => {
-        console.log("➕ [ConnectionsContext] Creando nueva conexión:", conn);
-        const newConn = await createConnection(conn);
+    const addConnection = async (conn: ConnectionData) => {
+        console.log(" [ConnectionsContext] Creando nueva conexión:", conn);
+        const response = await createConnection(conn);
+        const newConn = response.connection;
         setConnections((prev) => [...prev, newConn]);
     };
 
+
     const removeConnection = async (id: number) => {
-        console.log(`🗑️ [ConnectionsContext] Eliminando conexión ID=${id}...`);
+        console.log(`[ConnectionsContext] Eliminando conexión ID=${id}...`);
         await deleteConnection(id);
         setConnections((prev) => prev.filter((c) => c.id !== id));
         if (activeConnection?.id === id) {
