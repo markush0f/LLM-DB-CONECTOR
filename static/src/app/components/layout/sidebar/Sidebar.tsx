@@ -1,15 +1,14 @@
 "use client";
 import React, { useState } from "react";
-import { Menu, X, Database, History, Settings, Plus } from "lucide-react";
+import { Menu, X, Database, History, Settings, Plus, Loader2 } from "lucide-react";
 import { useConnections } from "@/app/context/ConnectionsContext";
 import SidebarButton from "./SidebarButton";
 import ConnectionList from "./ConnectionList";
 import ConnectionPasswordModal from "./ConnectionPasswordModal";
 import { activateConnection } from "@/app/services/ConnectionService";
-import { useSidebar } from "@/app/context/SidebarConnection";
 import { ConnectionData } from "@/app/types/connectionData";
+import { useSidebar } from "@/app/context/SidebarConnection";
 import NewConnectionModal from "../../connection/AddConnectionModal";
-
 
 export default function Sidebar() {
     const { selectedSection, setSelectedSection, isSidebarOpen, toggleSidebar } = useSidebar();
@@ -39,13 +38,7 @@ export default function Sidebar() {
 
     const handleCreateConnection = async (data: ConnectionData) => {
         try {
-
-            const newConnection = {
-                ...data,
-                id: connections && connections.length > 0 ? connections[0].id + 1 : 1
-            };
-
-            addConnection(newConnection);
+            await addConnection(data);
             setShowNewConnectionModal(false);
             setSelectedSection("connections");
             console.log("Nueva conexión creada:", data.name);
@@ -59,20 +52,22 @@ export default function Sidebar() {
         <>
             <aside
                 className={`${isSidebarOpen ? "w-64" : "w-16"} 
-          h-screen bg-gray-50 border-r border-gray-100 
-          transition-all duration-300 flex flex-col justify-between overflow-hidden`}
+          h-screen bg-white border-r border-gray-200 
+          transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-sm`}
             >
                 <div className="p-3 flex flex-col gap-6">
+                    {/* Toggle Button */}
                     <button
                         onClick={toggleSidebar}
-                        className="flex items-center justify-center w-10 h-10 rounded-lg bg-white border border-gray-200 shadow-sm hover:bg-gray-100 transition-all"
+                        className="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-all"
                     >
-                        {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+                        {isSidebarOpen ? <X size={18} className="text-gray-600" /> : <Menu size={18} className="text-gray-600" />}
                     </button>
 
-                    <nav className="flex flex-col gap-2 mt-4">
+                    {/* Navigation */}
+                    <nav className="flex flex-col gap-1.5">
                         <SidebarButton
-                            icon={<Plus size={20} />}
+                            icon={<Plus size={18} />}
                             text="Nueva conexión"
                             open={isSidebarOpen}
                             isActive={selectedSection === "new"}
@@ -82,21 +77,21 @@ export default function Sidebar() {
                             }}
                         />
                         <SidebarButton
-                            icon={<Database size={20} />}
+                            icon={<Database size={18} />}
                             text="Conexiones"
                             open={isSidebarOpen}
                             isActive={selectedSection === "connections"}
                             onClick={() => setSelectedSection("connections")}
                         />
                         <SidebarButton
-                            icon={<History size={20} />}
+                            icon={<History size={18} />}
                             text="Historial"
                             open={isSidebarOpen}
                             isActive={selectedSection === "history"}
                             onClick={() => setSelectedSection("history")}
                         />
                         <SidebarButton
-                            icon={<Settings size={20} />}
+                            icon={<Settings size={18} />}
                             text="Configuración"
                             open={isSidebarOpen}
                             isActive={selectedSection === "settings"}
@@ -104,29 +99,49 @@ export default function Sidebar() {
                         />
                     </nav>
 
+                    {/* Connections Section */}
                     {selectedSection === "connections" && (
-                        <div className="mt-6">
-                            <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
-                                {isSidebarOpen ? "Mis Conexiones" : ""}
-                            </h3>
-                            {loading && <p className="text-gray-400 text-xs">Cargando...</p>}
-                            {error && <p className="text-red-500 text-xs">{error}</p>}
-                            {isSidebarOpen ? (
-                                <ConnectionList isOpen={isSidebarOpen} onSelect={handleSelectConnection} />
-                            ) : (
-                                <div className="flex flex-col gap-2">
-                                    {/* Iconos pequeños cuando está cerrado */}
+                        <div className="mt-4 flex-1 overflow-hidden flex flex-col">
+                            {isSidebarOpen && (
+                                <div className="flex items-center justify-between px-2 pb-2 border-b border-gray-200">
+                                    <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Mis Conexiones
+                                    </h3>
+                                    {connections && connections.length > 0 && (
+                                        <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                                            {connections.length}
+                                        </span>
+                                    )}
                                 </div>
                             )}
+
+                            <div className="flex-1 overflow-y-auto mt-2">
+                                {loading ? (
+                                    <div className="flex items-center gap-2 px-3 py-3 text-xs text-gray-500">
+                                        <Loader2 size={14} className="animate-spin text-gray-400" />
+                                        <span>Cargando conexiones...</span>
+                                    </div>
+                                ) : error ? (
+                                    <div className="px-3 py-2 text-xs text-red-600 bg-red-50 rounded-md border border-red-200">
+                                        {error}
+                                    </div>
+                                ) : isSidebarOpen ? (
+                                    <ConnectionList isOpen={isSidebarOpen} onSelect={handleSelectConnection} />
+                                ) : null}
+                            </div>
                         </div>
                     )}
                 </div>
 
-                <div className="p-4 text-xs text-gray-400">
-                    {isSidebarOpen ? "v0.1 – local mode" : "v0.1"}
+                {/* Footer */}
+                <div className="p-3 border-t border-gray-200 bg-gray-50">
+                    <p className="text-xs text-gray-400 text-center">
+                        {isSidebarOpen ? "v0.1 – local mode" : "v0.1"}
+                    </p>
                 </div>
             </aside>
 
+            {/* Modals */}
             {showPasswordModal && selectedConnection && (
                 <ConnectionPasswordModal
                     connectionName={selectedConnection.name}
