@@ -1,5 +1,5 @@
 import { ConnectionData } from "../types/connectionData";
-import { toast } from "react-toastify";
+import { notifySuccess, notifyError, notifyInfo } from "@/lib/notify";
 
 interface NewConnection {
     host: string;
@@ -19,10 +19,10 @@ export async function fetchConnections(): Promise<ConnectionData[]> {
         if (!res.ok) throw new Error("Error fetching connections");
 
         const data = await res.json();
-        toast.success("🔗 Connections loaded successfully!");
+        notifyInfo("Connections loaded successfully");
         return data.connections || [];
     } catch (error: any) {
-        toast.error(`❌ Failed to load connections: ${error.message}`);
+        notifyError(`Failed to load connections: ${error.message}`);
         throw error;
     }
 }
@@ -48,10 +48,10 @@ export async function createConnection(conn: ConnectionData) {
         if (!res.ok) throw new Error("Error creating connection");
 
         const data = await res.json();
-        toast.success(`✅ Connection "${conn.name}" created successfully!`);
+        notifySuccess(`Connection "${conn.name}" created successfully`);
         return data.connection || data;
     } catch (error: any) {
-        toast.error(`❌ Failed to create connection: ${error.message}`);
+        notifyError(`Failed to create connection: ${error.message}`);
         throw error;
     }
 }
@@ -61,9 +61,9 @@ export async function deleteConnection(id: number, name?: string) {
     try {
         const res = await fetch(`${API_BASE}/connections/${id}`, { method: "DELETE" });
         if (!res.ok) throw new Error("Error deleting connection");
-        toast.success(`🗑️ Connection "${name || id}" deleted successfully!`);
+        notifySuccess(`Connection "${name || id}" deleted successfully`);
     } catch (error: any) {
-        toast.error(`❌ Failed to delete connection: ${error.message}`);
+        notifyError(`Failed to delete connection: ${error.message}`);
         throw error;
     }
 }
@@ -83,10 +83,10 @@ export async function activateConnection(id: number, password: string, name?: st
         }
 
         const data = await res.json();
-        toast.success(`🚀 Connected to "${name || "database"}" successfully!`);
+        notifySuccess(`Connected to "${name || "database"}" successfully`);
         return data;
     } catch (error: any) {
-        toast.error(`❌ Error activating connection: ${error.message}`);
+        notifyError(`Error activating connection: ${error.message}`);
         throw error;
     }
 }

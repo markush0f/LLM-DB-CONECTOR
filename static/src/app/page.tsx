@@ -1,9 +1,9 @@
 import Chat from "./components/chat/Chat";
 import Sidebar from "./components/layout/sidebar/Sidebar";
+import ToastProvider from "./components/ui/ToastProvider";
 import { ConnectionsProvider } from "./context/ConnectionsContext";
 import { SchemaProvider } from "./context/SchemaContext";
 import { SidebarProvider } from "./context/SidebarConnection";
-import { ToastContainer, toast } from 'react-toastify';
 
 export default function Home() {
   return (
@@ -16,17 +16,7 @@ export default function Home() {
               <Chat />
             </main>
           </div>
-          <ToastContainer
-            aria-label="Notification system"
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            pauseOnHover
-            draggable
-            theme="colored"
-          />
+          <ToastProvider />
 
 
         </SchemaProvider>
