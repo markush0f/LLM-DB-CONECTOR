@@ -1,5 +1,5 @@
 "use client";
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useSchemas } from "@/app/context/SchemaContext";
 import {
   ReactFlow,
@@ -10,19 +10,43 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
+import { motion } from "framer-motion";
 import TableNode from "./TableNode";
 import { getLayoutedElements } from "./layout";
 
+/**
+ * DatabaseDiagram component renders the database schema visually
+ * and highlights or animates only the tables that changed.
+ */
 export default function DatabaseDiagram() {
-  const { schema, loading, error } = useSchemas();
+  const { schema, prevSchema, changedTables, loading, error } = useSchemas();
 
-  if (loading) return <div className="text-gray-400 p-4 text-center">Cargando esquema...</div>;
-  if (error) return <div className="text-red-500 p-4 text-center">{error}</div>;
-  if (!schema) return <div className="text-gray-400 p-4 text-center">Sin datos de esquema</div>;
+  const [highlighted, setHighlighted] = useState<string[]>([]);
 
+  // When schema updates, show animation for changed tables
+  useEffect(() => {
+    if (changedTables.length > 0) {
+      setHighlighted(changedTables);
+
+      // Remove highlight after a short delay
+      const timer = setTimeout(() => setHighlighted([]), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [changedTables]);
+
+  if (loading)
+    return <div className="text-gray-400 p-4 text-center">Cargando esquema...</div>;
+  if (error)
+    return <div className="text-red-500 p-4 text-center">{error}</div>;
+  if (!schema)
+    return <div className="text-gray-400 p-4 text-center">Sin datos de esquema</div>;
+
+  // ✅ Build nodes (with highlight animation)
   const initialNodes = useMemo(() => {
     return Object.entries(schema).map(([tableKey, tableData]) => {
       const [, tableName] = tableKey.split(".");
+      const isHighlighted = highlighted.includes(tableKey);
+
       const data = {
         name: tableName,
         columns: tableData.columns.map((col) => ({
@@ -32,10 +56,25 @@ export default function DatabaseDiagram() {
           isFK: tableData.foreign_keys.some((fk) => fk.column === col.name),
         })),
       };
-      return { id: tableName, type: "tableNode", data, position: { x: 0, y: 0 } };
-    });
-  }, [schema]);
 
+      return {
+        id: tableName,
+        type: "tableNode",
+        data,
+        position: { x: 0, y: 0 },
+        style: isHighlighted
+          ? {
+            border: "2px solid #f97316",
+            boxShadow: "0 0 12px #fb923c",
+            transition: "all 0.4s ease-in-out",
+            transform: "scale(1.05)",
+          }
+          : { transition: "all 0.4s ease-in-out" },
+      };
+    });
+  }, [schema, highlighted]);
+
+  // ✅ Build edges (foreign key relations)
   const initialEdges = useMemo(() => {
     const edges: any[] = [];
     Object.entries(schema).forEach(([tableKey, tableData]) => {
@@ -70,7 +109,18 @@ export default function DatabaseDiagram() {
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        nodeTypes={{ tableNode: TableNode }}
+        nodeTypes={{
+          tableNode: (props) => (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+            >
+              <TableNode {...props} prevSchema={prevSchema} />
+            </motion.div>
+          ),
+        }}
+
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         fitView

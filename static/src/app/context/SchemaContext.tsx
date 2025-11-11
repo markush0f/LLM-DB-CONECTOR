@@ -1,15 +1,18 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import diff from "microdiff";
 import {
     fetchDatabaseSchema,
     fetchSchemasList,
     fetchTablesBySchema,
 } from "../api/schema";
 import { useConnections } from "./ConnectionsContext";
-import { DatabaseSchema } from "@/app/types/diagramData"; // ✅ Import your types
+import { DatabaseSchema } from "@/app/types/diagramData";
 
 interface SchemaContextType {
-    schema: DatabaseSchema | null; // ✅ Correct type
+    schema: DatabaseSchema | null;
+    prevSchema: DatabaseSchema | null; // ✅ nuevo
+    changedTables: string[]; // ✅ nuevo
     schemasList: string[];
     selectedSchema: string | null;
     setSelectedSchema: (schema: string) => void;
@@ -18,10 +21,13 @@ interface SchemaContextType {
     tables: string[];
     isLoadingTables: boolean;
     setTables: (tables: string[]) => void;
+    refreshSchema: () => Promise<void>; // ✅ nuevo
 }
 
 const SchemaContext = createContext<SchemaContextType>({
     schema: null,
+    prevSchema: null,
+    changedTables: [],
     schemasList: [],
     selectedSchema: null,
     setSelectedSchema: () => { },
@@ -30,11 +36,14 @@ const SchemaContext = createContext<SchemaContextType>({
     tables: [],
     isLoadingTables: false,
     setTables: () => { },
+    refreshSchema: async () => { },
 });
 
 export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { activeConnection } = useConnections();
-    const [schema, setSchema] = useState<DatabaseSchema | null>(null); // ✅ Typed
+    const [schema, setSchema] = useState<DatabaseSchema | null>(null);
+    const [prevSchema, setPrevSchema] = useState<DatabaseSchema | null>(null);
+    const [changedTables, setChangedTables] = useState<string[]>([]);
     const [schemasList, setSchemasList] = useState<string[]>([]);
     const [selectedSchema, setSelectedSchema] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -61,7 +70,7 @@ export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setLoading(true);
         try {
             const data = await fetchDatabaseSchema(schemaName);
-            setSchema(data as DatabaseSchema); // ✅ Typed safely
+            setSchema(data as DatabaseSchema);
         } catch (err: any) {
             setError(err.message || "Error fetching schema");
         } finally {
@@ -83,6 +92,28 @@ export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
     };
 
+    // ✅ Nuevo: refrescar esquema y detectar diferencias
+    const refreshSchema = async () => {
+        if (!selectedSchema || !activeConnection) return;
+        setPrevSchema(schema); // guarda el actual
+        try {
+            const newSchema = (await fetchDatabaseSchema(selectedSchema)) as DatabaseSchema;
+
+            // Detecta diferencias con el anterior
+            if (schema) {
+                const changes = diff(schema, newSchema)
+                    .map((c) => c.path[0]) 
+                    .filter((v, i, arr) => arr.indexOf(v) === i)
+                    .filter((v): v is string => typeof v === 'string');
+                setChangedTables(changes);
+            }
+
+            setSchema(newSchema);
+        } catch (err: any) {
+            console.error("Error refreshing schema:", err);
+        }
+    };
+
     useEffect(() => {
         if (activeConnection) loadSchemas();
     }, [activeConnection]);
@@ -98,6 +129,8 @@ export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         <SchemaContext.Provider
             value={{
                 schema,
+                prevSchema,
+                changedTables,
                 schemasList,
                 selectedSchema,
                 setSelectedSchema,
@@ -106,6 +139,7 @@ export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 tables,
                 isLoadingTables,
                 setTables,
+                refreshSchema, // ✅ ahora accesible desde fuera
             }}
         >
             {children}
