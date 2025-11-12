@@ -32,7 +32,7 @@ async def generate_sql(req: QueryRequest):
         print("❌ [ERROR] Exception while calling llm.run():", e)
         raise HTTPException(status_code=500, detail=f"Error in LLM: {str(e)}")
 
-    # Validar que el resultado sea un dict
+
     if not isinstance(llm_response, dict):
         print("⚠️ [WARNING] LLM returned non-dict:", llm_response)
         raise HTTPException(status_code=400, detail="Invalid LLM response format")

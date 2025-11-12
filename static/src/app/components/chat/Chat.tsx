@@ -1,9 +1,9 @@
 "use client";
-import Input from "./Input";
 import DatabaseDiagram from "../diagram/DatabaseDiagram";
 import Image from "next/image";
 import { useSchemas } from "@/app/context/SchemaContext";
 import { useConnections } from "@/app/context/ConnectionsContext";
+import Input from "./input/Input";
 
 export default function Chat() {
     const { loading, error, schema } = useSchemas();
