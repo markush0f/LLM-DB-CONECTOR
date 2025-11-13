@@ -19,13 +19,15 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    RequestLoggingMiddleware,
-    BodyLoggingMiddleware,
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_middleware(RequestLoggingMiddleware)
+app.add_middleware(BodyLoggingMiddleware)
+
 db_service = DatabaseService()
 app.include_router(connections_router)
 app.include_router(llm_sql_router)

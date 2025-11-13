@@ -8,12 +8,12 @@ from app.services.internal_database_service import DatabaseService
 
 class SQLAssistantService:
 
-    logger = create_logger("sql_assistant")
+    logger = create_logger()
 
     def __init__(self):
         self.llm = LocalLLMConnector()
-        self.schema = SchemaService()
-        self.db = DatabaseService()
+        self.schema = None
+        self.db = None
 
         tools_path = (
             Path(__file__).resolve().parent.parent
@@ -25,6 +25,13 @@ class SQLAssistantService:
             self.tools = json.load(f)
 
         self.logger.info("SQLAssistantService initialized successfully")
+
+    def _ensure_services(self):
+        """Initializes services only when needed."""
+        if self.schema is None:
+            self.schema = SchemaService()
+        if self.db is None:
+            self.db = DatabaseService()
 
     def build_prompt(self, user_input: str, messages: list):
         tool_block = json.dumps(self.tools, indent=2)
@@ -62,55 +69,34 @@ class SQLAssistantService:
         return full_prompt
 
     def execute_tool(self, name: str, args: dict):
-        self.logger.info("🛠 Executing tool: %s | Args: %s", name, args)
+        self._ensure_services()
 
-        try:
-            match name:
-                case "list_schemas":
-                    result = self.schema.get_schemas()
+        match name:
+            case "list_schemas":
+                return self.schema.get_schemas()
+            case "list_tables":
+                return self.schema.get_table_names(args["schema"])
+            case "get_columns":
+                return self.schema.get_table_columns(args["table"], args["schema"])
+            case "get_primary_keys":
+                return self.schema.get_primary_keys(args["schema"], args["table"])
+            case "get_foreign_keys":
+                return self.schema.get_foreign_keys(args["schema"], args["table"])
+            case "describe_table":
+                return self.schema.describe_table(args["schema"], args["table"])
+            case "describe_schema":
+                return self.schema.get_schema_grouped(args["schema"])
+            case "get_table_sample":
+                return self.db.execute(
+                    f"SELECT * FROM {args['schema']}.{args['table']} LIMIT {args.get('limit',5)}"
+                )
+            case "execute_query":
+                return self.db.execute(args["sql"])
+            case "execute_sql_write":
+                return self.db.execute(args["sql"])
+            case _:
+                return {"error": f"Unknown tool: {name}"}
 
-                case "list_tables":
-                    result = self.schema.get_table_names(args["schema"])
-
-                case "get_columns":
-                    result = self.schema.get_table_columns(
-                        args["table"], args["schema"]
-                    )
-
-                case "get_primary_keys":
-                    result = self.schema.get_primary_keys(args["schema"], args["table"])
-
-                case "get_foreign_keys":
-                    result = self.schema.get_foreign_keys(args["schema"], args["table"])
-
-                case "describe_table":
-                    result = self.schema.describe_table(args["schema"], args["table"])
-
-                case "describe_schema":
-                    result = self.schema.get_schema_grouped(args["schema"])
-
-                case "get_table_sample":
-                    sql = (
-                        f"SELECT * FROM {args['schema']}.{args['table']} "
-                        f"LIMIT {args.get('limit', 5)}"
-                    )
-                    result = self.db.execute(sql)
-
-                case "execute_query":
-                    result = self.db.execute(args["sql"])
-
-                case "execute_sql_write":
-                    result = self.db.execute(args["sql"])
-
-                case _:
-                    result = {"error": f"Unknown tool: {name}"}
-
-            self.logger.info("🧪 Tool result: %s", result)
-            return result
-
-        except Exception as e:
-            self.logger.error("❌ Tool execution error [%s]: %s", name, str(e))
-            return {"error": str(e)}
 
     def run(self, user_input: str):
         self.logger.info("🚀 Starting agent for user input: %s", user_input)
@@ -125,7 +111,7 @@ class SQLAssistantService:
             response = self.llm.run_text(prompt)
 
             self.logger.debug("🤖 Raw LLM response:\n%s", response)
-            
+
             if "TOOL_CALL:" in response:
                 try:
                     json_block = response.split("TOOL_CALL:")[1].strip()
@@ -144,7 +130,6 @@ class SQLAssistantService:
 
                 messages.append({"role": "tool", "content": json.dumps(tool_result)})
                 continue
-
 
             if "FINAL_SQL:" in response:
                 self.logger.info("🎉 FINAL_SQL detected")
