@@ -21,7 +21,6 @@ export default function Input() {
         "Cambiar colores a naranja",
     ]);
 
-    // Submit handler
     const handleSubmit = (e?: React.FormEvent) => {
         e?.preventDefault();
         if (value.trim()) {
@@ -31,7 +30,6 @@ export default function Input() {
         }
     };
 
-    // SQL simulation
     const handleExecuteSQL = () => {
         if (!sqlQuery.trim()) return;
         setQueryResult(`✅ Consulta ejecutada correctamente:\n${sqlQuery}`);

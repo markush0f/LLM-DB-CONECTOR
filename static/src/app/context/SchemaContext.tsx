@@ -92,7 +92,7 @@ export const SchemaProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
     };
 
-    // ✅ Nuevo: refrescar esquema y detectar diferencias
+    // Nuevo: refrescar esquema y detectar diferencias
     const refreshSchema = async () => {
         if (!selectedSchema || !activeConnection) return;
         setPrevSchema(schema); // guarda el actual
