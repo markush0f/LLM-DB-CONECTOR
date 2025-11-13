@@ -1,7 +1,7 @@
 [
     {
-        "name": "list_tables",
-        "description": "Devuelve todas las tablas del esquema actual.",
+        "name": "list_schemas",
+        "description": "Returns all non-system schemas in the active PostgreSQL database.",
         "parameters": {
             "type": "object",
             "properties": {},
@@ -9,58 +9,161 @@
         }
     },
     {
-        "name": "get_columns",
-        "description": "Devuelve las columnas de una tabla, incluyendo tipo, nullability y default.",
+        "name": "list_tables",
+        "description": "Returns a list of tables inside a schema.",
         "parameters": {
             "type": "object",
             "properties": {
-                "table": { "type": "string" }
+                "schema": {
+                    "type": "string"
+                }
             },
-            "required": ["table"]
+            "required": [
+                "schema"
+            ]
+        }
+    },
+    {
+        "name": "get_columns",
+        "description": "Returns all columns of a given table including type, nullability and default.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "schema": {
+                    "type": "string"
+                },
+                "table": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "schema",
+                "table"
+            ]
         }
     },
     {
         "name": "get_primary_keys",
-        "description": "Devuelve claves primarias de una tabla.",
+        "description": "Gets the primary key columns of a table.",
         "parameters": {
             "type": "object",
             "properties": {
-                "table": { "type": "string" }
+                "schema": {
+                    "type": "string"
+                },
+                "table": {
+                    "type": "string"
+                }
             },
-            "required": ["table"]
+            "required": [
+                "schema",
+                "table"
+            ]
         }
     },
     {
         "name": "get_foreign_keys",
-        "description": "Devuelve claves foráneas de una tabla.",
+        "description": "Returns foreign key relationships for the table.",
         "parameters": {
             "type": "object",
             "properties": {
-                "table": { "type": "string" }
+                "schema": {
+                    "type": "string"
+                },
+                "table": {
+                    "type": "string"
+                }
             },
-            "required": ["table"]
+            "required": [
+                "schema",
+                "table"
+            ]
         }
     },
     {
         "name": "describe_table",
-        "description": "Devuelve la estructura completa de una tabla: columnas, PK, FK.",
+        "description": "Returns a structured summary of a table: columns, primary keys, foreign keys.",
         "parameters": {
             "type": "object",
             "properties": {
-                "table": { "type": "string" }
+                "schema": {
+                    "type": "string"
+                },
+                "table": {
+                    "type": "string"
+                }
             },
-            "required": ["table"]
+            "required": [
+                "schema",
+                "table"
+            ]
+        }
+    },
+    {
+        "name": "describe_schema",
+        "description": "Returns a full structured summary of all tables in the schema including columns, PKs, and FKs.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "schema"
+            ]
+        }
+    },
+    {
+        "name": "get_table_sample",
+        "description": "Returns a small sample of N rows from a table for understanding the data.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "schema": {
+                    "type": "string"
+                },
+                "table": {
+                    "type": "string"
+                },
+                "limit": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "schema",
+                "table"
+            ]
         }
     },
     {
         "name": "execute_query",
-        "description": "Ejecuta una consulta SQL y devuelve el resultado.",
+        "description": "Executes a SQL query and returns the result. Use ONLY for reading context, not modifying the DB.",
         "parameters": {
             "type": "object",
             "properties": {
-                "sql": { "type": "string" }
+                "sql": {
+                    "type": "string"
+                }
             },
-            "required": ["sql"]
+            "required": [
+                "sql"
+            ]
+        }
+    },
+    {
+        "name": "execute_sql_write",
+        "description": "Executes a SQL write/update/DDL command. Only use after confirming final SQL.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "sql": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "sql"
+            ]
         }
     }
 ]
