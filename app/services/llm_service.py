@@ -11,10 +11,6 @@ class LocalLLMConnector:
 
     It transforms user instructions into SQL commands or other outputs
     by sending formatted prompts directly to the model installed on your system.
-
-    Example:
-        llm = LocalLLMConnector(model_name="mistral:7b-instruct", temperature=0.1)
-        response = llm.run("Create a SQL table for products with id, name, and price")
     """
 
     def __init__(
@@ -46,6 +42,8 @@ class LocalLLMConnector:
 
         print(f"🚀 Initialized LLM: {self.model_name} | GPU={'ON' if self.use_gpu else 'OFF'}")
 
+    
+    
     def build_prompt(self, user_input: str) -> str:
         """
         Builds a structured prompt for the model.
@@ -81,13 +79,12 @@ class LocalLLMConnector:
 
             # Combinar salida estándar y errores
             output = (result.stdout + result.stderr).decode("utf-8", errors="ignore").strip()
-            print(f"\n🧠 [MODEL OUTPUT BEGIN]\n{output}\n🧠 [MODEL OUTPUT END]\n")
 
             # Si Ollama falla
             if result.returncode != 0:
                 return {"error": f"Ollama failed: {output}"}
 
-            # 🧩 Intentar aislar un bloque JSON en la respuesta
+            # Intentar aislar un bloque JSON en la respuesta
             json_match = re.search(r"\{[\s\S]*\}", output)
             if json_match:
                 try:
