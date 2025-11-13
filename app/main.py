@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.core.logger_middleware import RequestLoggingMiddleware
+from app.core.middleware_body_logger import BodyLoggingMiddleware
 from app.internal_db import init_internal_db
 from app.services.internal_database_service import DatabaseService
 from app.router.connections_router import router as connections_router
@@ -19,6 +20,7 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     RequestLoggingMiddleware,
+    BodyLoggingMiddleware,
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
