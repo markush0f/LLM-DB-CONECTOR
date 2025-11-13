@@ -13,18 +13,12 @@ class SchemaService:
         self.engine = db_session.engine
         self.base_path = Path(__file__).resolve().parent.parent / "common" / "sql"
 
-    # ---------------------------------------------------------
     # Core loader for any SQL file (public + reusable)
-    # ---------------------------------------------------------
     def load_sql(self, filename: str) -> str:
         path = self.base_path / filename
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
 
-    # ---------------------------------------------------------
-    # PUBLIC RAW FETCHERS (no more private _fetch_)
-    # These return raw DB data ready to be processed
-    # ---------------------------------------------------------
     def fetch_columns(self, schema_name: str | None = None):
         query = text(self.load_sql("columns.sql"))
         with self.engine.connect() as conn:
@@ -43,9 +37,6 @@ class SchemaService:
             result = conn.execute(query, {"schema_name": schema_name})
             return [dict(row._mapping) for row in result]
 
-    # ---------------------------------------------------------
-    # PROCESSED PUBLIC API
-    # ---------------------------------------------------------
     def get_schemas(self):
         query = text(
             """
@@ -74,9 +65,6 @@ class SchemaService:
             result = conn.execute(query, {"schema_name": schema_name})
             return [row[0] for row in result.fetchall()]
 
-    # ---------------------------------------------------------
-    # TABLE-SPECIFIC CLEAN RESULTS
-    # ---------------------------------------------------------
     def get_primary_keys(self, schema_name: str, table_name: str) -> list[str]:
         pks = self.fetch_primary_keys(schema_name)
         return [pk["column_name"] for pk in pks if pk["table_name"] == table_name]
@@ -101,9 +89,7 @@ class SchemaService:
             )
             return [dict(row._mapping) for row in raw]
 
-    # ---------------------------------------------------------
-    # Combined table description (for agent tools)
-    # ---------------------------------------------------------
+
     def describe_table(self, schema_name: str, table_name: str) -> dict:
         return {
             "schema": schema_name,
@@ -113,9 +99,6 @@ class SchemaService:
             "foreign_keys": self.get_foreign_keys(schema_name, table_name),
         }
 
-    # ---------------------------------------------------------
-    # Grouped schema (for diagram)
-    # ---------------------------------------------------------
     def get_schema_grouped(self, schema_name: str | None = None) -> dict:
         columns = self.fetch_columns(schema_name)
         pks = self.fetch_primary_keys(schema_name)
