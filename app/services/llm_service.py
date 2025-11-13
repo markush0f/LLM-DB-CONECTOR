@@ -107,30 +107,39 @@ USER REQUEST:
     def tool_list_schemas(self):
         return self.schema.get_schemas()
 
+
     def tool_list_tables(self, schema: str):
         return self.schema.get_table_names(schema)
 
+
     def tool_get_columns(self, schema: str, table: str):
-        return self.schema.get_table_columns(schema, table)
+        return self.schema.get_table_columns(table, schema)
+
 
     def tool_get_primary_keys(self, schema: str, table: str):
         return self.schema.get_primary_keys(schema, table)
 
+
     def tool_get_foreign_keys(self, schema: str, table: str):
         return self.schema.get_foreign_keys(schema, table)
 
+
     def tool_describe_table(self, schema: str, table: str):
-        return self.schema.get_schema_grouped(schema).get(f"{schema}.{table}")
+        return self.schema.describe_table(schema, table)
+
 
     def tool_describe_schema(self, schema: str):
         return self.schema.get_schema_grouped(schema)
+
 
     def tool_get_table_sample(self, schema: str, table: str, limit: int = 5):
         sql = f"SELECT * FROM {schema}.{table} LIMIT {limit}"
         return self.db.execute(sql)
 
+
     def tool_execute_query(self, sql: str):
         return self.db.execute(sql)
+
 
     def tool_execute_sql_write(self, sql: str):
         return self.db.execute(sql)
