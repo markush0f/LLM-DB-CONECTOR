@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from app.core.logger_middleware import RequestLoggingMiddleware
 from app.internal_db import init_internal_db
 from app.services.internal_database_service import DatabaseService
 from app.router.connections_router import router as connections_router
@@ -11,13 +12,14 @@ init_internal_db()
 
 app = FastAPI(title="LLM-DB CONNECTOR API", version="1.0.0")
 origins = [
-    "http://localhost:3000", 
+    "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  
+    RequestLoggingMiddleware,
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
