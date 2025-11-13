@@ -10,12 +10,13 @@
     },
     {
         "name": "list_tables",
-        "description": "Returns a list of tables inside a schema.",
+        "description": "Returns all table names in the given schema.",
         "parameters": {
             "type": "object",
             "properties": {
                 "schema": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Schema name, e.g. 'public'"
                 }
             },
             "required": [
@@ -25,15 +26,17 @@
     },
     {
         "name": "get_columns",
-        "description": "Returns all columns of a given table including type, nullability and default.",
+        "description": "Returns all columns for a specific table, including type, nullability, defaults, and key information when available.",
         "parameters": {
             "type": "object",
             "properties": {
                 "schema": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Schema name, e.g. 'public'"
                 },
                 "table": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Table name"
                 }
             },
             "required": [
@@ -44,15 +47,17 @@
     },
     {
         "name": "get_primary_keys",
-        "description": "Gets the primary key columns of a table.",
+        "description": "Returns primary key column names for a specific table.",
         "parameters": {
             "type": "object",
             "properties": {
                 "schema": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Schema name"
                 },
                 "table": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Table name"
                 }
             },
             "required": [
@@ -63,15 +68,17 @@
     },
     {
         "name": "get_foreign_keys",
-        "description": "Returns foreign key relationships for the table.",
+        "description": "Returns foreign key constraints for a specific table, including referenced table and column.",
         "parameters": {
             "type": "object",
             "properties": {
                 "schema": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Schema name"
                 },
                 "table": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Table name"
                 }
             },
             "required": [
@@ -82,15 +89,17 @@
     },
     {
         "name": "describe_table",
-        "description": "Returns a structured summary of a table: columns, primary keys, foreign keys.",
+        "description": "Returns a complete structured description of a table: columns, primary keys, and foreign keys.",
         "parameters": {
             "type": "object",
             "properties": {
                 "schema": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Schema name"
                 },
                 "table": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Table name"
                 }
             },
             "required": [
@@ -101,12 +110,13 @@
     },
     {
         "name": "describe_schema",
-        "description": "Returns a full structured summary of all tables in the schema including columns, PKs, and FKs.",
+        "description": "Returns the full schema structure grouped by table, including columns, primary keys, and foreign keys.",
         "parameters": {
             "type": "object",
             "properties": {
                 "schema": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Schema name"
                 }
             },
             "required": [
@@ -116,18 +126,22 @@
     },
     {
         "name": "get_table_sample",
-        "description": "Returns a small sample of N rows from a table for understanding the data.",
+        "description": "Returns a small sample of rows from a given table to understand its data contents.",
         "parameters": {
             "type": "object",
             "properties": {
                 "schema": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Schema name"
                 },
                 "table": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Table name"
                 },
                 "limit": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "Maximum number of rows to return",
+                    "default": 5
                 }
             },
             "required": [
@@ -138,12 +152,13 @@
     },
     {
         "name": "execute_query",
-        "description": "Executes a SQL query and returns the result. Use ONLY for reading context, not modifying the DB.",
+        "description": "Executes a read-only SQL query and returns the result. Use for SELECT or inspection queries only.",
         "parameters": {
             "type": "object",
             "properties": {
                 "sql": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "SQL query to execute (SELECT only)"
                 }
             },
             "required": [
@@ -153,12 +168,13 @@
     },
     {
         "name": "execute_sql_write",
-        "description": "Executes a SQL write/update/DDL command. Only use after confirming final SQL.",
+        "description": "Executes a write/update/DDL SQL command (INSERT, UPDATE, DELETE, CREATE, ALTER, etc.). Should be used only when the user confirms the final SQL.",
         "parameters": {
             "type": "object",
             "properties": {
                 "sql": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "SQL command to execute"
                 }
             },
             "required": [
