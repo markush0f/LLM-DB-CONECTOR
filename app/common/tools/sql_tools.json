@@ -1,185 +1,123 @@
-[
-    {
-        "name": "list_schemas",
-        "description": "Returns all non-system schemas in the active PostgreSQL database.",
-        "parameters": {
-            "type": "object",
-            "properties": {},
-            "required": []
-        }
-    },
-    {
-        "name": "list_tables",
-        "description": "Returns all table names in the given schema.",
-        "parameters": {
-            "type": "object",
-            "properties": {
+{
+    "tools": [
+        {
+            "name": "list_schemas",
+            "description": "Return a list of all non-system schemas in the connected database.",
+            "arguments": {}
+        },
+        {
+            "name": "list_tables",
+            "description": "Return all table names inside a given schema.",
+            "arguments": {
                 "schema": {
                     "type": "string",
-                    "description": "Schema name, e.g. 'public'"
+                    "required": true
                 }
-            },
-            "required": [
-                "schema"
-            ]
-        }
-    },
-    {
-        "name": "get_columns",
-        "description": "Returns all columns for a specific table, including type, nullability, defaults, and key information when available.",
-        "parameters": {
-            "type": "object",
-            "properties": {
+            }
+        },
+        {
+            "name": "get_columns",
+            "description": "Return column metadata for a table: name, type, nullable, default.",
+            "arguments": {
                 "schema": {
                     "type": "string",
-                    "description": "Schema name, e.g. 'public'"
+                    "required": true
                 },
                 "table": {
                     "type": "string",
-                    "description": "Table name"
+                    "required": true
                 }
-            },
-            "required": [
-                "schema",
-                "table"
-            ]
-        }
-    },
-    {
-        "name": "get_primary_keys",
-        "description": "Returns primary key column names for a specific table.",
-        "parameters": {
-            "type": "object",
-            "properties": {
+            }
+        },
+        {
+            "name": "get_primary_keys",
+            "description": "Return the list of primary key columns for a table.",
+            "arguments": {
                 "schema": {
                     "type": "string",
-                    "description": "Schema name"
+                    "required": true
                 },
                 "table": {
                     "type": "string",
-                    "description": "Table name"
+                    "required": true
                 }
-            },
-            "required": [
-                "schema",
-                "table"
-            ]
-        }
-    },
-    {
-        "name": "get_foreign_keys",
-        "description": "Returns foreign key constraints for a specific table, including referenced table and column.",
-        "parameters": {
-            "type": "object",
-            "properties": {
+            }
+        },
+        {
+            "name": "get_foreign_keys",
+            "description": "Return foreign key relationships for a table, including referenced schema/table/column.",
+            "arguments": {
                 "schema": {
                     "type": "string",
-                    "description": "Schema name"
+                    "required": true
                 },
                 "table": {
                     "type": "string",
-                    "description": "Table name"
+                    "required": true
                 }
-            },
-            "required": [
-                "schema",
-                "table"
-            ]
-        }
-    },
-    {
-        "name": "describe_table",
-        "description": "Returns a complete structured description of a table: columns, primary keys, and foreign keys.",
-        "parameters": {
-            "type": "object",
-            "properties": {
+            }
+        },
+        {
+            "name": "describe_table",
+            "description": "Return grouped detailed structure for a table: columns, constraints, keys.",
+            "arguments": {
                 "schema": {
                     "type": "string",
-                    "description": "Schema name"
+                    "required": true
                 },
                 "table": {
                     "type": "string",
-                    "description": "Table name"
+                    "required": true
                 }
-            },
-            "required": [
-                "schema",
-                "table"
-            ]
-        }
-    },
-    {
-        "name": "describe_schema",
-        "description": "Returns the full schema structure grouped by table, including columns, primary keys, and foreign keys.",
-        "parameters": {
-            "type": "object",
-            "properties": {
+            }
+        },
+        {
+            "name": "describe_schema",
+            "description": "Return full metadata of all tables inside a schema.",
+            "arguments": {
                 "schema": {
                     "type": "string",
-                    "description": "Schema name"
+                    "required": true
                 }
-            },
-            "required": [
-                "schema"
-            ]
-        }
-    },
-    {
-        "name": "get_table_sample",
-        "description": "Returns a small sample of rows from a given table to understand its data contents.",
-        "parameters": {
-            "type": "object",
-            "properties": {
+            }
+        },
+        {
+            "name": "get_table_sample",
+            "description": "Return a small preview of table rows using SELECT * LIMIT <limit>.",
+            "arguments": {
                 "schema": {
                     "type": "string",
-                    "description": "Schema name"
+                    "required": true
                 },
                 "table": {
                     "type": "string",
-                    "description": "Table name"
+                    "required": true
                 },
                 "limit": {
-                    "type": "number",
-                    "description": "Maximum number of rows to return",
-                    "default": 5
+                    "type": "integer",
+                    "required": false
                 }
-            },
-            "required": [
-                "schema",
-                "table"
-            ]
-        }
-    },
-    {
-        "name": "execute_query",
-        "description": "Executes a read-only SQL query and returns the result. Use for SELECT or inspection queries only.",
-        "parameters": {
-            "type": "object",
-            "properties": {
+            }
+        },
+        {
+            "name": "execute_query",
+            "description": "Execute a SQL read-only query and return the results.",
+            "arguments": {
                 "sql": {
                     "type": "string",
-                    "description": "SQL query to execute (SELECT only)"
+                    "required": true
                 }
-            },
-            "required": [
-                "sql"
-            ]
-        }
-    },
-    {
-        "name": "execute_sql_write",
-        "description": "Executes a write/update/DDL SQL command (INSERT, UPDATE, DELETE, CREATE, ALTER, etc.). Should be used only when the user confirms the final SQL.",
-        "parameters": {
-            "type": "object",
-            "properties": {
+            }
+        },
+        {
+            "name": "execute_sql_write",
+            "description": "Execute a SQL write query (INSERT, UPDATE, DELETE) and return affected rows.",
+            "arguments": {
                 "sql": {
                     "type": "string",
-                    "description": "SQL command to execute"
+                    "required": true
                 }
-            },
-            "required": [
-                "sql"
-            ]
+            }
         }
-    }
-]
+    ]
+}
