@@ -1,59 +1,11 @@
 import json
 import re
 from pathlib import Path
+from app.common.system_prompt import SYSTEM_PROMPT
 from app.core.logger import create_logger
 from app.services.llm_service import LocalLLMConnector
 from app.services.schema_service import SchemaService
 from app.services.internal_database_service import DatabaseService
-
-SYSTEM_PROMPT = """
-You are SQL-AGENT, a deterministic SQL planning engine.
-
-Your ONLY job is:
-1. Inspect the database using tools.
-2. Build correct SQL based on real schema information.
-3. Output the final SQL strictly inside FINAL_SQL JSON.
-
-IMPORTANT RULES:
-- You MUST NOT guess table names, column names, types, constraints, keys or relationships.
-- If you do NOT know something, ALWAYS call a tool.
-- You must gather ALL required metadata before generating SQL.
-- Before writing JOINs: ALWAYS call get_foreign_keys.
-- Before INSERT/UPDATE/DELETE: ALWAYS describe_table and validate required columns.
-- Before SELECT: ALWAYS verify columns using get_columns.
-
-SEQUENCE YOU MUST FOLLOW:
-1. Understand the user request.
-2. Identify required tables.
-3. If schema/table existence is unknown → call list_schemas / list_tables.
-4. If table found → call describe_table, get_columns, get_primary_keys, get_foreign_keys.
-5. After all required metadata is collected, generate SQL.
-6. Output FINAL_SQL ONLY when the SQL is fully validated.
-
-ALLOWED OUTPUT FORMATS (STRICT):
-TOOL_CALL:
-{
-  "name": "<tool_name>",
-  "arguments": { ... }
-}
-
-FINAL_SQL:
-{
-  "sql": "<the query>",
-  "explanation": "<very short, 1-3 lines>"
-}
-
-Do NOT output anything else. No markdown. No comments. No text outside JSON.
-Do NOT output multiple JSON blocks at once.
-Do NOT invent arguments or omit required fields.
-
-If the user asks for creative data (e.g., "10 sample records"), you MUST:
-- extract table metadata
-- generate INSERT statements that match column types
-- avoid NULL unless the column is nullable.
-
-If you do not have enough metadata to create safe SQL → call a tool.
-"""
 
 
 class SQLAssistantService:
@@ -97,32 +49,26 @@ class SQLAssistantService:
 
     def execute_tool(self, name: str, args: dict):
         self._ensure_services()
-        self.logger.info("Executing tool %s args=%s", name, args)
+        self.logger.info("Executing tool %s args=%s", name, args or {})
+        args = args or {}
+        
+        # Dispatch table
+        dispatch = {
+            "list_schemas": lambda: self.schema.get_schemas(),
+            "list_tables": lambda: self.schema.get_table_names(args.get("schema")),
+            "get_columns": lambda: self.schema.get_table_columns(args.get("table"), args.get("schema")),
+            "get_primary_keys": lambda: self.schema.get_primary_keys(args.get("schema"), args.get("table")),
+            "get_foreign_keys": lambda: self.schema.get_foreign_keys(args.get("schema"), args.get("table")),
+            "describe_table": lambda: self.schema.describe_table(args.get("schema"), args.get("table")),
+            "describe_schema": lambda: self.schema.get_schema_grouped(args.get("schema")),
+            "get_table_sample": lambda: self.db.execute(
+            f"SELECT * FROM {args.get('schema')}.{args.get('table')} LIMIT {int(args.get('limit', 5))}"
+            ),
+            "execute_query": lambda: self.db.execute(args.get("sql")),
+            "execute_sql_write": lambda: self.db.execute(args.get("sql")),
+        }
 
-        match name:
-            case "list_schemas":
-                return self.schema.get_schemas()
-            case "list_tables":
-                return self.schema.get_table_names(args["schema"])
-            case "get_columns":
-                return self.schema.get_table_columns(args["table"], args["schema"])
-            case "get_primary_keys":
-                return self.schema.get_primary_keys(args["schema"], args["table"])
-            case "get_foreign_keys":
-                return self.schema.get_foreign_keys(args["schema"], args["table"])
-            case "describe_table":
-                return self.schema.describe_table(args["schema"], args["table"])
-            case "describe_schema":
-                return self.schema.get_schema_grouped(args["schema"])
-            case "get_table_sample":
-                sql = f"SELECT * FROM {args['schema']}.{args['table']} LIMIT {args.get('limit', 5)}"
-                return self.db.execute(sql)
-            case "execute_query":
-                return self.db.execute(args["sql"])
-            case "execute_sql_write":
-                return self.db.execute(args["sql"])
-            case _:
-                return {"error": f"Unknown tool: {name}"}
+        return dispatch.get(name, lambda: {"error": f"Unknown tool: {name}"})()
 
     def safe_json_parse(self, text: str):
         # Removed markdown fences
@@ -141,9 +87,9 @@ class SQLAssistantService:
             elif char == "}":
                 if brace_stack:
                     brace_stack.pop()
-                    if not brace_stack and start is not None:
-                        json_str = cleaned[start : i + 1]
-                        break
+                if start is not None and not brace_stack:
+                    json_str = cleaned[start : i + 1]
+                    break
 
         if json_str is None:
             self.logger.error("No balanced JSON object found in text")
@@ -188,9 +134,6 @@ class SQLAssistantService:
                 name = tool_call["name"]
                 args = tool_call.get("arguments", {})
 
-                # valid, error = self.validate_tool_call(name, args)
-                # if not valid:
-                #     return {"error": error}
 
                 result = self.execute_tool(name, args)
                 messages.append({"role": "tool", "content": json.dumps(result)})
