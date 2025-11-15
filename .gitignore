@@ -8,7 +8,7 @@ venv/
 .env/
 .env.bak/
 .venv/
-
+.venv-linux/
 # Environment variables
 *.env
 *.env.*
