@@ -1,8 +1,8 @@
 from app.internal_db import SessionLocal, Connection
 from app.models.models_db_connector import PGDBConnector
-from app.services.db_session import db_session
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
+from app.services.database_service import db_session
 
 
 def create_connection(name: str, host: str, port: int, user: str, database: str):

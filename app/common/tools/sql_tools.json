@@ -80,44 +80,6 @@
                     "required": true
                 }
             }
-        },
-        {
-            "name": "get_table_sample",
-            "description": "Return a small preview of table rows using SELECT * LIMIT <limit>.",
-            "arguments": {
-                "schema": {
-                    "type": "string",
-                    "required": true
-                },
-                "table": {
-                    "type": "string",
-                    "required": true
-                },
-                "limit": {
-                    "type": "integer",
-                    "required": false
-                }
-            }
-        },
-        {
-            "name": "execute_query",
-            "description": "Execute a SQL read-only query and return the results.",
-            "arguments": {
-                "sql": {
-                    "type": "string",
-                    "required": true
-                }
-            }
-        },
-        {
-            "name": "execute_sql_write",
-            "description": "Execute a SQL write query (INSERT, UPDATE, DELETE) and return affected rows.",
-            "arguments": {
-                "sql": {
-                    "type": "string",
-                    "required": true
-                }
-            }
         }
     ]
 }

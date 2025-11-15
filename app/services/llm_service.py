@@ -26,7 +26,7 @@ class LocalLLMConnector:
 
     def __init__(
         self,
-        model_name: str = "llama3.1",
+        model_name: str = "qwen2.5-coder:14b",
         temperature: float = 0.2,
         max_tokens: int = 2048,
         timeout: int = 60,
@@ -77,9 +77,9 @@ class LocalLLMConnector:
     def run_text(self, prompt: str) -> str:
         try:
             self.logger.info("Running LLM with prompt (%d chars)", len(prompt))
-            self.logger.debug(
-                "----- LLM PROMPT BEGIN -----\n%s\n----- LLM PROMPT END -----", prompt
-            )
+            # self.logger.debug(
+            #     "----- LLM PROMPT BEGIN -----\n%s\n----- LLM PROMPT END -----", prompt
+            # )
 
             start = time.time()
 

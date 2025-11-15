@@ -1,0 +1,2673 @@
+2025-11-15 00:34:02,243 - app_logger - INFO - SQLAssistantService initialized
+2025-11-15 00:34:09,741 - app_logger - INFO - REQUEST GET / | Body=
+2025-11-15 00:34:09,741 - app_logger - INFO - Incoming request: GET /
+2025-11-15 00:34:09,742 - app_logger - INFO - Completed GET / Status=404 Duration=0.50ms
+2025-11-15 00:34:09,743 - app_logger - INFO - RESPONSE GET / | Status=404 | Duration=2.50ms | Body={"detail":"Not Found"}
+2025-11-15 00:34:09,970 - app_logger - INFO - REQUEST GET /favicon.ico | Body=
+2025-11-15 00:34:09,971 - app_logger - INFO - Incoming request: GET /favicon.ico
+2025-11-15 00:34:09,972 - app_logger - INFO - Completed GET /favicon.ico Status=404 Duration=1.00ms
+2025-11-15 00:34:09,972 - app_logger - INFO - RESPONSE GET /favicon.ico | Status=404 | Duration=2.50ms | Body={"detail":"Not Found"}
+2025-11-15 00:34:13,880 - app_logger - INFO - REQUEST GET /docs | Body=
+2025-11-15 00:34:13,880 - app_logger - INFO - Incoming request: GET /docs
+2025-11-15 00:34:13,881 - app_logger - INFO - Completed GET /docs Status=200 Duration=1.00ms
+2025-11-15 00:34:13,881 - app_logger - INFO - RESPONSE GET /docs | Status=200 | Duration=1.50ms | Body=
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+    <link rel="shortcut icon" href="https://fastapi.tiangolo.com/img/favicon.png">
+    <title>LLM-DB CONNECTOR API - Swagger UI</title>
+    </head>
+    <body>
+    <div id="swagger-ui">
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <!-- `SwaggerUIBundle` is now available on the page -->
+    <script>
+    const ui = SwaggerUIBundle({
+        url: '/openapi.json',
+    "dom_id": "#swagger-ui",
+"layout": "BaseLayout",
+"deepLinking": true,
+"showExtensions": true,
+"showCommonExtensions": true,
+oauth2RedirectUrl: window.location.origin + '/docs/oauth2-redirect',
+    presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIBundle.SwaggerUIStandalonePreset
+        ],
+    })
+    </script>
+    </body>
+    </html>
+    
+2025-11-15 00:34:13,962 - app_logger - INFO - REQUEST GET /openapi.json | Body=
+2025-11-15 00:34:13,963 - app_logger - INFO - Incoming request: GET /openapi.json
+2025-11-15 00:34:13,973 - app_logger - INFO - Completed GET /openapi.json Status=200 Duration=10.02ms
+2025-11-15 00:34:13,973 - app_logger - INFO - RESPONSE GET /openapi.json | Status=200 | Duration=11.02ms | Body={"openapi":"3.1.0","info":{"title":"LLM-DB CONNECTOR API","version":"1.0.0"},"paths":{"/connections/save":{"post":{"tags":["Database Connections"],"summary":"Save Connection","operationId":"save_connection_connections_save_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/PGDBConnector"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/connections/list":{"get":{"tags":["Database Connections"],"summary":"List Connections","operationId":"list_connections_connections_list_get","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}}}}},"/connections/{connection_id}":{"delete":{"tags":["Database Connections"],"summary":"Delete Connection","description":"Delete a connection by ID.","operationId":"delete_connection_connections__connection_id__delete","parameters":[{"name":"connection_id","in":"path","required":true,"schema":{"type":"integer","title":"Connection Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/connections/use/{connection_id}":{"post":{"tags":["Database Connections"],"summary":"Use Connection","description":"Activate and persist a connection by ID.","operationId":"use_connection_connections_use__connection_id__post","parameters":[{"name":"connection_id","in":"path","required":true,"schema":{"type":"integer","title":"Connection Id"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/PasswordBody"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/connections/disconnect":{"post":{"tags":["Database Connections"],"summary":"Disconnect","description":"Close current connection.","operationId":"disconnect_connections_disconnect_post","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}}}}},"/llmsql/generate_sql":{"post":{"tags":["SQL Assistant"],"summary":"Generate Sql","description":"Generates SQL using the intelligent multi-step agent.\nIt will automatically inspect the DB using tools if needed.","operationId":"generate_sql_llmsql_generate_sql_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/QueryRequest"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"404":{"description":"Not found"},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/llmsql/execute_sql":{"post":{"tags":["SQL Assistant"],"summary":"Execute Sql","description":"Executes the SQL safely through the internal database service.","operationId":"execute_sql_llmsql_execute_sql_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ExecuteRequest"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"404":{"description":"Not found"},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/db/schema":{"get":{"tags":["Database Schema"],"summary":"Get Schema Grouped","description":"Returns the database schema grouped by table,\noptionally filtered by schema name (e.g. ?schema=public).","operationId":"get_schema_grouped_db_schema_get","parameters":[{"name":"schema","in":"query","required":false,"schema":{"anyOf":[{"type":"string"},{"type":"null"}],"description":"Schema name to filter (e.g. 'public')","title":"Schema"},"description":"Schema name to filter (e.g. 'public')"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/db/schemas":{"get":{"tags":["Database Schema"],"summary":"List Schemas","description":"Return all schema names in the database.","operationId":"list_schemas_db_schemas_get","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}}}}},"/db/tables":{"get":{"tags":["Database Schema"],"summary":"List Tables","description":"Return all table names from the given schema.","operationId":"list_tables_db_tables_get","parameters":[{"name":"schema","in":"query","required":false,"schema":{"type":"string","default":"public","title":"Schema"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/db/columns":{"get":{"tags":["Database Schema"],"summary":"Get Table Columns","description":"Return all columns for a specific table, including data type,\nnullability, default value, and key relationships.","operationId":"get_table_columns_db_columns_get","parameters":[{"name":"table","in":"query","required":true,"schema":{"type":"string","description":"Table name to extract columns from","title":"Table"},"description":"Table name to extract columns from"},{"name":"schema","in":"query","required":false,"schema":{"type":"string","description":"Schema name (default: public)","default":"public","title":"Schema"},"description":"Schema name (default: public)"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}}},"components":{"schemas":{"ExecuteRequest":{"properties":{"sql":{"type":"string","title":"Sql"}},"type":"object","required":["sql"],"title":"ExecuteRequest"},"HTTPValidationError":{"properties":{"detail":{"items":{"$ref":"#/components/schemas/ValidationError"},"type":"array","title":"Detail"}},"type":"object","title":"HTTPValidationError"},"PGDBConnector":{"properties":{"host":{"type":"string","title":"Host"},"port":{"type":"integer","title":"Port"},"user":{"type":"string","title":"User"},"password":{"type":"string","title":"Password"},"database":{"type":"string","title":"Database"},"name":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Name"}},"type":"object","required":["host","port","user","password","database"],"title":"PGDBConnector"},"PasswordBody":{"properties":{"password":{"type":"string","title":"Password"}},"type":"object","required":["password"],"title":"PasswordBody"},"QueryRequest":{"properties":{"user_input":{"type":"string","title":"User Input"}},"type":"object","required":["user_input"],"title":"QueryRequest"},"ValidationError":{"properties":{"loc":{"items":{"anyOf":[{"type":"string"},{"type":"integer"}]},"type":"array","title":"Location"},"msg":{"type":"string","title":"Message"},"type":{"type":"string","title":"Error Type"}},"type":"object","required":["loc","msg","type"],"title":"ValidationError"}}}}
+2025-11-15 00:34:22,218 - app_logger - INFO - REQUEST POST /connections/use/2 | Body={
+  "password": "password"
+}
+2025-11-15 00:34:22,218 - app_logger - INFO - Incoming request: POST /connections/use/2
+2025-11-15 00:34:26,396 - app_logger - INFO - Completed POST /connections/use/2 Status=400 Duration=4177.60ms
+2025-11-15 00:34:26,396 - app_logger - INFO - RESPONSE POST /connections/use/2 | Status=400 | Duration=4178.04ms | Body={"detail":"Failed to connect to database."}
+2025-11-15 00:34:51,767 - app_logger - INFO - REQUEST POST /connections/use/2 | Body={
+  "password": "password"
+}
+2025-11-15 00:34:51,768 - app_logger - INFO - Incoming request: POST /connections/use/2
+2025-11-15 00:34:51,806 - app_logger - INFO - Completed POST /connections/use/2 Status=200 Duration=38.83ms
+2025-11-15 00:34:51,806 - app_logger - INFO - RESPONSE POST /connections/use/2 | Status=200 | Duration=39.32ms | Body={"message":"Connected successfully to 'Markus'"}
+2025-11-15 00:34:55,591 - app_logger - INFO - REQUEST GET /db/schemas | Body=
+2025-11-15 00:34:55,592 - app_logger - INFO - Incoming request: GET /db/schemas
+2025-11-15 00:34:55,603 - app_logger - INFO - Completed GET /db/schemas Status=200 Duration=11.51ms
+2025-11-15 00:34:55,604 - app_logger - INFO - RESPONSE GET /db/schemas | Status=200 | Duration=12.51ms | Body=["public"]
+2025-11-15 00:35:05,144 - app_logger - INFO - REQUEST GET /db/schema | Body=
+2025-11-15 00:35:05,145 - app_logger - INFO - Incoming request: GET /db/schema
+2025-11-15 00:35:05,215 - app_logger - INFO - Completed GET /db/schema Status=200 Duration=70.65ms
+2025-11-15 00:35:05,216 - app_logger - INFO - RESPONSE GET /db/schema | Status=200 | Duration=72.66ms | Body={"public.customers":{"columns":[{"name":"customer_id","type":"integer","nullable":"NO","default":"nextval('customers_customer_id_seq'::regclass)"},{"name":"first_name","type":"character varying","nullable":"NO","default":null},{"name":"last_name","type":"character varying","nullable":"NO","default":null},{"name":"email","type":"character varying","nullable":"NO","default":null},{"name":"created_at","type":"timestamp without time zone","nullable":"YES","default":"CURRENT_TIMESTAMP"}],"primary_keys":["customer_id"],"foreign_keys":[]},"public.order_items":{"columns":[{"name":"order_item_id","type":"integer","nullable":"NO","default":"nextval('order_items_order_item_id_seq'::regclass)"},{"name":"order_id","type":"integer","nullable":"NO","default":null},{"name":"product_id","type":"integer","nullable":"NO","default":null},{"name":"quantity","type":"integer","nullable":"NO","default":null},{"name":"unit_price","type":"numeric","nullable":"NO","default":null}],"primary_keys":["order_item_id"],"foreign_keys":[{"column":"order_id","ref_table":"orders","ref_column":"order_id"},{"column":"product_id","ref_table":"products","ref_column":"product_id"}]},"public.orders":{"columns":[{"name":"order_id","type":"integer","nullable":"NO","default":"nextval('orders_order_id_seq'::regclass)"},{"name":"customer_id","type":"integer","nullable":"NO","default":null},{"name":"order_date","type":"timestamp without time zone","nullable":"YES","default":"CURRENT_TIMESTAMP"},{"name":"status","type":"character varying","nullable":"YES","default":"'Pending'::character varying"}],"primary_keys":["order_id"],"foreign_keys":[{"column":"customer_id","ref_table":"customers","ref_column":"customer_id"}]},"public.payments":{"columns":[{"name":"payment_id","type":"integer","nullable":"NO","default":"nextval('payments_payment_id_seq'::regclass)"},{"name":"order_id","type":"integer","nullable":"NO","default":null},{"name":"amount","type":"numeric","nullable":"NO","default":null},{"name":"payment_date","type":"timestamp without time zone","nullable":"YES","default":"CURRENT_TIMESTAMP"},{"name":"payment_method","type":"character varying","nullable":"YES","default":null}],"primary_keys":["payment_id"],"foreign_keys":[{"column":"order_id","ref_table":"orders","ref_column":"order_id"}]},"public.products":{"columns":[{"name":"product_id","type":"integer","nullable":"NO","default":"nextval('products_product_id_seq'::regclass)"},{"name":"name","type":"character varying","nullable":"NO","default":null},{"name":"description","type":"text","nullable":"YES","default":null},{"name":"price","type":"numeric","nullable":"NO","default":null},{"name":"stock","type":"integer","nullable":"YES","default":"0"}],"primary_keys":["product_id"],"foreign_keys":[]},"public.usuario":{"columns":[{"name":"id","type":"integer","nullable":"NO","default":null},{"name":"nombre","type":"character varying","nullable":"YES","default":null},{"name":"apellidos","type":"character varying","nullable":"YES","default":null}],"primary_keys":["id"],"foreign_keys":[]}}
+2025-11-15 00:35:39,067 - app_logger - INFO - REQUEST POST /llmsql/generate_sql | Body={
+  "user_input": "Necesito que introduzcas 10 registros en customers cond atos mockeados"
+}
+2025-11-15 00:35:39,068 - app_logger - INFO - Incoming request: POST /llmsql/generate_sql
+2025-11-15 00:35:39,069 - app_logger - INFO - Agent started for: Necesito que introduzcas 10 registros en customers cond atos mockeados
+2025-11-15 00:35:39,070 - app_logger - DEBUG - Prompt built (4627 chars)
+2025-11-15 00:35:39,070 - app_logger - INFO - Running LLM with prompt (4627 chars)
+2025-11-15 00:35:39,070 - app_logger - DEBUG - ----- LLM PROMPT BEGIN -----
+
+You are SQL-AGENT, a deterministic SQL planning engine.
+
+Your ONLY job is:
+1. Inspect the database using tools.
+2. Build correct SQL based on real schema information.
+3. Output the final SQL strictly inside FINAL_SQL JSON.
+
+IMPORTANT RULES:
+- You MUST NOT guess table names, column names, types, constraints, keys or relationships.
+- If you do NOT know something, ALWAYS call a tool.
+- You must gather ALL required metadata before generating SQL.
+- Before writing JOINs: ALWAYS call get_foreign_keys.
+- Before INSERT/UPDATE/DELETE: ALWAYS describe_table and validate required columns.
+- Before SELECT: ALWAYS verify columns using get_columns.
+
+SEQUENCE YOU MUST FOLLOW:
+1. Understand the user request.
+2. Identify required tables.
+3. If schema/table existence is unknown → call list_schemas / list_tables.
+4. If table found → call describe_table, get_columns, get_primary_keys, get_foreign_keys.
+5. After all required metadata is collected, generate SQL.
+6. Output FINAL_SQL ONLY when the SQL is fully validated.
+
+ALLOWED OUTPUT FORMATS (STRICT):
+TOOL_CALL:
+{
+  "name": "<tool_name>",
+  "arguments": { ... }
+}
+
+FINAL_SQL:
+{
+  "sql": "<the query>",
+  "explanation": "<very short, 1-3 lines>"
+}
+
+Do NOT output anything else. No markdown. No comments. No text outside JSON.
+Do NOT output multiple JSON blocks at once.
+Do NOT invent arguments or omit required fields.
+
+If the user asks for creative data (e.g., "10 sample records"), you MUST:
+- extract table metadata
+- generate INSERT statements that match column types
+- avoid NULL unless the column is nullable.
+
+If you do not have enough metadata to create safe SQL → call a tool.
+
+TOOLS:
+{
+  "tools": [
+    {
+      "name": "list_schemas",
+      "description": "Return a list of all non-system schemas in the connected database.",
+      "arguments": {}
+    },
+    {
+      "name": "list_tables",
+      "description": "Return all table names inside a given schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_columns",
+      "description": "Return column metadata for a table: name, type, nullable, default.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_primary_keys",
+      "description": "Return the list of primary key columns for a table.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_foreign_keys",
+      "description": "Return foreign key relationships for a table, including referenced schema/table/column.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_table",
+      "description": "Return grouped detailed structure for a table: columns, constraints, keys.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_schema",
+      "description": "Return full metadata of all tables inside a schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_table_sample",
+      "description": "Return a small preview of table rows using SELECT * LIMIT <limit>.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        },
+        "limit": {
+          "type": "integer",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "execute_query",
+      "description": "Execute a SQL read-only query and return the results.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "execute_sql_write",
+      "description": "Execute a SQL write query (INSERT, UPDATE, DELETE) and return affected rows.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  ]
+}
+USER: Necesito que introduzcas 10 registros en customers cond atos mockeados
+
+----- LLM PROMPT END -----
+2025-11-15 00:39:12,629 - app_logger - ERROR - LLM timed out after 60 seconds
+2025-11-15 00:39:12,632 - app_logger - DEBUG - Prompt built (4653 chars)
+2025-11-15 00:39:12,632 - app_logger - INFO - Running LLM with prompt (4653 chars)
+2025-11-15 00:39:12,632 - app_logger - DEBUG - ----- LLM PROMPT BEGIN -----
+
+You are SQL-AGENT, a deterministic SQL planning engine.
+
+Your ONLY job is:
+1. Inspect the database using tools.
+2. Build correct SQL based on real schema information.
+3. Output the final SQL strictly inside FINAL_SQL JSON.
+
+IMPORTANT RULES:
+- You MUST NOT guess table names, column names, types, constraints, keys or relationships.
+- If you do NOT know something, ALWAYS call a tool.
+- You must gather ALL required metadata before generating SQL.
+- Before writing JOINs: ALWAYS call get_foreign_keys.
+- Before INSERT/UPDATE/DELETE: ALWAYS describe_table and validate required columns.
+- Before SELECT: ALWAYS verify columns using get_columns.
+
+SEQUENCE YOU MUST FOLLOW:
+1. Understand the user request.
+2. Identify required tables.
+3. If schema/table existence is unknown → call list_schemas / list_tables.
+4. If table found → call describe_table, get_columns, get_primary_keys, get_foreign_keys.
+5. After all required metadata is collected, generate SQL.
+6. Output FINAL_SQL ONLY when the SQL is fully validated.
+
+ALLOWED OUTPUT FORMATS (STRICT):
+TOOL_CALL:
+{
+  "name": "<tool_name>",
+  "arguments": { ... }
+}
+
+FINAL_SQL:
+{
+  "sql": "<the query>",
+  "explanation": "<very short, 1-3 lines>"
+}
+
+Do NOT output anything else. No markdown. No comments. No text outside JSON.
+Do NOT output multiple JSON blocks at once.
+Do NOT invent arguments or omit required fields.
+
+If the user asks for creative data (e.g., "10 sample records"), you MUST:
+- extract table metadata
+- generate INSERT statements that match column types
+- avoid NULL unless the column is nullable.
+
+If you do not have enough metadata to create safe SQL → call a tool.
+
+TOOLS:
+{
+  "tools": [
+    {
+      "name": "list_schemas",
+      "description": "Return a list of all non-system schemas in the connected database.",
+      "arguments": {}
+    },
+    {
+      "name": "list_tables",
+      "description": "Return all table names inside a given schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_columns",
+      "description": "Return column metadata for a table: name, type, nullable, default.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_primary_keys",
+      "description": "Return the list of primary key columns for a table.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_foreign_keys",
+      "description": "Return foreign key relationships for a table, including referenced schema/table/column.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_table",
+      "description": "Return grouped detailed structure for a table: columns, constraints, keys.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_schema",
+      "description": "Return full metadata of all tables inside a schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_table_sample",
+      "description": "Return a small preview of table rows using SELECT * LIMIT <limit>.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        },
+        "limit": {
+          "type": "integer",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "execute_query",
+      "description": "Execute a SQL read-only query and return the results.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "execute_sql_write",
+      "description": "Execute a SQL write query (INSERT, UPDATE, DELETE) and return affected rows.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  ]
+}
+USER: Necesito que introduzcas 10 registros en customers cond atos mockeados
+ASSISTANT: ERROR: TIMEOUT
+
+----- LLM PROMPT END -----
+2025-11-15 00:39:13,690 - app_logger - INFO - LLM execution time: 1056.60 ms
+2025-11-15 00:39:13,691 - app_logger - DEBUG - ----- RAW STDOUT -----
+
+2025-11-15 00:39:13,691 - app_logger - DEBUG - ----- RAW STDERR -----
+[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠦ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026l[?25l[?2026h[?25l[1G[K[?25h[?2026l[2K[1G[?25hError: Post "http://127.0.0.1:11434/api/generate": read tcp 127.0.0.1:59822->127.0.0.1:11434: wsarecv: An existing connection was forcibly closed by the remote host.
+
+2025-11-15 00:39:13,691 - app_logger - ERROR - LLM returned exit code: 1
+2025-11-15 00:39:13,692 - app_logger - DEBUG - ----- CLEANED MODEL OUTPUT -----
+[2KError: Post "http://127.0.0.1:11434/api/generate": read tcp 127.0.0.1:59822->127.0.0.1:11434: wsarecv: An existing connection was forcibly closed by the remote host.
+2025-11-15 00:39:13,692 - app_logger - DEBUG - Prompt built (4833 chars)
+2025-11-15 00:39:13,692 - app_logger - INFO - Running LLM with prompt (4833 chars)
+2025-11-15 00:39:13,692 - app_logger - DEBUG - ----- LLM PROMPT BEGIN -----
+
+You are SQL-AGENT, a deterministic SQL planning engine.
+
+Your ONLY job is:
+1. Inspect the database using tools.
+2. Build correct SQL based on real schema information.
+3. Output the final SQL strictly inside FINAL_SQL JSON.
+
+IMPORTANT RULES:
+- You MUST NOT guess table names, column names, types, constraints, keys or relationships.
+- If you do NOT know something, ALWAYS call a tool.
+- You must gather ALL required metadata before generating SQL.
+- Before writing JOINs: ALWAYS call get_foreign_keys.
+- Before INSERT/UPDATE/DELETE: ALWAYS describe_table and validate required columns.
+- Before SELECT: ALWAYS verify columns using get_columns.
+
+SEQUENCE YOU MUST FOLLOW:
+1. Understand the user request.
+2. Identify required tables.
+3. If schema/table existence is unknown → call list_schemas / list_tables.
+4. If table found → call describe_table, get_columns, get_primary_keys, get_foreign_keys.
+5. After all required metadata is collected, generate SQL.
+6. Output FINAL_SQL ONLY when the SQL is fully validated.
+
+ALLOWED OUTPUT FORMATS (STRICT):
+TOOL_CALL:
+{
+  "name": "<tool_name>",
+  "arguments": { ... }
+}
+
+FINAL_SQL:
+{
+  "sql": "<the query>",
+  "explanation": "<very short, 1-3 lines>"
+}
+
+Do NOT output anything else. No markdown. No comments. No text outside JSON.
+Do NOT output multiple JSON blocks at once.
+Do NOT invent arguments or omit required fields.
+
+If the user asks for creative data (e.g., "10 sample records"), you MUST:
+- extract table metadata
+- generate INSERT statements that match column types
+- avoid NULL unless the column is nullable.
+
+If you do not have enough metadata to create safe SQL → call a tool.
+
+TOOLS:
+{
+  "tools": [
+    {
+      "name": "list_schemas",
+      "description": "Return a list of all non-system schemas in the connected database.",
+      "arguments": {}
+    },
+    {
+      "name": "list_tables",
+      "description": "Return all table names inside a given schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_columns",
+      "description": "Return column metadata for a table: name, type, nullable, default.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_primary_keys",
+      "description": "Return the list of primary key columns for a table.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_foreign_keys",
+      "description": "Return foreign key relationships for a table, including referenced schema/table/column.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_table",
+      "description": "Return grouped detailed structure for a table: columns, constraints, keys.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_schema",
+      "description": "Return full metadata of all tables inside a schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_table_sample",
+      "description": "Return a small preview of table rows using SELECT * LIMIT <limit>.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        },
+        "limit": {
+          "type": "integer",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "execute_query",
+      "description": "Execute a SQL read-only query and return the results.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "execute_sql_write",
+      "description": "Execute a SQL write query (INSERT, UPDATE, DELETE) and return affected rows.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  ]
+}
+USER: Necesito que introduzcas 10 registros en customers cond atos mockeados
+ASSISTANT: ERROR: TIMEOUT
+ASSISTANT: [2KError: Post "http://127.0.0.1:11434/api/generate": read tcp 127.0.0.1:59822->127.0.0.1:11434: wsarecv: An existing connection was forcibly closed by the remote host.
+
+----- LLM PROMPT END -----
+2025-11-15 00:39:20,698 - app_logger - INFO - LLM execution time: 7004.45 ms
+2025-11-15 00:39:20,698 - app_logger - DEBUG - ----- RAW STDOUT -----
+{
+  "name": "describe_table",
+  "arguments": {
+
+
+
+2025-11-15 00:39:20,699 - app_logger - DEBUG - ----- RAW STDERR -----
+time=2025-11-15T00:39:13.809Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:13.818Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:13.832Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:14.086Z level=INFO source=app.go:275 msg="starting ui server" port=59851
+time=2025-11-15T00:39:14.104Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠦ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026ltime=2025-11-15T00:39:17.086Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026ltime=2025-11-15T00:39:17.268Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+[?2026h[?25l[1G⠦ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026ltime=2025-11-15T00:39:17.559Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠦ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?25l[?2026h[?25l[1G[K[?25h[?2026l[2K[1G[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25htime=2025-11-15T00:39:20.489Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:20.489Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[?25l[?25h
+2025-11-15 00:39:20,699 - app_logger - DEBUG - ----- CLEANED MODEL OUTPUT -----
+{
+  "name": "describe_table",
+  "arguments": {
+time=2025-11-15T00:39:13.809Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:13.818Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:13.832Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:14.086Z level=INFO source=app.go:275 msg="starting ui server" port=59851
+time=2025-11-15T00:39:14.104Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+             time=2025-11-15T00:39:17.086Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:17.268Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+  time=2025-11-15T00:39:17.559Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                          [2Ktime=2025-11-15T00:39:20.489Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:20.489Z level=INFO source=app.go:324 msg="shutting down ollama server"
+2025-11-15 00:39:20,700 - app_logger - DEBUG - Prompt built (6156 chars)
+2025-11-15 00:39:20,700 - app_logger - INFO - Running LLM with prompt (6156 chars)
+2025-11-15 00:39:20,700 - app_logger - DEBUG - ----- LLM PROMPT BEGIN -----
+
+You are SQL-AGENT, a deterministic SQL planning engine.
+
+Your ONLY job is:
+1. Inspect the database using tools.
+2. Build correct SQL based on real schema information.
+3. Output the final SQL strictly inside FINAL_SQL JSON.
+
+IMPORTANT RULES:
+- You MUST NOT guess table names, column names, types, constraints, keys or relationships.
+- If you do NOT know something, ALWAYS call a tool.
+- You must gather ALL required metadata before generating SQL.
+- Before writing JOINs: ALWAYS call get_foreign_keys.
+- Before INSERT/UPDATE/DELETE: ALWAYS describe_table and validate required columns.
+- Before SELECT: ALWAYS verify columns using get_columns.
+
+SEQUENCE YOU MUST FOLLOW:
+1. Understand the user request.
+2. Identify required tables.
+3. If schema/table existence is unknown → call list_schemas / list_tables.
+4. If table found → call describe_table, get_columns, get_primary_keys, get_foreign_keys.
+5. After all required metadata is collected, generate SQL.
+6. Output FINAL_SQL ONLY when the SQL is fully validated.
+
+ALLOWED OUTPUT FORMATS (STRICT):
+TOOL_CALL:
+{
+  "name": "<tool_name>",
+  "arguments": { ... }
+}
+
+FINAL_SQL:
+{
+  "sql": "<the query>",
+  "explanation": "<very short, 1-3 lines>"
+}
+
+Do NOT output anything else. No markdown. No comments. No text outside JSON.
+Do NOT output multiple JSON blocks at once.
+Do NOT invent arguments or omit required fields.
+
+If the user asks for creative data (e.g., "10 sample records"), you MUST:
+- extract table metadata
+- generate INSERT statements that match column types
+- avoid NULL unless the column is nullable.
+
+If you do not have enough metadata to create safe SQL → call a tool.
+
+TOOLS:
+{
+  "tools": [
+    {
+      "name": "list_schemas",
+      "description": "Return a list of all non-system schemas in the connected database.",
+      "arguments": {}
+    },
+    {
+      "name": "list_tables",
+      "description": "Return all table names inside a given schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_columns",
+      "description": "Return column metadata for a table: name, type, nullable, default.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_primary_keys",
+      "description": "Return the list of primary key columns for a table.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_foreign_keys",
+      "description": "Return foreign key relationships for a table, including referenced schema/table/column.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_table",
+      "description": "Return grouped detailed structure for a table: columns, constraints, keys.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_schema",
+      "description": "Return full metadata of all tables inside a schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_table_sample",
+      "description": "Return a small preview of table rows using SELECT * LIMIT <limit>.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        },
+        "limit": {
+          "type": "integer",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "execute_query",
+      "description": "Execute a SQL read-only query and return the results.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "execute_sql_write",
+      "description": "Execute a SQL write query (INSERT, UPDATE, DELETE) and return affected rows.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  ]
+}
+USER: Necesito que introduzcas 10 registros en customers cond atos mockeados
+ASSISTANT: ERROR: TIMEOUT
+ASSISTANT: [2KError: Post "http://127.0.0.1:11434/api/generate": read tcp 127.0.0.1:59822->127.0.0.1:11434: wsarecv: An existing connection was forcibly closed by the remote host.
+ASSISTANT: {
+  "name": "describe_table",
+  "arguments": {
+time=2025-11-15T00:39:13.809Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:13.818Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:13.832Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:14.086Z level=INFO source=app.go:275 msg="starting ui server" port=59851
+time=2025-11-15T00:39:14.104Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+             time=2025-11-15T00:39:17.086Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:17.268Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+  time=2025-11-15T00:39:17.559Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                          [2Ktime=2025-11-15T00:39:20.489Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:20.489Z level=INFO source=app.go:324 msg="shutting down ollama server"
+
+----- LLM PROMPT END -----
+2025-11-15 00:39:26,552 - app_logger - INFO - LLM execution time: 5851.13 ms
+2025-11-15 00:39:26,552 - app_logger - DEBUG - ----- RAW STDOUT -----
+
+2025-11-15 00:39:26,553 - app_logger - DEBUG - ----- RAW STDERR -----
+time=2025-11-15T00:39:20.819Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:20.829Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:20.839Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:21.054Z level=INFO source=app.go:275 msg="starting ui server" port=59927
+time=2025-11-15T00:39:21.068Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠦ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026ltime=2025-11-15T00:39:24.054Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026ltime=2025-11-15T00:39:24.242Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+[?2026h[?25l[1G⠦ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026ltime=2025-11-15T00:39:24.503Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠦ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠦ [K[?25h[?2026ltime=2025-11-15T00:39:26.351Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:26.351Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[?25l[?2026h[?25l[1G[K[?25h[?2026l[2K[1G[?25hError: Post "http://127.0.0.1:11434/api/generate": EOF
+
+2025-11-15 00:39:26,553 - app_logger - ERROR - LLM returned exit code: 1
+2025-11-15 00:39:26,553 - app_logger - DEBUG - ----- CLEANED MODEL OUTPUT -----
+time=2025-11-15T00:39:20.819Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:20.829Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:20.839Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:21.054Z level=INFO source=app.go:275 msg="starting ui server" port=59927
+time=2025-11-15T00:39:21.068Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+             time=2025-11-15T00:39:24.054Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:24.242Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:24.503Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                  time=2025-11-15T00:39:26.351Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:26.351Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+2025-11-15 00:39:26,554 - app_logger - DEBUG - Prompt built (7480 chars)
+2025-11-15 00:39:26,554 - app_logger - INFO - Running LLM with prompt (7480 chars)
+2025-11-15 00:39:26,554 - app_logger - DEBUG - ----- LLM PROMPT BEGIN -----
+
+You are SQL-AGENT, a deterministic SQL planning engine.
+
+Your ONLY job is:
+1. Inspect the database using tools.
+2. Build correct SQL based on real schema information.
+3. Output the final SQL strictly inside FINAL_SQL JSON.
+
+IMPORTANT RULES:
+- You MUST NOT guess table names, column names, types, constraints, keys or relationships.
+- If you do NOT know something, ALWAYS call a tool.
+- You must gather ALL required metadata before generating SQL.
+- Before writing JOINs: ALWAYS call get_foreign_keys.
+- Before INSERT/UPDATE/DELETE: ALWAYS describe_table and validate required columns.
+- Before SELECT: ALWAYS verify columns using get_columns.
+
+SEQUENCE YOU MUST FOLLOW:
+1. Understand the user request.
+2. Identify required tables.
+3. If schema/table existence is unknown → call list_schemas / list_tables.
+4. If table found → call describe_table, get_columns, get_primary_keys, get_foreign_keys.
+5. After all required metadata is collected, generate SQL.
+6. Output FINAL_SQL ONLY when the SQL is fully validated.
+
+ALLOWED OUTPUT FORMATS (STRICT):
+TOOL_CALL:
+{
+  "name": "<tool_name>",
+  "arguments": { ... }
+}
+
+FINAL_SQL:
+{
+  "sql": "<the query>",
+  "explanation": "<very short, 1-3 lines>"
+}
+
+Do NOT output anything else. No markdown. No comments. No text outside JSON.
+Do NOT output multiple JSON blocks at once.
+Do NOT invent arguments or omit required fields.
+
+If the user asks for creative data (e.g., "10 sample records"), you MUST:
+- extract table metadata
+- generate INSERT statements that match column types
+- avoid NULL unless the column is nullable.
+
+If you do not have enough metadata to create safe SQL → call a tool.
+
+TOOLS:
+{
+  "tools": [
+    {
+      "name": "list_schemas",
+      "description": "Return a list of all non-system schemas in the connected database.",
+      "arguments": {}
+    },
+    {
+      "name": "list_tables",
+      "description": "Return all table names inside a given schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_columns",
+      "description": "Return column metadata for a table: name, type, nullable, default.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_primary_keys",
+      "description": "Return the list of primary key columns for a table.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_foreign_keys",
+      "description": "Return foreign key relationships for a table, including referenced schema/table/column.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_table",
+      "description": "Return grouped detailed structure for a table: columns, constraints, keys.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_schema",
+      "description": "Return full metadata of all tables inside a schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_table_sample",
+      "description": "Return a small preview of table rows using SELECT * LIMIT <limit>.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        },
+        "limit": {
+          "type": "integer",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "execute_query",
+      "description": "Execute a SQL read-only query and return the results.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "execute_sql_write",
+      "description": "Execute a SQL write query (INSERT, UPDATE, DELETE) and return affected rows.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  ]
+}
+USER: Necesito que introduzcas 10 registros en customers cond atos mockeados
+ASSISTANT: ERROR: TIMEOUT
+ASSISTANT: [2KError: Post "http://127.0.0.1:11434/api/generate": read tcp 127.0.0.1:59822->127.0.0.1:11434: wsarecv: An existing connection was forcibly closed by the remote host.
+ASSISTANT: {
+  "name": "describe_table",
+  "arguments": {
+time=2025-11-15T00:39:13.809Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:13.818Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:13.832Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:14.086Z level=INFO source=app.go:275 msg="starting ui server" port=59851
+time=2025-11-15T00:39:14.104Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+             time=2025-11-15T00:39:17.086Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:17.268Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+  time=2025-11-15T00:39:17.559Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                          [2Ktime=2025-11-15T00:39:20.489Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:20.489Z level=INFO source=app.go:324 msg="shutting down ollama server"
+ASSISTANT: time=2025-11-15T00:39:20.819Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:20.829Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:20.839Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:21.054Z level=INFO source=app.go:275 msg="starting ui server" port=59927
+time=2025-11-15T00:39:21.068Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+             time=2025-11-15T00:39:24.054Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:24.242Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:24.503Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                  time=2025-11-15T00:39:26.351Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:26.351Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+
+----- LLM PROMPT END -----
+2025-11-15 00:39:28,814 - app_logger - INFO - LLM execution time: 2259.14 ms
+2025-11-15 00:39:28,815 - app_logger - DEBUG - ----- RAW STDOUT -----
+
+2025-11-15 00:39:28,816 - app_logger - DEBUG - ----- RAW STDERR -----
+time=2025-11-15T00:39:26.670Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:26.679Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:26.689Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:26.903Z level=INFO source=app.go:275 msg="starting ui server" port=59991
+time=2025-11-15T00:39:26.919Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+[?2026h[?25l[1G⠙ [K[?25h[?2026ltime=2025-11-15T00:39:28.758Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:28.759Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[?25l[?2026h[?25l[1G[K[?25h[?2026l[2K[1G[?25hError: Post "http://127.0.0.1:11434/api/generate": EOF
+
+2025-11-15 00:39:28,817 - app_logger - ERROR - LLM returned exit code: 1
+2025-11-15 00:39:28,819 - app_logger - DEBUG - ----- CLEANED MODEL OUTPUT -----
+time=2025-11-15T00:39:26.670Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:26.679Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:26.689Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:26.903Z level=INFO source=app.go:275 msg="starting ui server" port=59991
+time=2025-11-15T00:39:26.919Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+ time=2025-11-15T00:39:28.758Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:28.759Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+2025-11-15 00:39:28,820 - app_logger - DEBUG - Prompt built (8307 chars)
+2025-11-15 00:39:28,821 - app_logger - INFO - Running LLM with prompt (8307 chars)
+2025-11-15 00:39:28,821 - app_logger - DEBUG - ----- LLM PROMPT BEGIN -----
+
+You are SQL-AGENT, a deterministic SQL planning engine.
+
+Your ONLY job is:
+1. Inspect the database using tools.
+2. Build correct SQL based on real schema information.
+3. Output the final SQL strictly inside FINAL_SQL JSON.
+
+IMPORTANT RULES:
+- You MUST NOT guess table names, column names, types, constraints, keys or relationships.
+- If you do NOT know something, ALWAYS call a tool.
+- You must gather ALL required metadata before generating SQL.
+- Before writing JOINs: ALWAYS call get_foreign_keys.
+- Before INSERT/UPDATE/DELETE: ALWAYS describe_table and validate required columns.
+- Before SELECT: ALWAYS verify columns using get_columns.
+
+SEQUENCE YOU MUST FOLLOW:
+1. Understand the user request.
+2. Identify required tables.
+3. If schema/table existence is unknown → call list_schemas / list_tables.
+4. If table found → call describe_table, get_columns, get_primary_keys, get_foreign_keys.
+5. After all required metadata is collected, generate SQL.
+6. Output FINAL_SQL ONLY when the SQL is fully validated.
+
+ALLOWED OUTPUT FORMATS (STRICT):
+TOOL_CALL:
+{
+  "name": "<tool_name>",
+  "arguments": { ... }
+}
+
+FINAL_SQL:
+{
+  "sql": "<the query>",
+  "explanation": "<very short, 1-3 lines>"
+}
+
+Do NOT output anything else. No markdown. No comments. No text outside JSON.
+Do NOT output multiple JSON blocks at once.
+Do NOT invent arguments or omit required fields.
+
+If the user asks for creative data (e.g., "10 sample records"), you MUST:
+- extract table metadata
+- generate INSERT statements that match column types
+- avoid NULL unless the column is nullable.
+
+If you do not have enough metadata to create safe SQL → call a tool.
+
+TOOLS:
+{
+  "tools": [
+    {
+      "name": "list_schemas",
+      "description": "Return a list of all non-system schemas in the connected database.",
+      "arguments": {}
+    },
+    {
+      "name": "list_tables",
+      "description": "Return all table names inside a given schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_columns",
+      "description": "Return column metadata for a table: name, type, nullable, default.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_primary_keys",
+      "description": "Return the list of primary key columns for a table.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_foreign_keys",
+      "description": "Return foreign key relationships for a table, including referenced schema/table/column.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_table",
+      "description": "Return grouped detailed structure for a table: columns, constraints, keys.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_schema",
+      "description": "Return full metadata of all tables inside a schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_table_sample",
+      "description": "Return a small preview of table rows using SELECT * LIMIT <limit>.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        },
+        "limit": {
+          "type": "integer",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "execute_query",
+      "description": "Execute a SQL read-only query and return the results.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "execute_sql_write",
+      "description": "Execute a SQL write query (INSERT, UPDATE, DELETE) and return affected rows.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  ]
+}
+USER: Necesito que introduzcas 10 registros en customers cond atos mockeados
+ASSISTANT: ERROR: TIMEOUT
+ASSISTANT: [2KError: Post "http://127.0.0.1:11434/api/generate": read tcp 127.0.0.1:59822->127.0.0.1:11434: wsarecv: An existing connection was forcibly closed by the remote host.
+ASSISTANT: {
+  "name": "describe_table",
+  "arguments": {
+time=2025-11-15T00:39:13.809Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:13.818Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:13.832Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:14.086Z level=INFO source=app.go:275 msg="starting ui server" port=59851
+time=2025-11-15T00:39:14.104Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+             time=2025-11-15T00:39:17.086Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:17.268Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+  time=2025-11-15T00:39:17.559Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                          [2Ktime=2025-11-15T00:39:20.489Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:20.489Z level=INFO source=app.go:324 msg="shutting down ollama server"
+ASSISTANT: time=2025-11-15T00:39:20.819Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:20.829Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:20.839Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:21.054Z level=INFO source=app.go:275 msg="starting ui server" port=59927
+time=2025-11-15T00:39:21.068Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+             time=2025-11-15T00:39:24.054Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:24.242Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:24.503Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                  time=2025-11-15T00:39:26.351Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:26.351Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+ASSISTANT: time=2025-11-15T00:39:26.670Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:26.679Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:26.689Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:26.903Z level=INFO source=app.go:275 msg="starting ui server" port=59991
+time=2025-11-15T00:39:26.919Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+ time=2025-11-15T00:39:28.758Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:28.759Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+
+----- LLM PROMPT END -----
+2025-11-15 00:39:33,912 - app_logger - INFO - LLM execution time: 5089.06 ms
+2025-11-15 00:39:33,912 - app_logger - DEBUG - ----- RAW STDOUT -----
+
+2025-11-15 00:39:33,912 - app_logger - DEBUG - ----- RAW STDERR -----
+time=2025-11-15T00:39:28.974Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:28.984Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:28.994Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:29.206Z level=INFO source=app.go:275 msg="starting ui server" port=60032
+time=2025-11-15T00:39:29.222Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+time=2025-11-15T00:39:30.313Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:30.313Z level=INFO source=app.go:324 msg="shutting down ollama server"
+Error: ollama server not responding - timed out waiting for server to start
+
+2025-11-15 00:39:33,912 - app_logger - ERROR - LLM returned exit code: 1
+2025-11-15 00:39:33,913 - app_logger - DEBUG - ----- CLEANED MODEL OUTPUT -----
+time=2025-11-15T00:39:28.974Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:28.984Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:28.994Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:29.206Z level=INFO source=app.go:275 msg="starting ui server" port=60032
+time=2025-11-15T00:39:29.222Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+time=2025-11-15T00:39:30.313Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:30.313Z level=INFO source=app.go:324 msg="shutting down ollama server"
+Error: ollama server not responding - timed out waiting for server to start
+2025-11-15 00:39:33,913 - app_logger - DEBUG - Prompt built (9151 chars)
+2025-11-15 00:39:33,913 - app_logger - INFO - Running LLM with prompt (9151 chars)
+2025-11-15 00:39:33,913 - app_logger - DEBUG - ----- LLM PROMPT BEGIN -----
+
+You are SQL-AGENT, a deterministic SQL planning engine.
+
+Your ONLY job is:
+1. Inspect the database using tools.
+2. Build correct SQL based on real schema information.
+3. Output the final SQL strictly inside FINAL_SQL JSON.
+
+IMPORTANT RULES:
+- You MUST NOT guess table names, column names, types, constraints, keys or relationships.
+- If you do NOT know something, ALWAYS call a tool.
+- You must gather ALL required metadata before generating SQL.
+- Before writing JOINs: ALWAYS call get_foreign_keys.
+- Before INSERT/UPDATE/DELETE: ALWAYS describe_table and validate required columns.
+- Before SELECT: ALWAYS verify columns using get_columns.
+
+SEQUENCE YOU MUST FOLLOW:
+1. Understand the user request.
+2. Identify required tables.
+3. If schema/table existence is unknown → call list_schemas / list_tables.
+4. If table found → call describe_table, get_columns, get_primary_keys, get_foreign_keys.
+5. After all required metadata is collected, generate SQL.
+6. Output FINAL_SQL ONLY when the SQL is fully validated.
+
+ALLOWED OUTPUT FORMATS (STRICT):
+TOOL_CALL:
+{
+  "name": "<tool_name>",
+  "arguments": { ... }
+}
+
+FINAL_SQL:
+{
+  "sql": "<the query>",
+  "explanation": "<very short, 1-3 lines>"
+}
+
+Do NOT output anything else. No markdown. No comments. No text outside JSON.
+Do NOT output multiple JSON blocks at once.
+Do NOT invent arguments or omit required fields.
+
+If the user asks for creative data (e.g., "10 sample records"), you MUST:
+- extract table metadata
+- generate INSERT statements that match column types
+- avoid NULL unless the column is nullable.
+
+If you do not have enough metadata to create safe SQL → call a tool.
+
+TOOLS:
+{
+  "tools": [
+    {
+      "name": "list_schemas",
+      "description": "Return a list of all non-system schemas in the connected database.",
+      "arguments": {}
+    },
+    {
+      "name": "list_tables",
+      "description": "Return all table names inside a given schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_columns",
+      "description": "Return column metadata for a table: name, type, nullable, default.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_primary_keys",
+      "description": "Return the list of primary key columns for a table.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_foreign_keys",
+      "description": "Return foreign key relationships for a table, including referenced schema/table/column.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_table",
+      "description": "Return grouped detailed structure for a table: columns, constraints, keys.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_schema",
+      "description": "Return full metadata of all tables inside a schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_table_sample",
+      "description": "Return a small preview of table rows using SELECT * LIMIT <limit>.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        },
+        "limit": {
+          "type": "integer",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "execute_query",
+      "description": "Execute a SQL read-only query and return the results.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "execute_sql_write",
+      "description": "Execute a SQL write query (INSERT, UPDATE, DELETE) and return affected rows.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  ]
+}
+USER: Necesito que introduzcas 10 registros en customers cond atos mockeados
+ASSISTANT: ERROR: TIMEOUT
+ASSISTANT: [2KError: Post "http://127.0.0.1:11434/api/generate": read tcp 127.0.0.1:59822->127.0.0.1:11434: wsarecv: An existing connection was forcibly closed by the remote host.
+ASSISTANT: {
+  "name": "describe_table",
+  "arguments": {
+time=2025-11-15T00:39:13.809Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:13.818Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:13.832Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:14.086Z level=INFO source=app.go:275 msg="starting ui server" port=59851
+time=2025-11-15T00:39:14.104Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+             time=2025-11-15T00:39:17.086Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:17.268Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+  time=2025-11-15T00:39:17.559Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                          [2Ktime=2025-11-15T00:39:20.489Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:20.489Z level=INFO source=app.go:324 msg="shutting down ollama server"
+ASSISTANT: time=2025-11-15T00:39:20.819Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:20.829Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:20.839Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:21.054Z level=INFO source=app.go:275 msg="starting ui server" port=59927
+time=2025-11-15T00:39:21.068Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+             time=2025-11-15T00:39:24.054Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:24.242Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:24.503Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                  time=2025-11-15T00:39:26.351Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:26.351Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+ASSISTANT: time=2025-11-15T00:39:26.670Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:26.679Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:26.689Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:26.903Z level=INFO source=app.go:275 msg="starting ui server" port=59991
+time=2025-11-15T00:39:26.919Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+ time=2025-11-15T00:39:28.758Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:28.759Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+ASSISTANT: time=2025-11-15T00:39:28.974Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:28.984Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:28.994Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:29.206Z level=INFO source=app.go:275 msg="starting ui server" port=60032
+time=2025-11-15T00:39:29.222Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+time=2025-11-15T00:39:30.313Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:30.313Z level=INFO source=app.go:324 msg="shutting down ollama server"
+Error: ollama server not responding - timed out waiting for server to start
+
+----- LLM PROMPT END -----
+2025-11-15 00:39:40,370 - app_logger - INFO - LLM execution time: 6456.47 ms
+2025-11-15 00:39:40,371 - app_logger - DEBUG - ----- RAW STDOUT -----
+
+2025-11-15 00:39:40,371 - app_logger - DEBUG - ----- RAW STDERR -----
+time=2025-11-15T00:39:34.010Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:34.022Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:34.031Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:34.245Z level=INFO source=app.go:275 msg="starting ui server" port=60059
+time=2025-11-15T00:39:34.261Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠦ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026ltime=2025-11-15T00:39:37.245Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026ltime=2025-11-15T00:39:37.448Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026ltime=2025-11-15T00:39:37.725Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠦ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠦ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026ltime=2025-11-15T00:39:40.107Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:40.107Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[?25l[?2026h[?25l[1G[K[?25h[?2026l[2K[1G[?25hError: Post "http://127.0.0.1:11434/api/generate": EOF
+
+2025-11-15 00:39:40,372 - app_logger - ERROR - LLM returned exit code: 1
+2025-11-15 00:39:40,372 - app_logger - DEBUG - ----- CLEANED MODEL OUTPUT -----
+time=2025-11-15T00:39:34.010Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:34.022Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:34.031Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:34.245Z level=INFO source=app.go:275 msg="starting ui server" port=60059
+time=2025-11-15T00:39:34.261Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+            time=2025-11-15T00:39:37.245Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:37.448Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:37.725Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                        time=2025-11-15T00:39:40.107Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:40.107Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+2025-11-15 00:39:40,373 - app_logger - DEBUG - Prompt built (10480 chars)
+2025-11-15 00:39:40,373 - app_logger - INFO - Running LLM with prompt (10480 chars)
+2025-11-15 00:39:40,373 - app_logger - DEBUG - ----- LLM PROMPT BEGIN -----
+
+You are SQL-AGENT, a deterministic SQL planning engine.
+
+Your ONLY job is:
+1. Inspect the database using tools.
+2. Build correct SQL based on real schema information.
+3. Output the final SQL strictly inside FINAL_SQL JSON.
+
+IMPORTANT RULES:
+- You MUST NOT guess table names, column names, types, constraints, keys or relationships.
+- If you do NOT know something, ALWAYS call a tool.
+- You must gather ALL required metadata before generating SQL.
+- Before writing JOINs: ALWAYS call get_foreign_keys.
+- Before INSERT/UPDATE/DELETE: ALWAYS describe_table and validate required columns.
+- Before SELECT: ALWAYS verify columns using get_columns.
+
+SEQUENCE YOU MUST FOLLOW:
+1. Understand the user request.
+2. Identify required tables.
+3. If schema/table existence is unknown → call list_schemas / list_tables.
+4. If table found → call describe_table, get_columns, get_primary_keys, get_foreign_keys.
+5. After all required metadata is collected, generate SQL.
+6. Output FINAL_SQL ONLY when the SQL is fully validated.
+
+ALLOWED OUTPUT FORMATS (STRICT):
+TOOL_CALL:
+{
+  "name": "<tool_name>",
+  "arguments": { ... }
+}
+
+FINAL_SQL:
+{
+  "sql": "<the query>",
+  "explanation": "<very short, 1-3 lines>"
+}
+
+Do NOT output anything else. No markdown. No comments. No text outside JSON.
+Do NOT output multiple JSON blocks at once.
+Do NOT invent arguments or omit required fields.
+
+If the user asks for creative data (e.g., "10 sample records"), you MUST:
+- extract table metadata
+- generate INSERT statements that match column types
+- avoid NULL unless the column is nullable.
+
+If you do not have enough metadata to create safe SQL → call a tool.
+
+TOOLS:
+{
+  "tools": [
+    {
+      "name": "list_schemas",
+      "description": "Return a list of all non-system schemas in the connected database.",
+      "arguments": {}
+    },
+    {
+      "name": "list_tables",
+      "description": "Return all table names inside a given schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_columns",
+      "description": "Return column metadata for a table: name, type, nullable, default.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_primary_keys",
+      "description": "Return the list of primary key columns for a table.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_foreign_keys",
+      "description": "Return foreign key relationships for a table, including referenced schema/table/column.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_table",
+      "description": "Return grouped detailed structure for a table: columns, constraints, keys.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_schema",
+      "description": "Return full metadata of all tables inside a schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_table_sample",
+      "description": "Return a small preview of table rows using SELECT * LIMIT <limit>.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        },
+        "limit": {
+          "type": "integer",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "execute_query",
+      "description": "Execute a SQL read-only query and return the results.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "execute_sql_write",
+      "description": "Execute a SQL write query (INSERT, UPDATE, DELETE) and return affected rows.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  ]
+}
+USER: Necesito que introduzcas 10 registros en customers cond atos mockeados
+ASSISTANT: ERROR: TIMEOUT
+ASSISTANT: [2KError: Post "http://127.0.0.1:11434/api/generate": read tcp 127.0.0.1:59822->127.0.0.1:11434: wsarecv: An existing connection was forcibly closed by the remote host.
+ASSISTANT: {
+  "name": "describe_table",
+  "arguments": {
+time=2025-11-15T00:39:13.809Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:13.818Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:13.832Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:14.086Z level=INFO source=app.go:275 msg="starting ui server" port=59851
+time=2025-11-15T00:39:14.104Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+             time=2025-11-15T00:39:17.086Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:17.268Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+  time=2025-11-15T00:39:17.559Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                          [2Ktime=2025-11-15T00:39:20.489Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:20.489Z level=INFO source=app.go:324 msg="shutting down ollama server"
+ASSISTANT: time=2025-11-15T00:39:20.819Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:20.829Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:20.839Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:21.054Z level=INFO source=app.go:275 msg="starting ui server" port=59927
+time=2025-11-15T00:39:21.068Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+             time=2025-11-15T00:39:24.054Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:24.242Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:24.503Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                  time=2025-11-15T00:39:26.351Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:26.351Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+ASSISTANT: time=2025-11-15T00:39:26.670Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:26.679Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:26.689Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:26.903Z level=INFO source=app.go:275 msg="starting ui server" port=59991
+time=2025-11-15T00:39:26.919Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+ time=2025-11-15T00:39:28.758Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:28.759Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+ASSISTANT: time=2025-11-15T00:39:28.974Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:28.984Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:28.994Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:29.206Z level=INFO source=app.go:275 msg="starting ui server" port=60032
+time=2025-11-15T00:39:29.222Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+time=2025-11-15T00:39:30.313Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:30.313Z level=INFO source=app.go:324 msg="shutting down ollama server"
+Error: ollama server not responding - timed out waiting for server to start
+ASSISTANT: time=2025-11-15T00:39:34.010Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:34.022Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:34.031Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:34.245Z level=INFO source=app.go:275 msg="starting ui server" port=60059
+time=2025-11-15T00:39:34.261Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+            time=2025-11-15T00:39:37.245Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:37.448Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:37.725Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                        time=2025-11-15T00:39:40.107Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:40.107Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+
+----- LLM PROMPT END -----
+2025-11-15 00:39:50,524 - app_logger - INFO - LLM execution time: 10148.86 ms
+2025-11-15 00:39:50,525 - app_logger - DEBUG - ----- RAW STDOUT -----
+{
+  "name": "get_table_sample",
+  "arguments": {
+    "schema": "",
+    "table": "customers",
+    "limit": 10
+  }
+}
+
+
+2025-11-15 00:39:50,525 - app_logger - DEBUG - ----- RAW STDERR -----
+time=2025-11-15T00:39:40.520Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:40.533Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:40.543Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:40.755Z level=INFO source=app.go:275 msg="starting ui server" port=60032
+time=2025-11-15T00:39:40.774Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠦ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026ltime=2025-11-15T00:39:43.755Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026ltime=2025-11-15T00:39:43.940Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠦ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026ltime=2025-11-15T00:39:44.224Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠦ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠦ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?25l[?2026h[?25l[1G[K[?25h[?2026l[2K[1G[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25htime=2025-11-15T00:39:50.351Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:50.352Z level=INFO source=app.go:324 msg="shutting down ollama server"
+
+2025-11-15 00:39:50,526 - app_logger - DEBUG - ----- CLEANED MODEL OUTPUT -----
+{
+  "name": "get_table_sample",
+  "arguments": {
+    "schema": "",
+    "table": "customers",
+    "limit": 10
+  }
+}
+time=2025-11-15T00:39:40.520Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:40.533Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:40.543Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:40.755Z level=INFO source=app.go:275 msg="starting ui server" port=60032
+time=2025-11-15T00:39:40.774Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+            time=2025-11-15T00:39:43.755Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:43.940Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:44.224Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                           [2Ktime=2025-11-15T00:39:50.351Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:50.352Z level=INFO source=app.go:324 msg="shutting down ollama server"
+2025-11-15 00:39:50,526 - app_logger - DEBUG - Prompt built (11872 chars)
+2025-11-15 00:39:50,526 - app_logger - INFO - Running LLM with prompt (11872 chars)
+2025-11-15 00:39:50,526 - app_logger - DEBUG - ----- LLM PROMPT BEGIN -----
+
+You are SQL-AGENT, a deterministic SQL planning engine.
+
+Your ONLY job is:
+1. Inspect the database using tools.
+2. Build correct SQL based on real schema information.
+3. Output the final SQL strictly inside FINAL_SQL JSON.
+
+IMPORTANT RULES:
+- You MUST NOT guess table names, column names, types, constraints, keys or relationships.
+- If you do NOT know something, ALWAYS call a tool.
+- You must gather ALL required metadata before generating SQL.
+- Before writing JOINs: ALWAYS call get_foreign_keys.
+- Before INSERT/UPDATE/DELETE: ALWAYS describe_table and validate required columns.
+- Before SELECT: ALWAYS verify columns using get_columns.
+
+SEQUENCE YOU MUST FOLLOW:
+1. Understand the user request.
+2. Identify required tables.
+3. If schema/table existence is unknown → call list_schemas / list_tables.
+4. If table found → call describe_table, get_columns, get_primary_keys, get_foreign_keys.
+5. After all required metadata is collected, generate SQL.
+6. Output FINAL_SQL ONLY when the SQL is fully validated.
+
+ALLOWED OUTPUT FORMATS (STRICT):
+TOOL_CALL:
+{
+  "name": "<tool_name>",
+  "arguments": { ... }
+}
+
+FINAL_SQL:
+{
+  "sql": "<the query>",
+  "explanation": "<very short, 1-3 lines>"
+}
+
+Do NOT output anything else. No markdown. No comments. No text outside JSON.
+Do NOT output multiple JSON blocks at once.
+Do NOT invent arguments or omit required fields.
+
+If the user asks for creative data (e.g., "10 sample records"), you MUST:
+- extract table metadata
+- generate INSERT statements that match column types
+- avoid NULL unless the column is nullable.
+
+If you do not have enough metadata to create safe SQL → call a tool.
+
+TOOLS:
+{
+  "tools": [
+    {
+      "name": "list_schemas",
+      "description": "Return a list of all non-system schemas in the connected database.",
+      "arguments": {}
+    },
+    {
+      "name": "list_tables",
+      "description": "Return all table names inside a given schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_columns",
+      "description": "Return column metadata for a table: name, type, nullable, default.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_primary_keys",
+      "description": "Return the list of primary key columns for a table.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_foreign_keys",
+      "description": "Return foreign key relationships for a table, including referenced schema/table/column.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_table",
+      "description": "Return grouped detailed structure for a table: columns, constraints, keys.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_schema",
+      "description": "Return full metadata of all tables inside a schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_table_sample",
+      "description": "Return a small preview of table rows using SELECT * LIMIT <limit>.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        },
+        "limit": {
+          "type": "integer",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "execute_query",
+      "description": "Execute a SQL read-only query and return the results.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "execute_sql_write",
+      "description": "Execute a SQL write query (INSERT, UPDATE, DELETE) and return affected rows.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  ]
+}
+USER: Necesito que introduzcas 10 registros en customers cond atos mockeados
+ASSISTANT: ERROR: TIMEOUT
+ASSISTANT: [2KError: Post "http://127.0.0.1:11434/api/generate": read tcp 127.0.0.1:59822->127.0.0.1:11434: wsarecv: An existing connection was forcibly closed by the remote host.
+ASSISTANT: {
+  "name": "describe_table",
+  "arguments": {
+time=2025-11-15T00:39:13.809Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:13.818Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:13.832Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:14.086Z level=INFO source=app.go:275 msg="starting ui server" port=59851
+time=2025-11-15T00:39:14.104Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+             time=2025-11-15T00:39:17.086Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:17.268Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+  time=2025-11-15T00:39:17.559Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                          [2Ktime=2025-11-15T00:39:20.489Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:20.489Z level=INFO source=app.go:324 msg="shutting down ollama server"
+ASSISTANT: time=2025-11-15T00:39:20.819Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:20.829Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:20.839Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:21.054Z level=INFO source=app.go:275 msg="starting ui server" port=59927
+time=2025-11-15T00:39:21.068Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+             time=2025-11-15T00:39:24.054Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:24.242Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:24.503Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                  time=2025-11-15T00:39:26.351Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:26.351Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+ASSISTANT: time=2025-11-15T00:39:26.670Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:26.679Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:26.689Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:26.903Z level=INFO source=app.go:275 msg="starting ui server" port=59991
+time=2025-11-15T00:39:26.919Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+ time=2025-11-15T00:39:28.758Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:28.759Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+ASSISTANT: time=2025-11-15T00:39:28.974Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:28.984Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:28.994Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:29.206Z level=INFO source=app.go:275 msg="starting ui server" port=60032
+time=2025-11-15T00:39:29.222Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+time=2025-11-15T00:39:30.313Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:30.313Z level=INFO source=app.go:324 msg="shutting down ollama server"
+Error: ollama server not responding - timed out waiting for server to start
+ASSISTANT: time=2025-11-15T00:39:34.010Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:34.022Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:34.031Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:34.245Z level=INFO source=app.go:275 msg="starting ui server" port=60059
+time=2025-11-15T00:39:34.261Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+            time=2025-11-15T00:39:37.245Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:37.448Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:37.725Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                        time=2025-11-15T00:39:40.107Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:40.107Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+ASSISTANT: {
+  "name": "get_table_sample",
+  "arguments": {
+    "schema": "",
+    "table": "customers",
+    "limit": 10
+  }
+}
+time=2025-11-15T00:39:40.520Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:40.533Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:40.543Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:40.755Z level=INFO source=app.go:275 msg="starting ui server" port=60032
+time=2025-11-15T00:39:40.774Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+            time=2025-11-15T00:39:43.755Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:43.940Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:44.224Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                           [2Ktime=2025-11-15T00:39:50.351Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:50.352Z level=INFO source=app.go:324 msg="shutting down ollama server"
+
+----- LLM PROMPT END -----
+2025-11-15 00:40:06,286 - app_logger - INFO - LLM execution time: 15758.45 ms
+2025-11-15 00:40:06,287 - app_logger - DEBUG - ----- RAW STDOUT -----
+{
+  "name": "get_columns",
+  "arguments": {
+    "schema": "",
+    "table": "customers"
+  }
+}
+{
+  "sql": "INSERT INTO customers (id, name, email, address) VALUES (1, 'John Doe', 'john.doe@example.com', '123 Main St');\nINSERT INTO customers (id, name, email, address) VALUES (2, 'Jane Doe', 'jane.doe@example.com', '456 Elm St');\nINSERT INTO customers (id, name, email, address) VALUES (3, 'Bob Smith', 'bob.smith@example.com', '789 Oak St');\nINSERT INTO customers (id, name, email, address) VALUES (4, 'Alice Johnson', 'alice.johnson@example.com', '321 Maple St');\nINSERT INTO customers (id, name, email, address) VALUES (5, 'Mike Brown', 'mike.brown@example.com', '901 Pine St');\nINSERT INTO customers (id, name, email, address) VALUES (6, 'Emily Davis', 'emily.davis@example.com', '234 Spruce St');\nINSERT INTO customers (id, name, email, address) VALUES (7, 'Kevin White', 'kevin.white@example.com', '567 Cedar St');\nINSERT INTO customers (id, name, email, address) VALUES (8, 'Sarah Lee', 'sarah.lee@example.com', '890 Walnut St');\nINSERT INTO customers (id, name, email,
+
+
+2025-11-15 00:40:06,287 - app_logger - DEBUG - ----- RAW STDERR -----
+time=2025-11-15T00:39:50.632Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:50.641Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:50.649Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:50.854Z level=INFO source=app.go:275 msg="starting ui server" port=60103
+time=2025-11-15T00:39:50.869Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026ltime=2025-11-15T00:39:53.854Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026ltime=2025-11-15T00:39:54.042Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026ltime=2025-11-15T00:39:54.331Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠸ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠦ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠧ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠋ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠙ [K[?25h[?2026l[?2026h[?25l[1G⠹ [K[?25h[?2026l[?2026h[?25l[1G⠼ [K[?25h[?2026l[?2026h[?25l[1G⠴ [K[?25h[?2026l[?2026h[?25l[1G⠦ [K[?25h[?2026ltime=2025-11-15T00:39:57.069Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/settings http.pattern="GET /api/v1/settings" http.status=200 http.d=0s request_id=1763167197069060900 version=0.12.7
+time=2025-11-15T00:39:57.071Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/health http.pattern="GET /api/v1/health" http.status=200 http.d=500.6µs request_id=1763167197070627400 version=0.12.7
+time=2025-11-15T00:39:57.071Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/chats http.pattern="GET /api/v1/chats" http.status=200 http.d=498.5µs request_id=1763167197071128000 version=0.12.7
+[?2026h[?25l[1G⠦ [K[?25h[?2026ltime=2025-11-15T00:39:57.080Z level=INFO source=server.go:343 msg=Matched "inference compute"="{Library:CUDA Variant: Compute:8.9 Driver:13.0 Name:CUDA0 VRAM:8.0 GiB}"
+time=2025-11-15T00:39:57.080Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/inference-compute http.pattern="GET /api/v1/inference-compute" http.status=200 http.d=11.566ms request_id=1763167197069060900 version=0.12.7
+time=2025-11-15T00:39:57.096Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/chats http.pattern="GET /api/v1/chats" http.status=200 http.d=0s request_id=1763167197096143300 version=0.12.7
+time=2025-11-15T00:39:57.104Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/models http.pattern="GET /api/v1/models" http.status=200 http.d=35.7299ms request_id=1763167197069060900 version=0.12.7
+time=2025-11-15T00:39:57.132Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/model/xwinlm/capabilities http.pattern="GET /api/v1/model/{model}/capabilities" http.status=200 http.d=35.5152ms request_id=1763167197096786500 version=0.12.7
+time=2025-11-15T00:39:57.160Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/me http.pattern="GET /api/v1/me" http.status=200 http.d=121.2346ms request_id=1763167197039090500 version=0.12.7
+[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠇ [K[?25h[?2026l[?2026h[?25l[1G⠏ [K[?25h[?2026ltime=2025-11-15T00:39:57.396Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=POST http.path=/api/v1/model/upstream http.pattern="POST /api/v1/model/upstream" http.status=200 http.d=276.0356ms request_id=1763167197120240200 version=0.12.7
+[?25l[?2026h[?25l[1G[K[?25h[?2026l[2K[1G[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25h[?25l[?25htime=2025-11-15T00:40:06.092Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:40:06.092Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[?25l[?25h
+2025-11-15 00:40:06,288 - app_logger - DEBUG - ----- CLEANED MODEL OUTPUT -----
+{
+  "name": "get_columns",
+  "arguments": {
+    "schema": "",
+    "table": "customers"
+  }
+}
+{
+  "sql": "INSERT INTO customers (id, name, email, address) VALUES (1, 'John Doe', 'john.doe@example.com', '123 Main St');\nINSERT INTO customers (id, name, email, address) VALUES (2, 'Jane Doe', 'jane.doe@example.com', '456 Elm St');\nINSERT INTO customers (id, name, email, address) VALUES (3, 'Bob Smith', 'bob.smith@example.com', '789 Oak St');\nINSERT INTO customers (id, name, email, address) VALUES (4, 'Alice Johnson', 'alice.johnson@example.com', '321 Maple St');\nINSERT INTO customers (id, name, email, address) VALUES (5, 'Mike Brown', 'mike.brown@example.com', '901 Pine St');\nINSERT INTO customers (id, name, email, address) VALUES (6, 'Emily Davis', 'emily.davis@example.com', '234 Spruce St');\nINSERT INTO customers (id, name, email, address) VALUES (7, 'Kevin White', 'kevin.white@example.com', '567 Cedar St');\nINSERT INTO customers (id, name, email, address) VALUES (8, 'Sarah Lee', 'sarah.lee@example.com', '890 Walnut St');\nINSERT INTO customers (id, name, email,
+time=2025-11-15T00:39:50.632Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:50.641Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:50.649Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:50.854Z level=INFO source=app.go:275 msg="starting ui server" port=60103
+time=2025-11-15T00:39:50.869Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+              time=2025-11-15T00:39:53.854Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:54.042Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:54.331Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                           time=2025-11-15T00:39:57.069Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/settings http.pattern="GET /api/v1/settings" http.status=200 http.d=0s request_id=1763167197069060900 version=0.12.7
+time=2025-11-15T00:39:57.071Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/health http.pattern="GET /api/v1/health" http.status=200 http.d=500.6µs request_id=1763167197070627400 version=0.12.7
+time=2025-11-15T00:39:57.071Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/chats http.pattern="GET /api/v1/chats" http.status=200 http.d=498.5µs request_id=1763167197071128000 version=0.12.7
+ time=2025-11-15T00:39:57.080Z level=INFO source=server.go:343 msg=Matched "inference compute"="{Library:CUDA Variant: Compute:8.9 Driver:13.0 Name:CUDA0 VRAM:8.0 GiB}"
+time=2025-11-15T00:39:57.080Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/inference-compute http.pattern="GET /api/v1/inference-compute" http.status=200 http.d=11.566ms request_id=1763167197069060900 version=0.12.7
+time=2025-11-15T00:39:57.096Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/chats http.pattern="GET /api/v1/chats" http.status=200 http.d=0s request_id=1763167197096143300 version=0.12.7
+time=2025-11-15T00:39:57.104Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/models http.pattern="GET /api/v1/models" http.status=200 http.d=35.7299ms request_id=1763167197069060900 version=0.12.7
+time=2025-11-15T00:39:57.132Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/model/xwinlm/capabilities http.pattern="GET /api/v1/model/{model}/capabilities" http.status=200 http.d=35.5152ms request_id=1763167197096786500 version=0.12.7
+time=2025-11-15T00:39:57.160Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/me http.pattern="GET /api/v1/me" http.status=200 http.d=121.2346ms request_id=1763167197039090500 version=0.12.7
+   time=2025-11-15T00:39:57.396Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=POST http.path=/api/v1/model/upstream http.pattern="POST /api/v1/model/upstream" http.status=200 http.d=276.0356ms request_id=1763167197120240200 version=0.12.7
+[2Ktime=2025-11-15T00:40:06.092Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:40:06.092Z level=INFO source=app.go:324 msg="shutting down ollama server"
+2025-11-15 00:40:06,289 - app_logger - DEBUG - Prompt built (16539 chars)
+2025-11-15 00:40:06,289 - app_logger - INFO - Running LLM with prompt (16539 chars)
+2025-11-15 00:40:06,289 - app_logger - DEBUG - ----- LLM PROMPT BEGIN -----
+
+You are SQL-AGENT, a deterministic SQL planning engine.
+
+Your ONLY job is:
+1. Inspect the database using tools.
+2. Build correct SQL based on real schema information.
+3. Output the final SQL strictly inside FINAL_SQL JSON.
+
+IMPORTANT RULES:
+- You MUST NOT guess table names, column names, types, constraints, keys or relationships.
+- If you do NOT know something, ALWAYS call a tool.
+- You must gather ALL required metadata before generating SQL.
+- Before writing JOINs: ALWAYS call get_foreign_keys.
+- Before INSERT/UPDATE/DELETE: ALWAYS describe_table and validate required columns.
+- Before SELECT: ALWAYS verify columns using get_columns.
+
+SEQUENCE YOU MUST FOLLOW:
+1. Understand the user request.
+2. Identify required tables.
+3. If schema/table existence is unknown → call list_schemas / list_tables.
+4. If table found → call describe_table, get_columns, get_primary_keys, get_foreign_keys.
+5. After all required metadata is collected, generate SQL.
+6. Output FINAL_SQL ONLY when the SQL is fully validated.
+
+ALLOWED OUTPUT FORMATS (STRICT):
+TOOL_CALL:
+{
+  "name": "<tool_name>",
+  "arguments": { ... }
+}
+
+FINAL_SQL:
+{
+  "sql": "<the query>",
+  "explanation": "<very short, 1-3 lines>"
+}
+
+Do NOT output anything else. No markdown. No comments. No text outside JSON.
+Do NOT output multiple JSON blocks at once.
+Do NOT invent arguments or omit required fields.
+
+If the user asks for creative data (e.g., "10 sample records"), you MUST:
+- extract table metadata
+- generate INSERT statements that match column types
+- avoid NULL unless the column is nullable.
+
+If you do not have enough metadata to create safe SQL → call a tool.
+
+TOOLS:
+{
+  "tools": [
+    {
+      "name": "list_schemas",
+      "description": "Return a list of all non-system schemas in the connected database.",
+      "arguments": {}
+    },
+    {
+      "name": "list_tables",
+      "description": "Return all table names inside a given schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_columns",
+      "description": "Return column metadata for a table: name, type, nullable, default.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_primary_keys",
+      "description": "Return the list of primary key columns for a table.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_foreign_keys",
+      "description": "Return foreign key relationships for a table, including referenced schema/table/column.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_table",
+      "description": "Return grouped detailed structure for a table: columns, constraints, keys.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_schema",
+      "description": "Return full metadata of all tables inside a schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_table_sample",
+      "description": "Return a small preview of table rows using SELECT * LIMIT <limit>.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        },
+        "limit": {
+          "type": "integer",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "execute_query",
+      "description": "Execute a SQL read-only query and return the results.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "execute_sql_write",
+      "description": "Execute a SQL write query (INSERT, UPDATE, DELETE) and return affected rows.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  ]
+}
+USER: Necesito que introduzcas 10 registros en customers cond atos mockeados
+ASSISTANT: ERROR: TIMEOUT
+ASSISTANT: [2KError: Post "http://127.0.0.1:11434/api/generate": read tcp 127.0.0.1:59822->127.0.0.1:11434: wsarecv: An existing connection was forcibly closed by the remote host.
+ASSISTANT: {
+  "name": "describe_table",
+  "arguments": {
+time=2025-11-15T00:39:13.809Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:13.818Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:13.832Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:14.086Z level=INFO source=app.go:275 msg="starting ui server" port=59851
+time=2025-11-15T00:39:14.104Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+             time=2025-11-15T00:39:17.086Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:17.268Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+  time=2025-11-15T00:39:17.559Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                          [2Ktime=2025-11-15T00:39:20.489Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:20.489Z level=INFO source=app.go:324 msg="shutting down ollama server"
+ASSISTANT: time=2025-11-15T00:39:20.819Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:20.829Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:20.839Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:21.054Z level=INFO source=app.go:275 msg="starting ui server" port=59927
+time=2025-11-15T00:39:21.068Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+             time=2025-11-15T00:39:24.054Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:24.242Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:24.503Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                  time=2025-11-15T00:39:26.351Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:26.351Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+ASSISTANT: time=2025-11-15T00:39:26.670Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:26.679Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:26.689Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:26.903Z level=INFO source=app.go:275 msg="starting ui server" port=59991
+time=2025-11-15T00:39:26.919Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+ time=2025-11-15T00:39:28.758Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:28.759Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+ASSISTANT: time=2025-11-15T00:39:28.974Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:28.984Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:28.994Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:29.206Z level=INFO source=app.go:275 msg="starting ui server" port=60032
+time=2025-11-15T00:39:29.222Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+time=2025-11-15T00:39:30.313Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:30.313Z level=INFO source=app.go:324 msg="shutting down ollama server"
+Error: ollama server not responding - timed out waiting for server to start
+ASSISTANT: time=2025-11-15T00:39:34.010Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:34.022Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:34.031Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:34.245Z level=INFO source=app.go:275 msg="starting ui server" port=60059
+time=2025-11-15T00:39:34.261Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+            time=2025-11-15T00:39:37.245Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:37.448Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:37.725Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                        time=2025-11-15T00:39:40.107Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:40.107Z level=INFO source=app.go:324 msg="shutting down ollama server"
+[2KError: Post "http://127.0.0.1:11434/api/generate": EOF
+ASSISTANT: {
+  "name": "get_table_sample",
+  "arguments": {
+    "schema": "",
+    "table": "customers",
+    "limit": 10
+  }
+}
+time=2025-11-15T00:39:40.520Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:40.533Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:40.543Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:40.755Z level=INFO source=app.go:275 msg="starting ui server" port=60032
+time=2025-11-15T00:39:40.774Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+            time=2025-11-15T00:39:43.755Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:43.940Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:44.224Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                           [2Ktime=2025-11-15T00:39:50.351Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:39:50.352Z level=INFO source=app.go:324 msg="shutting down ollama server"
+ASSISTANT: {
+  "name": "get_columns",
+  "arguments": {
+    "schema": "",
+    "table": "customers"
+  }
+}
+{
+  "sql": "INSERT INTO customers (id, name, email, address) VALUES (1, 'John Doe', 'john.doe@example.com', '123 Main St');\nINSERT INTO customers (id, name, email, address) VALUES (2, 'Jane Doe', 'jane.doe@example.com', '456 Elm St');\nINSERT INTO customers (id, name, email, address) VALUES (3, 'Bob Smith', 'bob.smith@example.com', '789 Oak St');\nINSERT INTO customers (id, name, email, address) VALUES (4, 'Alice Johnson', 'alice.johnson@example.com', '321 Maple St');\nINSERT INTO customers (id, name, email, address) VALUES (5, 'Mike Brown', 'mike.brown@example.com', '901 Pine St');\nINSERT INTO customers (id, name, email, address) VALUES (6, 'Emily Davis', 'emily.davis@example.com', '234 Spruce St');\nINSERT INTO customers (id, name, email, address) VALUES (7, 'Kevin White', 'kevin.white@example.com', '567 Cedar St');\nINSERT INTO customers (id, name, email, address) VALUES (8, 'Sarah Lee', 'sarah.lee@example.com', '890 Walnut St');\nINSERT INTO customers (id, name, email,
+time=2025-11-15T00:39:50.632Z level=INFO source=app_windows.go:270 msg="starting Ollama" app=C:\Users\abram\AppData\Local\Programs\Ollama version=0.12.7 OS=Windows/10.0.26200
+time=2025-11-15T00:39:50.641Z level=INFO source=app.go:231 msg="initialized tools registry" tool_count=0
+time=2025-11-15T00:39:50.649Z level=INFO source=app.go:246 msg="starting ollama server"
+time=2025-11-15T00:39:50.854Z level=INFO source=app.go:275 msg="starting ui server" port=60103
+time=2025-11-15T00:39:50.869Z level=INFO source=app.go:336 msg="deferring pending update for fast startup"
+              time=2025-11-15T00:39:53.854Z level=INFO source=updater.go:252 msg="beginning update checker" interval=1h0m0s
+  time=2025-11-15T00:39:54.042Z level=INFO source=updater.go:127 msg="New update available at https://github.com/ollama/ollama/releases/download/v0.12.11/OllamaSetup.exe"
+   time=2025-11-15T00:39:54.331Z level=INFO source=updater.go:176 msg="update already downloaded" bundle=C:\Users\abram\AppData\Local\Ollama\updates_v2\0x8DE2303E5941311\OllamaSetup.exe
+                           time=2025-11-15T00:39:57.069Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/settings http.pattern="GET /api/v1/settings" http.status=200 http.d=0s request_id=1763167197069060900 version=0.12.7
+time=2025-11-15T00:39:57.071Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/health http.pattern="GET /api/v1/health" http.status=200 http.d=500.6µs request_id=1763167197070627400 version=0.12.7
+time=2025-11-15T00:39:57.071Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/chats http.pattern="GET /api/v1/chats" http.status=200 http.d=498.5µs request_id=1763167197071128000 version=0.12.7
+ time=2025-11-15T00:39:57.080Z level=INFO source=server.go:343 msg=Matched "inference compute"="{Library:CUDA Variant: Compute:8.9 Driver:13.0 Name:CUDA0 VRAM:8.0 GiB}"
+time=2025-11-15T00:39:57.080Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/inference-compute http.pattern="GET /api/v1/inference-compute" http.status=200 http.d=11.566ms request_id=1763167197069060900 version=0.12.7
+time=2025-11-15T00:39:57.096Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/chats http.pattern="GET /api/v1/chats" http.status=200 http.d=0s request_id=1763167197096143300 version=0.12.7
+time=2025-11-15T00:39:57.104Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/models http.pattern="GET /api/v1/models" http.status=200 http.d=35.7299ms request_id=1763167197069060900 version=0.12.7
+time=2025-11-15T00:39:57.132Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/model/xwinlm/capabilities http.pattern="GET /api/v1/model/{model}/capabilities" http.status=200 http.d=35.5152ms request_id=1763167197096786500 version=0.12.7
+time=2025-11-15T00:39:57.160Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=GET http.path=/api/v1/me http.pattern="GET /api/v1/me" http.status=200 http.d=121.2346ms request_id=1763167197039090500 version=0.12.7
+   time=2025-11-15T00:39:57.396Z level=INFO source=ui.go:168 msg=site.serveHTTP http.method=POST http.path=/api/v1/model/upstream http.pattern="POST /api/v1/model/upstream" http.status=200 http.d=276.0356ms request_id=1763167197120240200 version=0.12.7
+[2Ktime=2025-11-15T00:40:06.092Z level=INFO source=app.go:319 msg="shutting down desktop server"
+time=2025-11-15T00:40:06.092Z level=INFO source=app.go:324 msg="shutting down ollama server"
+
+----- LLM PROMPT END -----
+2025-11-15 01:00:45,628 - app_logger - INFO - SQLAssistantService initialized
+2025-11-15 01:00:53,491 - app_logger - INFO - SQLAssistantService initialized
+2025-11-15 01:00:54,318 - app_logger - INFO - SQLAssistantService initialized
+2025-11-15 01:01:16,526 - app_logger - INFO - REQUEST POST /connections/use/2 | Body={
+  "password": "password"
+}
+2025-11-15 01:01:16,526 - app_logger - INFO - Incoming request: POST /connections/use/2
+2025-11-15 01:01:16,632 - app_logger - INFO - Completed POST /connections/use/2 Status=200 Duration=105.38ms
+2025-11-15 01:01:16,633 - app_logger - INFO - RESPONSE POST /connections/use/2 | Status=200 | Duration=106.87ms | Body={"message":"Connected successfully to 'Markus'"}
+2025-11-15 01:01:19,418 - app_logger - INFO - REQUEST POST /llmsql/generate_sql | Body={
+  "user_input": "Necesito que introduzcas 10 registros en customers cond atos mockeados"
+}
+2025-11-15 01:01:19,419 - app_logger - INFO - Incoming request: POST /llmsql/generate_sql
+2025-11-15 01:01:19,420 - app_logger - INFO - Agent started for: Necesito que introduzcas 10 registros en customers cond atos mockeados
+2025-11-15 01:01:19,420 - app_logger - DEBUG - Prompt built (3678 chars)
+2025-11-15 01:01:19,420 - app_logger - INFO - Running LLM with prompt (3678 chars)
+2025-11-15 01:01:19,420 - app_logger - DEBUG - ----- LLM PROMPT BEGIN -----
+
+You are SQL-AGENT, a deterministic SQL engine.
+
+STRICT RULES:
+1. Never output anything except TOOL_CALL JSON or FINAL_SQL JSON.
+2. Never explain your reasoning.
+3. Never add text before or after JSON.
+4. Never output multiple JSON blocks.
+5. If unsure: ALWAYS call a tool.
+6. For SELECT queries: ALWAYS call get_columns.
+7. For JOIN queries: ALWAYS call get_foreign_keys.
+8. For INSERT/UPDATE/DELETE: ALWAYS call describe_table.
+9. Never hallucinate table names or columns.
+10. If metadata missing: call a tool to fetch it.
+
+TOOL_CALL format EXACT:
+{
+  "name": "<tool_name>",
+  "arguments": { ... }
+}
+
+FINAL_SQL format EXACT:
+{
+  "sql": "<query>",
+  "explanation": "<1-3 lines>"
+}
+
+
+TOOLS:
+{
+  "tools": [
+    {
+      "name": "list_schemas",
+      "description": "Return a list of all non-system schemas in the connected database.",
+      "arguments": {}
+    },
+    {
+      "name": "list_tables",
+      "description": "Return all table names inside a given schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_columns",
+      "description": "Return column metadata for a table: name, type, nullable, default.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_primary_keys",
+      "description": "Return the list of primary key columns for a table.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_foreign_keys",
+      "description": "Return foreign key relationships for a table, including referenced schema/table/column.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_table",
+      "description": "Return grouped detailed structure for a table: columns, constraints, keys.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "describe_schema",
+      "description": "Return full metadata of all tables inside a schema.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "get_table_sample",
+      "description": "Return a small preview of table rows using SELECT * LIMIT <limit>.",
+      "arguments": {
+        "schema": {
+          "type": "string",
+          "required": true
+        },
+        "table": {
+          "type": "string",
+          "required": true
+        },
+        "limit": {
+          "type": "integer",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "execute_query",
+      "description": "Execute a SQL read-only query and return the results.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    {
+      "name": "execute_sql_write",
+      "description": "Execute a SQL write query (INSERT, UPDATE, DELETE) and return affected rows.",
+      "arguments": {
+        "sql": {
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  ]
+}
+USER: Necesito que introduzcas 10 registros en customers cond atos mockeados
+
+----- LLM PROMPT END -----
+2025-11-15 14:34:12,120 - app_logger - INFO - SQLAssistantService initialized
+2025-11-15 14:34:13,642 - app_logger - INFO - REQUEST GET / | Body=
+2025-11-15 14:34:13,642 - app_logger - INFO - Incoming request: GET /
+2025-11-15 14:34:13,645 - app_logger - INFO - Completed GET / Status=404 Duration=3.00ms
+2025-11-15 14:34:13,647 - app_logger - INFO - RESPONSE GET / | Status=404 | Duration=5.51ms | Body={"detail":"Not Found"}
+2025-11-15 14:34:16,269 - app_logger - INFO - REQUEST GET /docs | Body=
+2025-11-15 14:34:16,269 - app_logger - INFO - Incoming request: GET /docs
+2025-11-15 14:34:16,271 - app_logger - INFO - Completed GET /docs Status=200 Duration=1.32ms
+2025-11-15 14:34:16,271 - app_logger - INFO - RESPONSE GET /docs | Status=200 | Duration=2.01ms | Body=
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+    <link rel="shortcut icon" href="https://fastapi.tiangolo.com/img/favicon.png">
+    <title>LLM-DB CONNECTOR API - Swagger UI</title>
+    </head>
+    <body>
+    <div id="swagger-ui">
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <!-- `SwaggerUIBundle` is now available on the page -->
+    <script>
+    const ui = SwaggerUIBundle({
+        url: '/openapi.json',
+    "dom_id": "#swagger-ui",
+"layout": "BaseLayout",
+"deepLinking": true,
+"showExtensions": true,
+"showCommonExtensions": true,
+oauth2RedirectUrl: window.location.origin + '/docs/oauth2-redirect',
+    presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIBundle.SwaggerUIStandalonePreset
+        ],
+    })
+    </script>
+    </body>
+    </html>
+    
+2025-11-15 14:34:16,344 - app_logger - INFO - REQUEST GET /openapi.json | Body=
+2025-11-15 14:34:16,344 - app_logger - INFO - Incoming request: GET /openapi.json
+2025-11-15 14:34:16,354 - app_logger - INFO - Completed GET /openapi.json Status=200 Duration=9.52ms
+2025-11-15 14:34:16,354 - app_logger - INFO - RESPONSE GET /openapi.json | Status=200 | Duration=10.52ms | Body={"openapi":"3.1.0","info":{"title":"LLM-DB CONNECTOR API","version":"1.0.0"},"paths":{"/connections/save":{"post":{"tags":["Database Connections"],"summary":"Save Connection","operationId":"save_connection_connections_save_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/PGDBConnector"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/connections/list":{"get":{"tags":["Database Connections"],"summary":"List Connections","operationId":"list_connections_connections_list_get","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}}}}},"/connections/{connection_id}":{"delete":{"tags":["Database Connections"],"summary":"Delete Connection","description":"Delete a connection by ID.","operationId":"delete_connection_connections__connection_id__delete","parameters":[{"name":"connection_id","in":"path","required":true,"schema":{"type":"integer","title":"Connection Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/connections/use/{connection_id}":{"post":{"tags":["Database Connections"],"summary":"Use Connection","description":"Activate and persist a connection by ID.","operationId":"use_connection_connections_use__connection_id__post","parameters":[{"name":"connection_id","in":"path","required":true,"schema":{"type":"integer","title":"Connection Id"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/PasswordBody"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/connections/disconnect":{"post":{"tags":["Database Connections"],"summary":"Disconnect","description":"Close current connection.","operationId":"disconnect_connections_disconnect_post","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}}}}},"/llmsql/generate_sql":{"post":{"tags":["SQL Assistant"],"summary":"Generate Sql","description":"Generates SQL using the intelligent multi-step agent.\nIt will automatically inspect the DB using tools if needed.","operationId":"generate_sql_llmsql_generate_sql_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/QueryRequest"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"404":{"description":"Not found"},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/llmsql/execute_sql":{"post":{"tags":["SQL Assistant"],"summary":"Execute Sql","description":"Executes the SQL safely through the internal database service.","operationId":"execute_sql_llmsql_execute_sql_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ExecuteRequest"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"404":{"description":"Not found"},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/db/schema":{"get":{"tags":["Database Schema"],"summary":"Get Schema Grouped","description":"Returns the database schema grouped by table,\noptionally filtered by schema name (e.g. ?schema=public).","operationId":"get_schema_grouped_db_schema_get","parameters":[{"name":"schema","in":"query","required":false,"schema":{"anyOf":[{"type":"string"},{"type":"null"}],"description":"Schema name to filter (e.g. 'public')","title":"Schema"},"description":"Schema name to filter (e.g. 'public')"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/db/schemas":{"get":{"tags":["Database Schema"],"summary":"List Schemas","description":"Return all schema names in the database.","operationId":"list_schemas_db_schemas_get","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}}}}},"/db/tables":{"get":{"tags":["Database Schema"],"summary":"List Tables","description":"Return all table names from the given schema.","operationId":"list_tables_db_tables_get","parameters":[{"name":"schema","in":"query","required":false,"schema":{"type":"string","default":"public","title":"Schema"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/db/columns":{"get":{"tags":["Database Schema"],"summary":"Get Table Columns","description":"Return all columns for a specific table, including data type,\nnullability, default value, and key relationships.","operationId":"get_table_columns_db_columns_get","parameters":[{"name":"table","in":"query","required":true,"schema":{"type":"string","description":"Table name to extract columns from","title":"Table"},"description":"Table name to extract columns from"},{"name":"schema","in":"query","required":false,"schema":{"type":"string","description":"Schema name (default: public)","default":"public","title":"Schema"},"description":"Schema name (default: public)"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}}},"components":{"schemas":{"ExecuteRequest":{"properties":{"sql":{"type":"string","title":"Sql"}},"type":"object","required":["sql"],"title":"ExecuteRequest"},"HTTPValidationError":{"properties":{"detail":{"items":{"$ref":"#/components/schemas/ValidationError"},"type":"array","title":"Detail"}},"type":"object","title":"HTTPValidationError"},"PGDBConnector":{"properties":{"host":{"type":"string","title":"Host"},"port":{"type":"integer","title":"Port"},"user":{"type":"string","title":"User"},"password":{"type":"string","title":"Password"},"database":{"type":"string","title":"Database"},"name":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Name"}},"type":"object","required":["host","port","user","password","database"],"title":"PGDBConnector"},"PasswordBody":{"properties":{"password":{"type":"string","title":"Password"}},"type":"object","required":["password"],"title":"PasswordBody"},"QueryRequest":{"properties":{"user_input":{"type":"string","title":"User Input"}},"type":"object","required":["user_input"],"title":"QueryRequest"},"ValidationError":{"properties":{"loc":{"items":{"anyOf":[{"type":"string"},{"type":"integer"}]},"type":"array","title":"Location"},"msg":{"type":"string","title":"Message"},"type":{"type":"string","title":"Error Type"}},"type":"object","required":["loc","msg","type"],"title":"ValidationError"}}}}
+2025-11-15 14:34:26,011 - app_logger - INFO - REQUEST POST /connections/use/2 | Body={
+  "password": "password"
+}
+2025-11-15 14:34:26,011 - app_logger - INFO - Incoming request: POST /connections/use/2
+2025-11-15 14:34:26,118 - app_logger - INFO - Completed POST /connections/use/2 Status=200 Duration=106.70ms
+2025-11-15 14:34:26,118 - app_logger - INFO - RESPONSE POST /connections/use/2 | Status=200 | Duration=107.70ms | Body={"message":"Connected successfully to 'Markus'"}

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from app.core.logger_middleware import RequestLoggingMiddleware
 from app.core.middleware_body_logger import BodyLoggingMiddleware
 from app.internal_db import init_internal_db
-from app.services.internal_database_service import DatabaseService
+from app.services.database_service import DatabaseService
 from app.router.connections_router import router as connections_router
 from app.router.llm_sql_router import router as llm_sql_router
 from app.router.schema_router import router as schema_router

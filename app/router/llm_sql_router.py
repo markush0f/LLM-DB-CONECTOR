@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from app.models.execute_sql_request import ExecuteRequest
 from app.models.query_request import QueryRequest
 from app.services.sql_assistant import SQLAssistantService
-from app.services.internal_database_service import DatabaseService
+from app.services.database_service import DatabaseService
 
 router = APIRouter(
     prefix="/llmsql",

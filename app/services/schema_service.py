@@ -1,11 +1,12 @@
 from sqlalchemy import text
 from pathlib import Path
 from collections import defaultdict
-from app.services.db_session import db_session
-
+from app.core.logger import create_logger
+from app.services.database_service import db_session
 
 class SchemaService:
     """Handles schema extraction and grouping for PostgreSQL."""
+    logger = create_logger()
 
     def __init__(self):
         if not db_session.is_connected():
@@ -17,25 +18,33 @@ class SchemaService:
     def load_sql(self, filename: str) -> str:
         path = self.base_path / filename
         with open(path, "r", encoding="utf-8") as f:
-            return f.read()
+            content = f.read()
+        self.logger.debug("load_sql result for %s: %s", filename, content)
+        return content
 
     def fetch_columns(self, schema_name: str | None = None):
         query = text(self.load_sql("columns.sql"))
         with self.engine.connect() as conn:
             result = conn.execute(query, {"schema_name": schema_name})
-            return [dict(row._mapping) for row in result]
+            rows = [dict(row._mapping) for row in result]
+        self.logger.debug("fetch_columns result for schema=%s: %s", schema_name, rows)
+        return rows
 
     def fetch_primary_keys(self, schema_name: str | None = None):
         query = text(self.load_sql("primary_keys.sql"))
         with self.engine.connect() as conn:
             result = conn.execute(query, {"schema_name": schema_name})
-            return [dict(row._mapping) for row in result]
+            rows = [dict(row._mapping) for row in result]
+        self.logger.debug("fetch_primary_keys result for schema=%s: %s", schema_name, rows)
+        return rows
 
     def fetch_foreign_keys(self, schema_name: str | None = None):
         query = text(self.load_sql("foreign_keys.sql"))
         with self.engine.connect() as conn:
             result = conn.execute(query, {"schema_name": schema_name})
-            return [dict(row._mapping) for row in result]
+            rows = [dict(row._mapping) for row in result]
+        self.logger.debug("fetch_foreign_keys result for schema=%s: %s", schema_name, rows)
+        return rows
 
     def get_schemas(self):
         query = text(
@@ -49,7 +58,9 @@ class SchemaService:
         )
         with self.engine.connect() as conn:
             result = conn.execute(query)
-            return [row[0] for row in result.fetchall()]
+            schemas = [row[0] for row in result.fetchall()]
+        self.logger.debug("get_schemas result: %s", schemas)
+        return schemas
 
     def get_table_names(self, schema_name: str = "public") -> list[str]:
         query = text(
@@ -63,15 +74,19 @@ class SchemaService:
         )
         with self.engine.connect() as conn:
             result = conn.execute(query, {"schema_name": schema_name})
-            return [row[0] for row in result.fetchall()]
+            tables = [row[0] for row in result.fetchall()]
+        self.logger.debug("get_table_names result for schema=%s: %s", schema_name, tables)
+        return tables
 
     def get_primary_keys(self, schema_name: str, table_name: str) -> list[str]:
         pks = self.fetch_primary_keys(schema_name)
-        return [pk["column_name"] for pk in pks if pk["table_name"] == table_name]
+        result = [pk["column_name"] for pk in pks if pk["table_name"] == table_name]
+        self.logger.debug("get_primary_keys result for %s.%s: %s", schema_name, table_name, result)
+        return result
 
     def get_foreign_keys(self, schema_name: str, table_name: str) -> list[dict]:
         fks = self.fetch_foreign_keys(schema_name)
-        return [
+        result = [
             {
                 "column": fk["column_name"],
                 "ref_table": fk["foreign_table_name"],
@@ -80,6 +95,8 @@ class SchemaService:
             for fk in fks
             if fk["table_name"] == table_name
         ]
+        self.logger.debug("get_foreign_keys result for %s.%s: %s", schema_name, table_name, result)
+        return result
 
     def get_table_columns(self, table_name: str, schema_name: str = "public"):
         query = text(self.load_sql("table_columns.sql"))
@@ -87,17 +104,21 @@ class SchemaService:
             raw = conn.execute(
                 query, {"schema_name": schema_name, "table_name": table_name}
             )
-            return [dict(row._mapping) for row in raw]
+            columns = [dict(row._mapping) for row in raw]
+        self.logger.debug("get_table_columns result for %s.%s: %s", schema_name, table_name, columns)
+        return columns
 
 
     def describe_table(self, schema_name: str, table_name: str) -> dict:
-        return {
+        desc = {
             "schema": schema_name,
             "table": table_name,
             "columns": self.get_table_columns(table_name, schema_name),
             "primary_keys": self.get_primary_keys(schema_name, table_name),
             "foreign_keys": self.get_foreign_keys(schema_name, table_name),
         }
+        self.logger.debug("describe_table result for %s.%s: %s", schema_name, table_name, desc)
+        return desc
 
     def get_schema_grouped(self, schema_name: str | None = None) -> dict:
         columns = self.fetch_columns(schema_name)
@@ -133,4 +154,5 @@ class SchemaService:
                 }
             )
 
+        self.logger.debug("get_schema_grouped result for schema=%s: %s", schema_name, schema)
         return schema

@@ -1,7 +1,6 @@
 from sqlalchemy import create_engine, text
 from app.models.models_db_connector import PGDBConnector
 
-
 class DatabaseService:
     """
     Manages a single persistent database connection for the local environment.
@@ -15,7 +14,9 @@ class DatabaseService:
 
     def connect(self, config: PGDBConnector) -> bool:
         """Create and test a single persistent connection."""
-        self.db_url = f"postgresql://{config.user}:{config.password}@{config.host}:{config.port}/{config.database}"
+        self.db_url = (
+            f"postgresql://{config.user}:{config.password}@{config.host}:{config.port}/{config.database}"
+        )
         engine = create_engine(self.db_url)
 
         try:
@@ -48,3 +49,9 @@ class DatabaseService:
             self.engine = None
             return True
         return False
+    
+    def is_connected(self) -> bool:
+        return self.engine is not None
+
+# GLOBAL SINGLETON (used by entire backend + agent)
+db_session = DatabaseService()
