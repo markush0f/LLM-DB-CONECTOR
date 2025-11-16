@@ -34,6 +34,25 @@ The backend is fully implemented. The frontend is under development and will be 
 
 ---
 
+## Automatic Versioned Backups (Every SQL Generation)
+
+Each time a new SQL query is generated through the `/llmsql/generate_sql` endpoint, the system automatically creates a versioned backup of the connected PostgreSQL database.
+
+**How it works:**
+
+* A full `.sql` dump is created on every generation request.
+* Backups follow the naming pattern:
+  `backup_YYYY-MM-DD_HH-MM-SS.sql`
+* Only the **last 5 backups** are kept.
+* When a new backup is created and there are already 5 stored, the oldest backup is automatically deleted.
+* Backups are saved in:
+  `./backups/`
+
+**Purpose:**
+This ensures safe SQL execution, allows rollback, and provides a version history of all database states tied to AI-generated SQL operations.
+
+---
+
 ## Tech Stack
 
 **Backend**: Python, FastAPI, SQLAlchemy, PostgreSQL, SQLite
@@ -64,7 +83,6 @@ ollama pull <model>
 ```bash
 pip install -r requirements.txt
 ```
-
 
 ### 4. Run FastAPI Backend
 
