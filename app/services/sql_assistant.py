@@ -89,9 +89,14 @@ class SQLAssistantService:
             "describe_schema": lambda: self.schema.get_schema_grouped(
                 args.get("schema")
             ),
+            "get_table_sample": lambda: self.db.execute(
+                f"SELECT * FROM {args.get('schema')}.{args.get('table')} "
+                f"LIMIT {int(args.get('limit', 5))}"
+            ),
         }
 
         return dispatch.get(name, lambda: {"error": f"Unknown tool: {name}"})()
+
 
     def _extract_marker_block(self, text: str, marker: str) -> str | None:
         # Change: match with or without colon
@@ -135,7 +140,7 @@ class SQLAssistantService:
     def run(self, user_input: str):
 
         self.logger.info("Agent started for: %s", user_input)
-        self._ensure_services()
+        self._ensure_services()  # Ensure DB exists
 
         messages = []
         max_steps = 10
@@ -153,55 +158,50 @@ class SQLAssistantService:
             response = self._clean_llm_output(raw_response)
             self.logger.debug("LLM cleaned response (step %d): %s", step, response)
 
-            # -----------------------------------------------
-            # 1. Explicit TOOL_CALL
-            # -----------------------------------------------
+            # -------------------------------------------------------
+            # 1. TOOL_CALL EXPLÍCITO
+            # -------------------------------------------------------
             tool_block = self._extract_marker_block(response, "TOOL_CALL")
             if tool_block:
                 tool_call = self.safe_json_parse(tool_block)
                 if tool_call:
                     name = tool_call.get("name")
-                    args = tool_call.get("arguments", {}) or {}
+                    args = tool_call.get("arguments", {})
 
-                    # Normalize schema/table
-                    if "schema" in args and isinstance(args["schema"], str):
-                        if args["schema"] not in [None, "<default_schema>"]:
-                            args["schema"] = args["schema"].strip().lower()
-                    if "table" in args and isinstance(args["table"], str):
-                        args["table"] = args["table"].strip().lower()
-
-                    # Auto-fix schema invented by LLM
+                    # ---- AUTOCORRECCIÓN DEL SCHEMA ----
                     if name != "list_schemas":
                         if args.get("schema") in [None, "<default_schema>"]:
                             if selected_schema:
                                 args["schema"] = selected_schema
 
+                    # Ejecutar tool
                     result = self.execute_tool(name, args)
                     messages.append({"role": "tool", "content": json.dumps(result)})
 
-                    # Save schemas
+                    # Guardar schemas reales
                     if name == "list_schemas" and isinstance(result, list):
                         schemas_list = result
                         if len(result) == 1:
                             selected_schema = result[0]
 
-                    # Save tables
+                    # Guardar tablas reales
                     if name == "list_tables" and isinstance(result, list):
                         tables_list = result
 
-                    # Validate describe_table
+                    # Si pidió describe_table pero la tabla no existe → corregir
                     if name == "describe_table" and args.get("table"):
                         if tables_list and args["table"].lower() not in [
                             t.lower() for t in tables_list
                         ]:
                             return {"error": f"Table '{args['table']}' does not exist"}
+
                         selected_table = args["table"]
 
                     continue
 
-            # -----------------------------------------------
-            # 2. Implicit TOOL_CALL
-            # -----------------------------------------------
+            # -------------------------------------------------------
+            # 2. TOOL_CALL IMPLÍCITO
+            # -------------------------------------------------------
             implicit = self.safe_json_parse(response)
             if (
                 implicit
@@ -211,16 +211,9 @@ class SQLAssistantService:
                 and "sql" not in implicit
             ):
                 name = implicit["name"]
-                args = implicit.get("arguments", {}) or {}
+                args = implicit.get("arguments", {})
 
-                # Normalize schema/table
-                if "schema" in args and isinstance(args["schema"], str):
-                    if args["schema"] not in [None, "<default_schema>"]:
-                        args["schema"] = args["schema"].strip().lower()
-                if "table" in args and isinstance(args["table"], str):
-                    args["table"] = args["table"].strip().lower()
-
-                # Auto-fix schema invented by LLM
+                # Autocorrección del schema inventado
                 if args.get("schema") in [None, "<default_schema>"]:
                     if selected_schema:
                         args["schema"] = selected_schema
@@ -228,21 +221,21 @@ class SQLAssistantService:
                 result = self.execute_tool(name, args)
                 messages.append({"role": "tool", "content": json.dumps(result)})
 
-                # Save schemas
+                # Guardar schema
                 if name == "list_schemas" and isinstance(result, list):
                     schemas_list = result
                     if len(result) == 1:
                         selected_schema = result[0]
 
-                # Save tables
+                # Guardar tablas
                 if name == "list_tables" and isinstance(result, list):
                     tables_list = result
 
                 continue
 
-            # -----------------------------------------------
-            # 3. Explicit FINAL_SQL
-            # -----------------------------------------------
+            # -------------------------------------------------------
+            # 3. FINAL_SQL EXPLÍCITO
+            # -------------------------------------------------------
             final_block = self._extract_marker_block(response, "FINAL_SQL")
             if final_block:
                 final = self.safe_json_parse(final_block)
@@ -250,15 +243,15 @@ class SQLAssistantService:
                     return final
                 return {"error": "Invalid FINAL_SQL JSON"}
 
-            # -----------------------------------------------
-            # 4. Implicit FINAL_SQL
-            # -----------------------------------------------
+            # -------------------------------------------------------
+            # 4. FINAL_SQL IMPLÍCITO
+            # -------------------------------------------------------
             if implicit and "sql" in implicit:
                 return implicit
 
-            # -----------------------------------------------
-            # 5. Continue assistant message
-            # -----------------------------------------------
+            # -------------------------------------------------------
+            # 5. Continue dialogue
+            # -------------------------------------------------------
             messages.append({"role": "assistant", "content": response})
 
         return {"error": "max_steps_reached"}
