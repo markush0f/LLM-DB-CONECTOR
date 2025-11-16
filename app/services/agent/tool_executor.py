@@ -52,10 +52,15 @@ class ToolExecutor:
         schema = args.get("schema")
         table = args.get("table")
 
+        # CHANGE: log start
+        self.logger.info("describe_table requested for %s.%s", schema, table)
+
         cached = metadata_cache.get_table(schema, table)
         if cached:
-            self.logger.info("Using cached metadata for %s.%s", schema, table)
+            self.logger.info("Returning cached metadata for %s.%s", schema, table)
             return cached
+
+        self.logger.info("Fetching fresh metadata for %s.%s", schema, table)
 
         columns = self.schema.get_columns(schema, table)
         pks = self.schema.get_primary_keys(schema, table)
@@ -68,5 +73,7 @@ class ToolExecutor:
         }
 
         metadata_cache.store_table(schema, table, metadata)
+
+        self.logger.info("Stored fresh metadata for %s.%s", schema, table)
 
         return metadata
