@@ -35,4 +35,4 @@ class Connection(Base):
 def init_internal_db():
     """Initialize SQLite database if not already created."""
     Base.metadata.create_all(bind=engine)
-    print(f"✅ Internal SQLite database ready at: {DB_PATH}")
+    print(f"Internal SQLite database ready at: {DB_PATH}")

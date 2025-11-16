@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.models.execute_sql_request import ExecuteRequest
 from app.models.query_request import QueryRequest
-from app.services.sql_assistant import SQLAssistantService
+from app.services.agent.sql_agent import SQLAssistantService
 from app.services.database_service import DatabaseService
 
 router = APIRouter(
@@ -66,3 +66,8 @@ def execute_sql(req: ExecuteRequest):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/history")
+def get_sql_history():
+    return "..."

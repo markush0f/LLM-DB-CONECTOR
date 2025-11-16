@@ -53,5 +53,5 @@ class DatabaseService:
     def is_connected(self) -> bool:
         return self.engine is not None
 
-# GLOBAL SINGLETON (used by entire backend + agent)
+# GLOBAL SINGLETON
 db_session = DatabaseService()
