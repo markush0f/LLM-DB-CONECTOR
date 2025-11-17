@@ -8,8 +8,8 @@ router = APIRouter(prefix="/cache", tags=["cache"])
 
 @router.post("/metadata/invalidate")
 def invalidate_metadata_cache(payload: MetadataCacheInvalidateRequest):
-    schema = payload.schema.lower().strip() if payload.schema else None
-    table = payload.table.lower().strip() if payload.table else None
+    schema = payload.schema_name.lower().strip() if payload.schema_name else None
+    table = payload.table_name.lower().strip() if payload.table_name else None
 
     if schema and table:
         metadata_cache.invalidate_table(schema, table)
@@ -19,9 +19,13 @@ def invalidate_metadata_cache(payload: MetadataCacheInvalidateRequest):
         metadata_cache.invalidate_schema(schema)
         return {"status": "ok", "message": f"Invalidated cache for schema {schema}"}
 
-    # CHANGE: invalidate all
     if not schema and not table:
         metadata_cache.invalidate_all()
         return {"status": "ok", "message": "Invalidated entire metadata cache"}
 
     raise HTTPException(status_code=400, detail="Invalid cache invalidation request")
+
+
+@router.get("/metadata/status")
+def get_metadata_cache_status():
+    return metadata_cache.get_status()

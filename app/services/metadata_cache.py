@@ -72,7 +72,6 @@ class MetadataCache:
         self.timestamps.clear()
 
         self.logger.warning("Invalidated entire metadata cache")
-        # CHANGE: expose cache status for debugging
 
     def get_status(self) -> Dict[str, Any]:
         status = {
@@ -83,19 +82,22 @@ class MetadataCache:
 
         for schema, tables in self.cache.items():
             status["schemas"][schema] = {}
-            for table in tables.keys():
+
+            for table, metadata in tables.items():
                 key = self._make_key(schema, table)
                 ts = self.timestamps.get(key, 0)
-                remaining = None
 
+                remaining = None
                 if self.ttl is not None:
                     remaining = max(self.ttl - (time.time() - ts), 0)
 
                 status["schemas"][schema][table] = {
                     "cached_at": ts,
                     "expires_in": remaining,
+                    "metadata": metadata, 
                 }
 
                 status["total_entries"] += 1
 
         return status
+

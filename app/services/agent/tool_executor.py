@@ -36,9 +36,9 @@ class ToolExecutor:
         dispatch = {
             "list_schemas": lambda: self.schema.get_schemas(),
             "list_tables": lambda: self.schema.get_table_names(args.get("schema")),
-            "get_columns": lambda: self.schema.get_columns(
-                args.get("schema"),
-                args.get("table"),
+            "get_columns": lambda: self.schema.get_table_columns(
+                table_name=args.get("table"),
+                schema_name=args.get("schema"),
             ),
         }
 
@@ -52,7 +52,6 @@ class ToolExecutor:
         schema = args.get("schema")
         table = args.get("table")
 
-        # CHANGE: log start
         self.logger.info("describe_table requested for %s.%s", schema, table)
 
         cached = metadata_cache.get_table(schema, table)
@@ -62,9 +61,21 @@ class ToolExecutor:
 
         self.logger.info("Fetching fresh metadata for %s.%s", schema, table)
 
-        columns = self.schema.get_columns(schema, table)
-        pks = self.schema.get_primary_keys(schema, table)
-        fks = self.schema.get_foreign_keys(schema, table)
+        # FIX: correct argument order
+        columns = self.schema.get_table_columns(
+            table_name=table,
+            schema_name=schema
+        )
+
+        pks = self.schema.get_primary_keys(
+            schema_name=schema,
+            table_name=table
+        )
+
+        fks = self.schema.get_foreign_keys(
+            schema_name=schema,
+            table_name=table
+        )
 
         metadata = {
             "columns": columns,
@@ -77,3 +88,4 @@ class ToolExecutor:
         self.logger.info("Stored fresh metadata for %s.%s", schema, table)
 
         return metadata
+
