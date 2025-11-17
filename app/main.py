@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from app.core.logger_middleware import RequestLoggingMiddleware
 from app.core.middleware_body_logger import BodyLoggingMiddleware
 from app.internal_db import init_internal_db
@@ -34,3 +35,4 @@ app.include_router(connections_router)
 app.include_router(llm_sql_router)
 app.include_router(schema_router)
 app.include_router(coche_router)
+app.mount("/admin", StaticFiles(directory="/home/markus/Desktop/llm-db-conector/static/admin/dist", html=True), name="admin")
