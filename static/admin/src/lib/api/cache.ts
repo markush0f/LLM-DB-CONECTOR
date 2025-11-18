@@ -1,27 +1,33 @@
-const API_URL = "http://localhost:8000";
+const API_URL = "http://localhost:8000/cache";
 
 export async function fetchCache() {
-    const res = await fetch(`${API_URL}/admin/cache`);
+    const res = await fetch(`${API_URL}/metadata/status`);
     return res.json();
 }
 
-export async function clearAllCache() {
-    const res = await fetch(`${API_URL}/admin/cache`, {
-        method: "DELETE",
+export async function invalidateAllCache() {
+    const res = await fetch(`${API_URL}/metadata/invalidate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({})
     });
     return res.json();
 }
 
-export async function clearSchema(schema: string) {
-    const res = await fetch(`${API_URL}/admin/cache/${schema}`, {
-        method: "DELETE",
+export async function invalidateSchema(schema: string) {
+    const res = await fetch(`${API_URL}/metadata/invalidate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ schema_name: schema })
     });
     return res.json();
 }
 
-export async function clearTable(schema: string, table: string) {
-    const res = await fetch(`${API_URL}/admin/cache/${schema}/${table}`, {
-        method: "DELETE",
+export async function invalidateTable(schema: string, table: string) {
+    const res = await fetch(`${API_URL}/metadata/invalidate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ schema_name: schema, table_name: table })
     });
     return res.json();
 }

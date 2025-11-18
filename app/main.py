@@ -17,7 +17,7 @@ app = FastAPI(title="LLM-DB CONNECTOR API", version="1.0.0")
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "",
+    "http://localhost:4321",
 ]
 
 app.add_middleware(

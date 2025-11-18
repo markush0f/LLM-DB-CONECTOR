@@ -9,7 +9,7 @@ export default defineConfig({
   base: "/admin",
 
   vite: {
-      plugins: [tailwindcss()],
+    plugins: [tailwindcss()],
   },
 
   integrations: [react()],

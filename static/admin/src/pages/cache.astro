@@ -1,87 +1,12 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import AdminSidebar from "../components/admin/AdminSidebar.astro";
 import AdminHeader from "../components/admin/AdminHeader.astro";
+import AdminSidebar from "../components/admin/AdminSidebar.astro";
 
-import "../styles/global.css";
 import CacheHeader from "../components/cache/CacheHeader.astro";
-import CacheSchemaBlock from "../components/cache/CacheSchemaBlock.astro";
 import CacheStats from "../components/cache/CacheStats.astro";
 
-// Implementation: mock data for cache visualization
-type CacheEntry = {
-  schema: string;
-  table: string;
-  cachedAt: string;
-  columns: number;
-  rows: number;
-  size: string;
-};
-
-const mockCache: CacheEntry[] = [
-  {
-    schema: "public",
-    table: "users",
-    cachedAt: "2025-11-16 12:30:22",
-    columns: 8,
-    rows: 1250,
-    size: "2.3 MB",
-  },
-  {
-    schema: "public",
-    table: "orders",
-    cachedAt: "2025-11-16 12:31:10",
-    columns: 12,
-    rows: 5420,
-    size: "8.7 MB",
-  },
-  {
-    schema: "analytics",
-    table: "events",
-    cachedAt: "2025-11-16 12:31:45",
-    columns: 5,
-    rows: 15680,
-    size: "15.2 MB",
-  },
-  {
-    schema: "public",
-    table: "products",
-    cachedAt: "2025-11-16 11:15:33",
-    columns: 15,
-    rows: 890,
-    size: "4.1 MB",
-  },
-  {
-    schema: "analytics",
-    table: "sessions",
-    cachedAt: "2025-11-16 10:45:12",
-    columns: 10,
-    rows: 8920,
-    size: "6.8 MB",
-  },
-];
-
-// Agrupar por schema
-const groupedCache = mockCache.reduce(
-  (acc, item) => {
-    if (!acc[item.schema]) {
-      acc[item.schema] = [];
-    }
-    acc[item.schema].push(item);
-    return acc;
-  },
-  {} as Record<string, CacheEntry[]>
-);
-
-// Calcular estadísticas
-const totalTables = mockCache.length;
-const totalSchemas = Object.keys(groupedCache).length;
-const totalSize = mockCache
-  .reduce((acc, item) => {
-    const size = parseFloat(item.size);
-    return acc + size;
-  }, 0)
-  .toFixed(1);
+import CacheManager from "../islands/CacheManager";
 ---
 
 <Layout>
@@ -96,19 +21,10 @@ const totalSize = mockCache
         subtitle="Manage and monitor your database cache"
       />
 
-      <CacheStats
-        totalSchemas={totalSchemas}
-        totalTables={totalTables}
-        totalSize={totalSize}
-      />
+      <CacheStats totalSchemas={5} totalTables={20} totalSize={"35.5"} />
 
-      <div class="space-y-6">
-        {
-          Object.entries(groupedCache).map(([schema, tables]) => (
-            <CacheSchemaBlock schema={schema} tables={tables} />
-          ))
-        }
-      </div>
+      <!-- React Island -->
+      <CacheManager client:only="react" />
     </section>
   </main>
 </Layout>
