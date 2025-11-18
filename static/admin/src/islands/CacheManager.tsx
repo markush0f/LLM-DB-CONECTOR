@@ -6,13 +6,19 @@ import {
     invalidateTable
 } from "../lib/api/cache";
 
-import "../styles/global.css"
 import CacheSchemaBlock from "../components/cache/CacheSchemaBlock";
 import type { NormalizedTable, RawCacheResponse } from "../types/cache.types";
+import "../styles/global.css"
 
 export default function CacheManager() {
     const [cache, setCache] = useState<Record<string, NormalizedTable[]>>({});
     const [loading, setLoading] = useState(true);
+
+    const [stats, setStats] = useState({
+        ttl: 0,
+        totalEntries: 0,
+        schemasCount: 0
+    });
 
     function normalize(raw: RawCacheResponse): Record<string, NormalizedTable[]> {
         const result: Record<string, NormalizedTable[]> = {};
@@ -41,8 +47,17 @@ export default function CacheManager() {
 
     async function load() {
         setLoading(true);
+
         const raw: RawCacheResponse = await fetchCache();
+
         setCache(normalize(raw));
+
+        setStats({
+            ttl: raw.ttl_seconds,
+            totalEntries: raw.total_entries,
+            schemasCount: Object.keys(raw.schemas).length
+        });
+
         setLoading(false);
     }
 

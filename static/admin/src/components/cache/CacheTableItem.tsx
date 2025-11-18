@@ -4,12 +4,14 @@ import {
   Table2,
   Columns3,
   List,
-  HardDrive
+  HardDrive,
+  Clock
 } from "lucide-react";
+
+import { formatExpiry, getExpiryColor } from "../../utils/cacheFormat";
 import type { NormalizedTable } from "../../types/cache.types";
 
-
-export interface CacheTableItemProps extends NormalizedTable {
+interface Props extends NormalizedTable {
   onClear: () => void;
   onRefresh: () => void;
 }
@@ -20,15 +22,15 @@ export default function CacheTableItem({
   rows,
   size,
   cachedAt,
+  expiresIn,
   onClear,
   onRefresh
-}: CacheTableItemProps) {
+}: Props) {
   return (
     <div className="px-6 py-4 hover:bg-gray-50 transition-colors">
       <div className="flex items-center justify-between">
 
         <div className="flex items-center gap-4 flex-1">
-
           <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
             <Table2 className="w-5 h-5 text-gray-600" />
           </div>
@@ -39,7 +41,6 @@ export default function CacheTableItem({
             </h4>
 
             <div className="flex items-center gap-6 text-sm text-gray-600">
-
               <span className="flex items-center gap-1.5">
                 <Columns3 className="w-4 h-4" />
                 <span className="font-medium">{columns}</span> columns
@@ -47,9 +48,7 @@ export default function CacheTableItem({
 
               <span className="flex items-center gap-1.5">
                 <List className="w-4 h-4" />
-                <span className="font-medium">
-                  {rows.toLocaleString()}
-                </span> rows
+                <span className="font-medium">{rows}</span> rows
               </span>
 
               <span className="flex items-center gap-1.5">
@@ -57,6 +56,12 @@ export default function CacheTableItem({
                 <span className="font-medium">{size}</span>
               </span>
 
+              <span className="flex items-center gap-1.5">
+                <Clock className="w-4 h-4" />
+                <span className={`font-medium ${getExpiryColor(expiresIn)}`}>
+                  {formatExpiry(expiresIn)}
+                </span>
+              </span>
             </div>
           </div>
 
@@ -64,7 +69,6 @@ export default function CacheTableItem({
             <p className="text-xs text-gray-500 mb-0.5">Cached</p>
             <p className="text-sm font-medium text-gray-700">{cachedAt}</p>
           </div>
-
         </div>
 
         <div className="flex items-center gap-2 ml-6">
