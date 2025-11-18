@@ -1,0 +1,42 @@
+---
+import AdminHeader from "../components/admin/AdminHeader.astro";
+import AdminSidebar from "../components/admin/AdminSidebar.astro";
+import Layout from "../layouts/Layout.astro";
+import ConnectionsStats from "../components/connections/ConnectionsStats.astro";
+import { getConnections } from "../lib/api/connections";
+import ConnectionsManager from "../islands/ConnectionsManager";
+import ConnectionsHeader from "../components/connections/ConnectionsHeader.astro";
+import "../styles/global.css";
+
+// Obtener datos
+const connections = await getConnections();
+
+// Calcular estadísticas
+const totalConnections = connections.length;
+const connectedCount = connections.filter(
+  (c) => c.status === "connected"
+).length;
+const disconnectedCount = connections.filter(
+  (c) => c.status === "disconnected" || c.status === "error"
+).length;
+---
+
+<Layout>
+  <AdminSidebar />
+
+  <main class="flex-1 flex flex-col bg-gray-50">
+    <AdminHeader />
+
+    <section class="p-8">
+      <ConnectionsHeader />
+
+      <ConnectionsStats
+        total={totalConnections}
+        connected={connectedCount}
+        disconnected={disconnectedCount}
+      />
+
+      <ConnectionsManager client:load initialConnections={connections} />
+    </section>
+  </main>
+</Layout>
