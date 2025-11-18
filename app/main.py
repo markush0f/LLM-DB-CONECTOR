@@ -17,6 +17,7 @@ app = FastAPI(title="LLM-DB CONNECTOR API", version="1.0.0")
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "",
 ]
 
 app.add_middleware(
@@ -27,6 +28,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.get("/")
+def list_routes():
+    routes_info = []
+    for route in app.router.routes:
+        routes_info.append({"path": route.path})
+
+    return {"available_endpoints": routes_info}
+
+
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(BodyLoggingMiddleware)
 
@@ -35,4 +46,10 @@ app.include_router(connections_router)
 app.include_router(llm_sql_router)
 app.include_router(schema_router)
 app.include_router(coche_router)
-app.mount("/admin", StaticFiles(directory="/home/markus/Desktop/llm-db-conector/static/admin/dist", html=True), name="admin")
+app.mount(
+    "/admin",
+    StaticFiles(
+        directory="/home/markus/Desktop/llm-db-conector/static/admin/dist", html=True
+    ),
+    name="admin",
+)

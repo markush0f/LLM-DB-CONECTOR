@@ -1,0 +1,52 @@
+---
+import Database from "@lucide/astro/icons/database";
+import Table from "@lucide/astro/icons/table";
+import HardDrive from "@lucide/astro/icons/hard-drive";
+import type { CacheStatsProps } from "../../types/CacheStats.types";
+
+const { totalSchemas, totalTables, totalSize } = Astro.props as CacheStatsProps;
+---
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="bg-white rounded-lg border border-gray-200 p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600 mb-1">Total Schemas</p>
+        <p class="text-3xl font-bold text-gray-900">{totalSchemas}</p>
+      </div>
+      <div
+        class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center"
+      >
+        <Database class="w-6 h-6 text-blue-600" />
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg border border-gray-200 p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600 mb-1">Cached Tables</p>
+        <p class="text-3xl font-bold text-gray-900">{totalTables}</p>
+      </div>
+      <div
+        class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center"
+      >
+        <Table class="w-6 h-6 text-purple-600" />
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg border border-gray-200 p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600 mb-1">Total Size</p>
+        <p class="text-3xl font-bold text-gray-900">{totalSize} MB</p>
+      </div>
+      <div
+        class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center"
+      >
+        <HardDrive class="w-6 h-6 text-green-600" />
+      </div>
+    </div>
+  </div>
+</div>

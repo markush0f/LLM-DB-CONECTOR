@@ -1,186 +1,92 @@
 ---
-import AdminHeader from "../components/admin/AdminHeader.astro";
-import AdminSidebar from "../components/admin/AdminSidebar.astro";
 import Layout from "../layouts/Layout.astro";
+import AdminSidebar from "../components/admin/AdminSidebar.astro";
+import AdminHeader from "../components/admin/AdminHeader.astro";
+import AdminCard from "../components/admin/AdminCard.astro";
+
+import DatabaseIcon from "@lucide/astro/icons/database";
+import FileTextIcon from "@lucide/astro/icons/file-text";
+import HistoryIcon from "@lucide/astro/icons/history";
+import ListIcon from "@lucide/astro/icons/list";
+import SettingsIcon from "@lucide/astro/icons/settings";
+
 import "../styles/global.css";
 ---
 
 <Layout>
   <AdminSidebar />
 
-  <main
-    class="flex-1 flex flex-col bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50"
-  >
+  <main class="flex-1 flex flex-col bg-gray-50">
     <AdminHeader />
 
-    <section class="p-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      <!-- Cache Manager Card -->
-      <div
-        class="group relative overflow-hidden p-6 bg-white/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-      >
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-blue-400/10 to-purple-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        >
-        </div>
-        <div class="relative z-10">
-          <div
-            class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"
-          >
-            <svg
-              class="w-6 h-6 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
-              ></path>
-            </svg>
-          </div>
-          <h2 class="font-bold text-xl text-gray-800 mb-2">Cache Manager</h2>
-          <p class="text-gray-600 text-sm">Manage cached schemas & tables.</p>
-        </div>
+    <section class="p-8">
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-1">Dashboard</h1>
+        <p class="text-gray-600 text-sm">Overview of admin panel modules</p>
       </div>
 
-      <!-- System Prompts Card -->
-      <div
-        class="group relative overflow-hidden p-6 bg-white/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-      >
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-purple-400/10 to-pink-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        >
-        </div>
-        <div class="relative z-10">
-          <div
-            class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"
-          >
-            <svg
-              class="w-6 h-6 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              ></path>
-            </svg>
-          </div>
-          <h2 class="font-bold text-xl text-gray-800 mb-2">System Prompts</h2>
-          <p class="text-gray-600 text-sm">Edit the active system prompt.</p>
-        </div>
-      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <AdminCard
+          title="Cache Manager"
+          description="Manage cached schemas & tables"
+          Icon={DatabaseIcon}
+          color="blue"
+          href="/admin/cache"
+        />
 
-      <!-- Prompts History Card -->
-      <div
-        class="group relative overflow-hidden p-6 bg-white/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-      >
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-green-400/10 to-emerald-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        >
-        </div>
-        <div class="relative z-10">
-          <div
-            class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"
-          >
-            <svg
-              class="w-6 h-6 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <h2 class="font-bold text-xl text-gray-800 mb-2">Prompts History</h2>
-          <p class="text-gray-600 text-sm">
-            Review all user-generated prompts.
-          </p>
-        </div>
-      </div>
+        <AdminCard
+          title="System Prompts"
+          description="Edit the active system prompt"
+          Icon={FileTextIcon}
+          color="purple"
+          href="/admin/prompts"
+        />
 
-      <!-- Logs Card -->
-      <div
-        class="group relative overflow-hidden p-6 bg-white/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-      >
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-orange-400/10 to-red-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        >
-        </div>
-        <div class="relative z-10">
-          <div
-            class="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"
-          >
-            <svg
-              class="w-6 h-6 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              ></path>
-            </svg>
-          </div>
-          <h2 class="font-bold text-xl text-gray-800 mb-2">Logs</h2>
-          <p class="text-gray-600 text-sm">View backend activity logs.</p>
-        </div>
-      </div>
+        <AdminCard
+          title="Prompts History"
+          description="Review user-generated prompts"
+          Icon={HistoryIcon}
+          color="green"
+          href="/admin/history"
+        />
 
-      <!-- Model Settings Card -->
-      <div
-        class="group relative overflow-hidden p-6 bg-white/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-      >
-        <div
-          class="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-blue-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        >
-        </div>
-        <div class="relative z-10">
-          <div
-            class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"
-          >
-            <svg
-              class="w-6 h-6 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-              ></path>
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
+        <AdminCard
+          title="Logs"
+          description="View backend activity logs"
+          Icon={ListIcon}
+          color="orange"
+          href="/admin/logs"
+        />
+
+        <AdminCard
+          title="Model Settings"
+          description="Manage model configuration"
+          Icon={SettingsIcon}
+          color="cyan"
+          href="/admin/model"
+        />
+
+        <!-- <AdminCard
+          title="System Status"
+          description=""
+          Icon={BarChartIcon}
+          color="indigo"
+        > -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-600">Active Connections</span>
+            <span class="font-semibold text-gray-900">24</span>
           </div>
-          <h2 class="font-bold text-xl text-gray-800 mb-2">Model Settings</h2>
-          <p class="text-gray-600 text-sm">Manage model configuration.</p>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-600">Cache Hit Rate</span>
+            <span class="font-semibold text-green-600">94.2%</span>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-600">Uptime</span>
+            <span class="font-semibold text-gray-900">99.8%</span>
+          </div>
         </div>
       </div>
     </section>
   </main>
 </Layout>
-
-<!-- Sidebar Component -->
-<style is:global>
-  aside {
-    background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%);
-  }
-</style>
