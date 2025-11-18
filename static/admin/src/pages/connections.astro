@@ -2,23 +2,26 @@
 import AdminHeader from "../components/admin/AdminHeader.astro";
 import AdminSidebar from "../components/admin/AdminSidebar.astro";
 import Layout from "../layouts/Layout.astro";
+
 import ConnectionsStats from "../components/connections/ConnectionsStats.astro";
-import { getConnections } from "../lib/api/connections";
-import ConnectionsManager from "../islands/ConnectionsManager";
 import ConnectionsHeader from "../components/connections/ConnectionsHeader.astro";
+
+import { listConnections } from "../lib/api/connections";
+import ConnectionsManager from "../islands/ConnectionsManager";
+
 import "../styles/global.css";
 
-// Obtener datos
-const connections = await getConnections();
+// Obtener datos desde la API real
+const response = await listConnections();
 
-// Calcular estadísticas
-const totalConnections = connections.length;
-const connectedCount = connections.filter(
-  (c) => c.status === "connected"
-).length;
-const disconnectedCount = connections.filter(
-  (c) => c.status === "disconnected" || c.status === "error"
-).length;
+// El backend devuelve:
+// { total: number, connections: SavedConnection[] }
+const connections = response.connections;
+
+// Estadísticas (por ahora siempre disconnected porque backend no envía estado)
+const totalConnections = response.total;
+const connectedCount = 0;
+const disconnectedCount = totalConnections;
 ---
 
 <Layout>
@@ -36,7 +39,11 @@ const disconnectedCount = connections.filter(
         disconnected={disconnectedCount}
       />
 
-      <ConnectionsManager client:load initialConnections={connections} />
+      <!-- React island -->
+      <ConnectionsManager
+        client:load
+        initialConnections={connections}
+      />
     </section>
   </main>
 </Layout>

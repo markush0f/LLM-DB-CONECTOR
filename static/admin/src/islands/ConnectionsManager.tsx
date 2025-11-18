@@ -1,89 +1,119 @@
 import { useState, useEffect } from "react";
+
+import {
+    listConnections,
+    saveConnection,
+    deleteConnection,
+    useConnection
+} from "../lib/api/connections";
+
 import ConnectionItem from "../components/connections/ConnectionItem";
 import ConnectionFormModal from "../components/connections/ConnectionsFormModal";
-import type { DBConnection, DBConnectionForm } from "../types/DBConnection.types";
+import type { SavedConnection, PGDBConnector } from "../types/DBConnection.types";
+
 
 interface Props {
-    initialConnections: DBConnection[];
+    initialConnections: SavedConnection[];
 }
 
 export default function ConnectionsManager({ initialConnections }: Props) {
-    const [connections, setConnections] = useState<DBConnection[]>(initialConnections);
+
+    const [connections, setConnections] = useState<SavedConnection[]>(initialConnections);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingConnection, setEditingConnection] = useState<DBConnection | null>(null);
+    const [editingConnection, setEditingConnection] = useState<SavedConnection | null>(null);
+
+    // Fetch updated list from backend
+    async function loadConnections() {
+        try {
+            const data = await listConnections();
+            setConnections(data.connections);
+        } catch (err) {
+            console.error("Error loading connections:", err);
+        }
+    }
 
     useEffect(() => {
-        // Escuchar evento del botón "New Connection"
+        // Load fresh data from backend
+        loadConnections();
+
         const handleAddClick = () => {
             setEditingConnection(null);
             setIsModalOpen(true);
         };
 
-        const addButton = document.getElementById('add-connection-btn');
-        addButton?.addEventListener('click', handleAddClick);
+        const addButton = document.getElementById("add-connection-btn");
+        addButton?.addEventListener("click", handleAddClick);
 
         return () => {
-            addButton?.removeEventListener('click', handleAddClick);
+            addButton?.removeEventListener("click", handleAddClick);
         };
     }, []);
 
-    const handleEdit = (id: string) => {
-        const connection = connections.find(c => c.id === id);
-        if (connection) {
-            setEditingConnection(connection);
+
+    const handleEdit = (id: number) => {
+        const item = connections.find(c => c.id === id);
+        if (item) {
+            setEditingConnection(item);
             setIsModalOpen(true);
         }
     };
 
-    const handleDelete = (id: string) => {
-        if (confirm('Are you sure you want to delete this connection?')) {
+
+    const handleDelete = async (id: number) => {
+        if (!confirm("Are you sure you want to delete this connection?")) return;
+
+        try {
+            await deleteConnection(id);
             setConnections(connections.filter(c => c.id !== id));
-            // Aquí iría la llamada a la API para eliminar
-            console.log('Deleting connection:', id);
+        } catch (err) {
+            alert("Error deleting connection.");
+            console.error(err);
         }
     };
 
-    const handleTest = async (id: string) => {
-        const connection = connections.find(c => c.id === id);
-        if (connection) {
-            // Simular test de conexión
-            alert(`Testing connection to ${connection.name}...\n\nConnection successful!`);
-            console.log('Testing connection:', id);
+
+    const handleTest = async (id: number) => {
+        const password = prompt("Enter password to activate/test this connection:");
+        if (!password) return;
+
+        try {
+            const result = await useConnection(id, password);
+
+            alert(`Connection successful!\n\n${result.message}`);
+
+            // Update UI reflecting active connection
+            await loadConnections();
+
+        } catch (err) {
+            alert("Connection failed.");
+            console.error(err);
         }
     };
 
-    const handleSave = (formData: DBConnectionForm) => {
-        if (editingConnection) {
-            // Actualizar conexión existente
-            setConnections(connections.map(c =>
-                c.id === editingConnection.id
-                    ? { ...c, ...formData, lastConnected: new Date().toISOString() }
-                    : c
-            ));
-            console.log('Updating connection:', editingConnection.id, formData);
-        } else {
-            // Crear nueva conexión
-            const newConnection: DBConnection = {
-                ...formData,
-                id: Date.now().toString(),
-                status: 'disconnected',
-                createdAt: new Date().toISOString()
-            };
-            setConnections([...connections, newConnection]);
-            console.log('Creating connection:', formData);
+
+    const handleSave = async (formData: PGDBConnector) => {
+        try {
+            await saveConnection(formData);
+            await loadConnections();
+            setIsModalOpen(false);
+            setEditingConnection(null);
+        } catch (err) {
+            alert("Error saving connection.");
+            console.error(err);
         }
     };
+
 
     return (
         <>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {connections.map((connection) => (
+                {connections.map(connection => (
                     <ConnectionItem
                         key={connection.id}
                         connection={connection}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                        onTest={handleTest}
+                        onEdit={() => handleEdit(connection.id)}
+                        onDelete={() => handleDelete(connection.id)}
+                        onTest={() => handleTest(connection.id)}
                     />
                 ))}
             </div>
@@ -91,10 +121,15 @@ export default function ConnectionsManager({ initialConnections }: Props) {
             {connections.length === 0 && (
                 <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
                     <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                            d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7
+                                 M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4
+                                 M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
                     </svg>
+
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">No connections yet</h3>
                     <p className="text-gray-600 mb-4">Get started by creating your first database connection</p>
+
                     <button
                         onClick={() => setIsModalOpen(true)}
                         className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"

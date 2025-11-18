@@ -1,22 +1,29 @@
-export interface DBConnection {
-    id: string;
-    name: string;
-    type: 'postgresql' | 'mysql' | 'mongodb' | 'sqlite';
+// CHANGE: connection-related TS definitions
+
+export interface PGDBConnector {
+    name?: string;
     host: string;
     port: number;
+    user: string;
     database: string;
-    username: string;
-    status: 'connected' | 'disconnected' | 'error';
-    lastConnected?: string;
-    createdAt: string;
 }
 
-export interface DBConnectionForm {
+export interface SavedConnection {
+    id: number;
     name: string;
-    type: 'postgresql' | 'mysql' | 'mongodb' | 'sqlite';
     host: string;
     port: number;
+    user: string;
     database: string;
-    username: string;
-    password: string;
+}
+
+export interface ConnectionListResponse {
+    total: number;
+    connections: SavedConnection[];
+}
+
+export interface ActivateResponse {
+    status: string;
+    message: string;
+    active_connection: SavedConnection;
 }

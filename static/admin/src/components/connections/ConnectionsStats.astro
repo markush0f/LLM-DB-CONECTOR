@@ -1,5 +1,6 @@
 ---
-// src/components/connections/ConnectionsStats.astro
+import Database from "@lucide/astro/icons/database";
+import PowerOff from "@lucide/astro/icons/power";
 interface Props {
   total: number;
   connected: number;
@@ -10,6 +11,7 @@ const { total, connected, disconnected } = Astro.props;
 ---
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <!-- Total -->
   <div class="bg-white rounded-lg border border-gray-200 p-6">
     <div class="flex items-center justify-between">
       <div>
@@ -19,23 +21,12 @@ const { total, connected, disconnected } = Astro.props;
       <div
         class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center"
       >
-        <svg
-          class="w-6 h-6 text-blue-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
-          ></path>
-        </svg>
+        <Database class="w-6 h-6 text-blue-600" />
       </div>
     </div>
   </div>
 
+  <!-- Connected -->
   <div class="bg-white rounded-lg border border-gray-200 p-6">
     <div class="flex items-center justify-between">
       <div>
@@ -46,21 +37,24 @@ const { total, connected, disconnected } = Astro.props;
         class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center"
       >
         <svg
-          class="w-6 h-6 text-green-600"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-circle-check-big-icon lucide-circle-check-big"
+          ><path d="M21.801 10A10 10 0 1 1 17 3.335"></path><path
+            d="m9 11 3 3L22 4"></path></svg
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
       </div>
     </div>
   </div>
 
+  <!-- Disconnected -->
   <div class="bg-white rounded-lg border border-gray-200 p-6">
     <div class="flex items-center justify-between">
       <div>
@@ -70,19 +64,7 @@ const { total, connected, disconnected } = Astro.props;
       <div
         class="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center"
       >
-        <svg
-          class="w-6 h-6 text-gray-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3m8.293 8.293l1.414 1.414"
-          ></path>
-        </svg>
+        <PowerOff class="w-6 h-6 text-gray-600" />
       </div>
     </div>
   </div>
