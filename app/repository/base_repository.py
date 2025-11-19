@@ -1,5 +1,9 @@
 from sqlmodel import select
-from app.internal_db.session import get_local_session
+from app.internal_db import SessionLocal
+
+
+def get_local_session():
+    return SessionLocal()
 
 
 class BaseRepository:
