@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from typing import Optional
 
 from pydantic import BaseModel
-from app.models.models_db_connector import PGDBConnector
+from app.models.requests.models_db_connector import PGDBConnector
 from app.services.connections import (
     create_connection,
     delete_connection_by_id,

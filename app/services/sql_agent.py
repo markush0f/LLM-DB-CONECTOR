@@ -2,9 +2,9 @@ import json
 from pathlib import Path
 from app.core.logger import create_logger
 from app.services.llm_service import LocalLLMConnector
-from app.services.agent.prompt_builder import PromptBuilder
+from app.utils.prompt_builder import PromptBuilder
 from app.services.agent.tool_executor import ToolExecutor
-from app.services.agent.json_parser import JSONParser
+from app.utils.json_parser import JSONParser
 
 
 class SQLAssistantService:

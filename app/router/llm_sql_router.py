@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from app.models.execute_sql_request import ExecuteRequest
-from app.models.query_request import QueryRequest
-from app.services.agent.sql_agent import SQLAssistantService
+from app.models.requests.execute_sql_request import ExecuteRequest
+from app.models.requests.query_request import QueryRequest
+from app.services.sql_agent import SQLAssistantService
 from app.services.database_service import DatabaseService
 
 router = APIRouter(

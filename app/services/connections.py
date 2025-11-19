@@ -1,5 +1,5 @@
 from app.internal_db import SessionLocal, Connection
-from app.models.models_db_connector import PGDBConnector
+from app.models.requests.models_db_connector import PGDBConnector
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
 from app.services.database_service import db_session

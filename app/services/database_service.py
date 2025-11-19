@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, text
-from app.models.models_db_connector import PGDBConnector
+from app.models.requests.models_db_connector import PGDBConnector
 
 # CHANGE: imports for automatic schema-change invalidation
 from app.core.metadata_cache_provider import metadata_cache

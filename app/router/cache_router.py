@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import HTMLResponse
 
 from app.core.metadata_cache_provider import metadata_cache
-from app.models.metadata_cache_invalid_request import MetadataCacheInvalidateRequest
+from app.models.requests.metadata_cache_invalid_request import MetadataCacheInvalidateRequest
 
 router = APIRouter(prefix="/cache", tags=["cache"])
 

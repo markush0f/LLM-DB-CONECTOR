@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-DB_PATH = os.path.join(os.getcwd(), "app_data.db")
+DB_PATH = os.path.join(os.getcwd(), "app_data_sql.db")
 
 Base = declarative_base()
 engine = create_engine(f"sqlite:///{DB_PATH}", connect_args={"check_same_thread": False})
