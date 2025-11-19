@@ -1,7 +1,8 @@
 import json
 from pathlib import Path
 from app.core.logger import create_logger
-from app.repository.prompt_history_repository import PromptHistoryRepository
+from app.repository.assistant_message_repository import AssistantMessageRepository
+from app.repository.user_message_repository import UserMessageRepository
 from app.services.llm_service import LocalLLMConnector
 from app.utils.prompt_builder import PromptBuilder
 from app.utils.json_parser import JSONParser
@@ -12,7 +13,10 @@ class SQLAssistantService:
     def __init__(self):
         self.logger = create_logger()
         self.llm = LocalLLMConnector(model_name="qwen2.5-coder:14b", use_gpu=True)
-        self.prompt_repo = PromptHistoryRepository()
+
+        self.user_repo = UserMessageRepository()
+        self.assistant_repo = AssistantMessageRepository()
+
         tools = self._load_tools()
         self.prompt_builder = PromptBuilder(tools)
         self.tool_executor = ToolExecutor()
@@ -22,6 +26,9 @@ class SQLAssistantService:
 
     def run(self, user_input: str):
         self.logger.info("Agent started for: %s", user_input)
+
+        # Store user message
+        user_message = self._save_user_message(user_input)
 
         messages = []
         max_steps = 10
@@ -66,31 +73,32 @@ class SQLAssistantService:
 
             final_sql = self._process_final_sql(cleaned)
             if final_sql:
-                self._save_prompt(user_input, json.dumps(final_sql))
+                # Store assistant final answer
+                self._save_assistant_message(json.dumps(final_sql), user_message.id)
                 return final_sql
 
             if implicit and "sql" in implicit:
-                self._save_prompt(user_input, json.dumps(implicit))
+                # Store assistant final answer
+                self._save_assistant_message(json.dumps(implicit), user_message.id)
                 return implicit
 
             messages.append({"role": "assistant", "content": cleaned})
 
+            # Store assistant textual response
+            self._save_assistant_message(cleaned, user_message.id)
+            return {"response": cleaned}
+
         return {"error": "max_steps_reached"}
 
-    def _save_prompt(self, user_input: str, model_output: str):
-        """Store only the user's prompt and the final bot response."""
-        try:
-            self.prompt_repo.save(
-                user_input=user_input,
-                output=model_output,
-                model_name=self.llm.model_name,
-                role="assistant",
-            )
-        except Exception as exc:
-            self.logger.error("Failed to save prompt history: %s", exc)
+    def _save_user_message(self, text: str):
+        return self.user_repo.save(content=text, model_name=self.llm.model_name)
+
+    def _save_assistant_message(self, text: str, parent_id: int):
+        return self.assistant_repo.save(
+            content=text, model_name=self.llm.model_name, user_message_id=parent_id
+        )
 
     def _load_tools(self):
-        """Load tool definitions from json file."""
         tools_path = (
             Path(__file__).resolve().parent.parent
             / "common"
@@ -114,7 +122,6 @@ class SQLAssistantService:
         }
 
     def _handle_schema_autoselect(self, tool_name, result, selected_schema):
-        """Auto-select schema when list_schemas returns only one."""
         if tool_name == "list_schemas" and isinstance(result, list):
             if len(result) == 1:
                 return result[0]
@@ -123,7 +130,6 @@ class SQLAssistantService:
     def _should_insert_schema(
         self, tool_name, args, selected_schema, tools_requiring_schema
     ):
-        """Check and fill schema automatically."""
         if tool_name in tools_requiring_schema:
             if args.get("schema") in [None, "<default_schema>"]:
                 if selected_schema:
@@ -133,7 +139,6 @@ class SQLAssistantService:
     def _process_tool_call(
         self, parsed, selected_schema, messages, tools_requiring_schema
     ):
-        """Process explicit tool calls."""
         name = parsed.get("name")
         args = parsed.get("arguments", {})
         args = self._should_insert_schema(
@@ -150,7 +155,6 @@ class SQLAssistantService:
     def _process_implicit_tool_call(
         self, implicit, selected_schema, messages, tools_requiring_schema
     ):
-        """Process implicit tool calls from model output."""
         name = implicit["name"]
         args = implicit.get("arguments", {})
         args = self._should_insert_schema(
@@ -164,7 +168,6 @@ class SQLAssistantService:
         return selected_schema
 
     def _process_final_sql(self, cleaned):
-        """Check for FINAL_SQL block and return parsed result."""
         final_block = self.json_parser.extract_block(cleaned, "FINAL_SQL")
         if not final_block:
             return None

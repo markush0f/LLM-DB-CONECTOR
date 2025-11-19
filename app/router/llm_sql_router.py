@@ -71,3 +71,9 @@ def execute_sql(req: ExecuteRequest):
 @router.get("/history")
 def get_sql_history():
     return "..."
+
+
+# @router.post("/")
+# def save_prompt(req: QueryRequest):
+#     return assistant.save_user_message(req.user_input)
+    
