@@ -1,13 +1,21 @@
-from app.internal_db import SessionLocal, Connection
-from app.models.requests.models_db_connector import PGDBConnector
-from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError
+
+
+from app.models.requests.models_db_connector import PGDBConnector
+from app.models.schemas.connection_schema import Connection
+from app.repository.connection_repository import ConnectionRepository
 from app.services.database_service import db_session
 
 
-def create_connection(name: str, host: str, port: int, user: str, database: str):
-    """Save a new DB connection configuration."""
-    session = SessionLocal()
+# Repository instance
+connection_repo = ConnectionRepository()
+
+
+def create_connection(
+    name: str, host: str, port: int, user: str, database: str, password: str
+):
+    """Create a new connection using the repository."""
     try:
         conn = Connection(
             name=name,
@@ -15,38 +23,35 @@ def create_connection(name: str, host: str, port: int, user: str, database: str)
             port=port,
             user=user,
             database=database,
+            password=password,
         )
-        session.add(conn)
-        session.commit()
-        session.refresh(conn)
-        return conn.as_dict()
+
+        # CHANGE: Now using repository instead of direct SQLAlchemy session
+        saved = connection_repo.create(conn)
+        return saved.as_dict()
+
     except IntegrityError:
-        session.rollback()
         return {"error": f"A connection named '{name}' already exists."}
+
     except Exception as e:
-        session.rollback()
         return {"error": str(e)}
-    finally:
-        session.close()
 
 
 def get_connections():
-    """Return all saved connections."""
-    session = SessionLocal()
+    """Return all saved connections using the repository."""
     try:
-        data = session.query(Connection).all()
+        # CHANGE: repository read instead of session.query
+        data = connection_repo.get_all()
         return [conn.as_dict() for conn in data]
+
     except Exception as e:
         return {"error": str(e)}
-    finally:
-        session.close()
 
 
 def activate_connection(connection_id: int, password: str):
-    """Activate and persist a database connection by ID."""
-    session = SessionLocal()
-    conn = session.query(Connection).filter(Connection.id == connection_id).first()
-    session.close()
+    """Activate a connection using the repository."""
+    # CHANGE: repository lookup
+    conn = connection_repo.get_by_id(connection_id)
 
     if not conn:
         raise HTTPException(status_code=404, detail="Connection not found.")
@@ -57,6 +62,7 @@ def activate_connection(connection_id: int, password: str):
         user=conn.user,
         password=password,
         database=conn.database,
+        name=conn.name,
     )
 
     success = db_session.connect(config)
@@ -74,17 +80,15 @@ def disconnect_connection():
 
 
 def delete_connection_by_id(connection_id: int):
-    """Delete a connection by ID."""
-    session = SessionLocal()
+    """Delete a connection using the repository."""
     try:
-        conn = session.query(Connection).filter(Connection.id == connection_id).first()
-        if not conn:
+        # CHANGE: repository delete instead of session.delete
+        deleted = connection_repo.delete(connection_id)
+
+        if not deleted:
             return {"error": "Connection not found."}
-        session.delete(conn)
-        session.commit()
+
         return {"message": "Connection deleted successfully."}
+
     except Exception as e:
-        session.rollback()
         return {"error": str(e)}
-    finally:
-        session.close()

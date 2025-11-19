@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException
-from typing import Optional
 
 from pydantic import BaseModel
 from app.models.requests.models_db_connector import PGDBConnector
@@ -23,6 +22,7 @@ def save_connection(config: PGDBConnector):
         port=config.port,
         user=config.user,
         database=config.database,
+        password=config.password,
     )
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
