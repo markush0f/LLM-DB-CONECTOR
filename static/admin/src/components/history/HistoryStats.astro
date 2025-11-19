@@ -1,0 +1,47 @@
+---
+import { MessageSquare, Layers, Cpu } from "lucide-react";
+
+interface Props {
+  totalConversations: number;
+  totalMessages: number;
+  modelsUsed: string[];
+}
+
+const { totalConversations, totalMessages, modelsUsed } = Astro.props;
+---
+
+<div class="bg-white border border-gray-200 rounded-lg px-4 py-3 mb-6">
+  <div class="flex flex-wrap items-center gap-6">
+    <div class="flex items-center gap-2">
+      <MessageSquare />
+      <span class="text-sm text-gray-600">Conversations:</span>
+      <span class="text-sm font-semibold text-gray-900"
+        >{totalConversations}</span
+      >
+    </div>
+
+    <div class="flex items-center gap-2">
+      <Layers />
+      <span class="text-sm text-gray-600">Messages:</span>
+      <span class="text-sm font-semibold text-gray-900">{totalMessages}</span>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <Cpu />
+      <span class="text-sm text-gray-600">Models:</span>
+      <span class="text-sm font-semibold text-gray-900"
+        >{modelsUsed.length}</span
+      >
+
+      <div class="flex flex-wrap gap-1">
+        {
+          modelsUsed.map((model) => (
+            <span class="px-1.5 py-[1px] bg-gray-100 text-gray-700 text-[10px] rounded">
+              {model}
+            </span>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</div>
