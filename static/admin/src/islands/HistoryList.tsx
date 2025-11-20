@@ -10,7 +10,12 @@ export default function HistoryList() {
     return (
         <div className="space-y-8">
             {conversations.map(conv => (
-                <ConversationItem key={conv.userMessage.id} conversation={conv} />
+                <div key={conv.userMessage.id}>
+                    <ConversationItem conversation={conv} />
+
+                    {/* CHANGE: separator under each conversation */}
+                    <hr className="mt-6 border-gray-300" />
+                </div>
             ))}
 
             {hasMore && (
@@ -23,4 +28,5 @@ export default function HistoryList() {
             )}
         </div>
     );
+
 }
