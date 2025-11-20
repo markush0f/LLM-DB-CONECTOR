@@ -7,9 +7,9 @@ from app.services.database_service import DatabaseService
 from app.router.connections_router import router as connections_router
 from app.router.llm_sql_router import router as llm_sql_router
 from app.router.schema_router import router as schema_router
-from app.router.cache_router import router as coche_router
+from app.router.cache_router import router as cache_router
+from app.router.model_router import router as model_router
 from fastapi.middleware.cors import CORSMiddleware
-
 
 init_internal_db()
 
@@ -45,7 +45,8 @@ db_service = DatabaseService()
 app.include_router(connections_router)
 app.include_router(llm_sql_router)
 app.include_router(schema_router)
-app.include_router(coche_router)
+app.include_router(cache_router)
+app.include_router(model_router)
 app.mount(
     "/admin",
     StaticFiles(

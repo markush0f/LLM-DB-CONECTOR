@@ -4,6 +4,7 @@ from app.core.logger import create_logger
 from app.repository.assistant_message_repository import AssistantMessageRepository
 from app.repository.user_message_repository import UserMessageRepository
 from app.services.llm_service import LocalLLMConnector
+from app.services.model_service import ModelService
 from app.utils.prompt_builder import PromptBuilder
 from app.utils.json_parser import JSONParser
 from app.utils.tool_executor import ToolExecutor
@@ -12,7 +13,10 @@ from app.utils.tool_executor import ToolExecutor
 class SQLAssistantService:
     def __init__(self):
         self.logger = create_logger()
-        self.llm = LocalLLMConnector(model_name="qwen2.5-coder:14b", use_gpu=True)
+        self.model_service = ModelService()
+
+        self.llm = None
+        self.current_model_name = None
 
         self.user_repo = UserMessageRepository()
         self.assistant_repo = AssistantMessageRepository()
@@ -24,8 +28,37 @@ class SQLAssistantService:
 
         self.logger.info("SQLAssistantService initialized")
 
+    def load_model_from_active_model(self):
+        model = self.model_service.get_active_model()
+        self.logger.info("Active model: %s", model)
+
+        if not model:
+            raise RuntimeError("No active model selected.")
+
+        if self.current_model_name == model.model_name:
+            return
+
+        self.llm = LocalLLMConnector(
+            model_name=model.model_name,
+            use_gpu=True,
+            temperature=model.temperature,
+            top_p=model.top_p,
+            seed=model.seed,
+        )
+
+        self.current_model_name = model.model_name
+        self.logger.info(f"Model loaded: {model.model_name}")
+
     def run(self, user_input: str):
+        # Load active LLM model
+        self.load_model_from_active_model()
+
         self.logger.info("Agent started for: %s", user_input)
+
+        # get model settings
+        settings = self.model_service.get_active_model()
+        system_prompt = settings.system_prompt
+        context = settings.context
 
         # Store user message
         user_message = self._save_user_message(user_input)
@@ -45,7 +78,13 @@ class SQLAssistantService:
         }
 
         for step in range(max_steps):
-            prompt = self._build_prompt(user_input, messages)
+            prompt = self.prompt_builder.build(
+                user_input=user_input,
+                messages=messages,
+                system_prompt=system_prompt,
+                context=context,
+            )
+
             raw_output = self._run_model(prompt)
             cleaned = self.json_parser.clean_output(raw_output)
 
@@ -69,33 +108,31 @@ class SQLAssistantService:
                 selected_schema = self._process_implicit_tool_call(
                     implicit, selected_schema, messages, tools_requiring_schema
                 )
-                continue
 
             final_sql = self._process_final_sql(cleaned)
             if final_sql:
-                # Store assistant final answer
                 self._save_assistant_message(json.dumps(final_sql), user_message.id)
                 return final_sql
 
             if implicit and "sql" in implicit:
-                # Store assistant final answer
                 self._save_assistant_message(json.dumps(implicit), user_message.id)
                 return implicit
 
             messages.append({"role": "assistant", "content": cleaned})
-
-            # Store assistant textual response
             self._save_assistant_message(cleaned, user_message.id)
+
             return {"response": cleaned}
 
         return {"error": "max_steps_reached"}
 
     def _save_user_message(self, text: str):
-        return self.user_repo.save(content=text, model_name=self.llm.model_name)
+        return self.user_repo.save(content=text, model_name=self.current_model_name)
 
     def _save_assistant_message(self, text: str, parent_id: int):
         return self.assistant_repo.save(
-            content=text, model_name=self.llm.model_name, user_message_id=parent_id
+            content=text,
+            model_name=self.current_model_name,
+            user_message_id=parent_id,
         )
 
     def _load_tools(self):
