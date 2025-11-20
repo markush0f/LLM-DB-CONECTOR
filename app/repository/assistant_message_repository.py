@@ -1,8 +1,7 @@
-
-
 from app.internal_db import get_local_session
 from app.models.schemas.prompt_schema import AssistantMessage
 from app.repository.base_repository import BaseRepository
+from sqlmodel import select, func
 
 
 class AssistantMessageRepository(BaseRepository):
@@ -13,8 +12,27 @@ class AssistantMessageRepository(BaseRepository):
 
     def save(self, content: str, model_name: str, user_message_id: int):
         message = AssistantMessage(
-            content=content,
-            model_name=model_name,
-            user_message_id=user_message_id
+            content=content, model_name=model_name, user_message_id=user_message_id
         )
         return self.create(message)
+
+    def get_paginated(self, page: int, limit: int):
+        return super().get_paginated(page, limit)
+
+    def count(self):
+        session = self.session_factory()
+        try:
+            statement = select(func.count(self.model.id))
+            result = session.exec(statement).one()
+            return result
+        finally:
+            session.close()
+
+    def get_models_used(self):
+        session = self.session_factory()
+        try:
+            statement = select(self.model.model_name).distinct()
+            rows = session.exec(statement).all()
+            return rows
+        finally:
+            session.close()

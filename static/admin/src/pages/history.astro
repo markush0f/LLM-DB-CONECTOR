@@ -3,26 +3,11 @@ import AdminHeader from "../components/admin/AdminHeader.astro";
 import AdminSidebar from "../components/admin/AdminSidebar.astro";
 import Layout from "../layouts/Layout.astro";
 import HistoryHeader from "../components/history/HistoryHeader.astro";
-import HistoryStats from "../components/history/HistoryStats.astro";
 import HistoryList from "../islands/HistoryList";
-import { getConversations } from "../lib/api/messages";
 import "../styles/global.css";
-
-const conversations = await getConversations();
-
-const totalConversations = conversations.length;
-const totalMessages = conversations.reduce(
-  (acc, conv) => acc + 1 + conv.assistantMessages.length,
-  0
-);
-const modelsUsed = Array.from(
-  new Set([
-    ...conversations.map((c) => c.userMessage.model_name),
-    ...conversations.flatMap((c) =>
-      c.assistantMessages.map((m) => m.model_name)
-    ),
-  ])
-);
+import HistoryStats from "../components/history/HistoryStats.astro";
+import { getStats } from "../lib/api/messages";
+const stats = await getStats();
 ---
 
 <Layout>
@@ -33,14 +18,13 @@ const modelsUsed = Array.from(
 
     <section class="p-8">
       <HistoryHeader />
-
       <HistoryStats
-        totalConversations={totalConversations}
-        totalMessages={totalMessages}
-        modelsUsed={modelsUsed}
+        totalMessages={stats.total_messages}
+        modelsUsed={stats.models_used}
       />
-
-      <HistoryList client:load initialConversations={conversations} />
+      <div class="max-h-[600px] overflow-y-auto">
+        <HistoryList client:load />
+      </div>
     </section>
   </main>
 </Layout>

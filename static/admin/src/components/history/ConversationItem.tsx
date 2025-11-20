@@ -8,7 +8,6 @@ interface Props {
 export default function ConversationItem({ conversation }: Props) {
   const { userMessage, assistantMessages } = conversation;
 
-  // CHANGE: improved date formatting
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString("en-US", {
@@ -21,11 +20,9 @@ export default function ConversationItem({ conversation }: Props) {
 
   return (
     <div className="p-6 hover:bg-gray-50 transition-colors">
-      {/* User Message */}
       <div className="mb-6">
         <div className="flex items-start gap-3">
-          {/* CHANGE: replaced custom SVG with lucide icon */}
-          <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
+          <div className="shrink-0 w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
             <User className="w-5 h-5 text-white" />
           </div>
 

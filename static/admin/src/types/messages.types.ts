@@ -1,17 +1,16 @@
 export interface UserMessage {
     id: number;
+    created_at: string;
     content: string;
     model_name: string;
-    created_at: string;
 }
-
 export interface AssistantMessage {
     id: number;
+    created_at: string;
     content: string;
     model_name: string;
-    role: string;
     user_message_id: number;
-    created_at: string;
+    role: "assistant";
 }
 
 export interface Conversation {

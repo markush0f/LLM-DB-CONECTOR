@@ -58,3 +58,21 @@ class BaseRepository:
             session.commit()
             session.refresh(obj)
             return obj
+
+
+
+    def get_paginated(self, page: int, limit: int):
+        offset = (page - 1) * limit
+        session = self.session_factory()
+
+        try:
+            # CHANGE: basic SQLAlchemy limit/offset
+            query = (
+                session.query(self.model)
+                .order_by(self.model.created_at.desc())
+                .offset(offset)
+                .limit(limit)
+            )
+            return query.all()
+        finally:
+            session.close()
