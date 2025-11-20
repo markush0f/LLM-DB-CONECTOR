@@ -35,3 +35,8 @@ def get_stats():
         "total_messages": stats["total_messages"],
         "models_used": stats["models_used"],
     }
+
+
+@router.delete("/{role}/{message_id}")
+def delete_message(role: str, message_id: int):
+    return message_service.delete_message(message_id, role)

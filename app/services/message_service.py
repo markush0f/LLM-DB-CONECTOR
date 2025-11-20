@@ -1,6 +1,7 @@
 from app.repository.user_message_repository import UserMessageRepository
 from app.repository.assistant_message_repository import AssistantMessageRepository
 from app.core.logger import create_logger
+from fastapi import HTTPException
 
 
 class MessageService:
@@ -33,3 +34,17 @@ class MessageService:
             "total_messages": total_users_messages + total_assistants,
             "models_used": unique_models,
         }
+
+    def delete_message(self, message_id: int, role: str):
+        if role not in ["user", "assistant"]:
+            raise HTTPException(status_code=400, detail="Invalid role")
+
+        if role == "user":
+            deleted = self.user_message_repository.delete(message_id)
+        elif role == "assistant":
+            deleted = self.assistant_message_repository.delete(message_id)
+
+        if not deleted:
+            raise HTTPException(status_code=404, detail="Message not found")
+
+        return {"status": "deleted", "role": role, "id": message_id}
