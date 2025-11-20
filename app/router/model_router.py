@@ -69,3 +69,13 @@ def set_active_model(model_id: int):
     active_model = active_model_service.get_active_model()
 
     return {"message": "Active model updated", "active_model": active_model}
+
+
+@router.delete("/{model_id}")
+def delete_model(model_id: int):
+    model = model_service.get_model_by_id(model_id)
+    if not model:
+        raise HTTPException(status_code=404, detail="Model not found.")
+
+    model_service.delete_model(model_id)
+    return {"message": "Model deleted"}

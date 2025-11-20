@@ -7,19 +7,45 @@ class PromptBuilder:
         self.logger = create_logger()
         self.tools = tools
 
-    def build(self, system_prompt: str, context: str, user_input: str) -> str:
+    def build(
+        self,
+        system_prompt: str,
+        context: str,
+        user_input: str,
+        last_tool_result: dict | None,
+        step: int,
+        last_tool_name: str | None,
+    ) -> str:
+        """CHANGE: prompt now encodes state and last tool result in JSON-friendly form."""
+
+        state = {
+            "step": step,
+            "last_tool_name": last_tool_name,
+            "has_last_tool_result": last_tool_result is not None,
+        }
+
+        if last_tool_result is not None:
+            last_result_json = json.dumps(last_tool_result)
+        else:
+            last_result_json = "null"
+
         return f"""{system_prompt}
 
-    TOOLS:
-    {json.dumps({"tools": self.tools}, indent=2)}
+CONTEXT:
+{context}
 
-    CONTEXT:
-    {context}
+TOOLS:
+{json.dumps({"tools": self.tools}, indent=2)}
 
-    USER_INPUT:
-    {user_input}
+STATE:
+{json.dumps(state, indent=2)}
 
-    ### FINAL RULES (MANDATORY)
-    You MUST start your response with a TOOL_CALL to "list_schemas".
-    Return ONLY JSON and ONLY the structures defined in the SYSTEM_PROMPT.
-    """
+LAST_TOOL_RESULT_JSON:
+{last_result_json}
+
+USER_INPUT:
+{user_input}
+
+Follow strictly the TOOL_CALL and FINAL_SQL JSON formats defined in the system prompt.
+Do not output markdown or any text outside a single JSON object.
+"""

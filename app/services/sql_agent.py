@@ -35,10 +35,10 @@ class SQLAssistantService:
         if not model:
             raise RuntimeError("No active model selected.")
 
-        # Avoid reloading same model unnecessarily
         if self.current_model_name == model.model_name:
             return
 
+        # CHANGE: LLM initialized from active model settings
         self.llm = LocalLLMConnector(
             model_name=model.model_name,
             use_gpu=True,
@@ -48,60 +48,142 @@ class SQLAssistantService:
         )
 
         self.current_model_name = model.model_name
-        self.logger.info(f"Model loaded: {model.model_name}")
+        self.logger.info("Model loaded: %s", model.model_name)
 
     def run(self, user_input: str):
-        # Always load active LLM model first
+        # CHANGE: load model on each request based on active model
         self.load_model_from_active_model()
 
-        self.logger.info("Agent started for: %s", user_input)
-
-        # Fetch system_prompt & context
         settings = self.model_service.get_active_model()
         system_prompt = settings.system_prompt
         context = settings.context
 
-        # Store user message in DB
+        self.logger.info("Agent started for: %s", user_input)
+
         user_message = self._save_user_message(user_input)
 
-        # Build full prompt: system_prompt + context + tools + user_input
-        prompt = self.prompt_builder.build(
-            system_prompt=system_prompt,
-            context=context,
-            user_input=user_input,
-        )
-        self.logger.info("Built prompt: %s", prompt)
-        # Run model
-        raw_output = self._run_model(prompt)
-        cleaned = self.json_parser.clean_output(raw_output)
+        selected_schema = None
+        last_tool_result = None
+        last_tool_name = None
 
-        # First check TOOL_CALL block
+        max_steps = 10
+        repeated_same_tool = 0
+        max_repeated_calls = 3
+
+        tools_requiring_schema = {
+            "list_tables",
+            "get_columns",
+            "get_primary_keys",
+            "get_foreign_keys",
+            "describe_table",
+            "describe_schema",
+            "get_table_sample",
+        }
+
+        for step in range(max_steps):
+            prompt = self.prompt_builder.build(
+                system_prompt=system_prompt,
+                context=context,
+                user_input=user_input,
+                last_tool_result=last_tool_result,
+                step=step,
+                last_tool_name=last_tool_name,
+            )
+
+            raw = self.llm.run_text(prompt)
+            cleaned = self.json_parser.clean_output(raw)
+
+            # CHANGE: unified parsing for TOOL_CALL (explicit or implicit)
+            parsed_tool_call = self._extract_tool_call(cleaned)
+
+            if parsed_tool_call:
+                name = parsed_tool_call.get("name")
+                args = parsed_tool_call.get("arguments", {}) or {}
+
+                # Detect tool-call loop with same arguments
+                if (
+                    last_tool_name == name
+                    and last_tool_result is not None
+                    and last_tool_result.get("arguments") == args
+                ):
+                    repeated_same_tool += 1
+                    self.logger.warning(
+                        "Model repeated tool %s with same arguments (%d/%d)",
+                        name,
+                        repeated_same_tool,
+                        max_repeated_calls,
+                    )
+                else:
+                    repeated_same_tool = 0
+
+                if repeated_same_tool >= max_repeated_calls:
+                    self.logger.error("Model stuck repeating tool %s", name)
+                    break
+
+                if name in tools_requiring_schema and not args.get("schema"):
+                    if selected_schema:
+                        args["schema"] = selected_schema
+
+                result = self.tool_executor.execute(name, args)
+                self.logger.debug("Tool executed: %s args=%s", name, args)
+
+                if (
+                    name == "list_schemas"
+                    and isinstance(result, list)
+                    and len(result) == 1
+                ):
+                    selected_schema = result[0]
+                    self.logger.debug("Auto-selected schema: %s", selected_schema)
+
+                last_tool_name = name
+                last_tool_result = {
+                    "tool": name,
+                    "arguments": args,
+                    "result": result,
+                }
+
+                continue
+
+            # FINAL_SQL branch
+            final_sql = self._extract_final_sql(cleaned)
+            if final_sql:
+                self._save_assistant_message(json.dumps(final_sql), user_message.id)
+                return final_sql
+
+            # CHANGE: direct SQL dict fallback if model skips FINAL_SQL wrapper
+            implicit = self.json_parser.safe_parse(cleaned)
+            if implicit and isinstance(implicit, dict) and "sql" in implicit:
+                self._save_assistant_message(json.dumps(implicit), user_message.id)
+                return implicit
+
+        return {"error": "max_steps_reached"}
+
+    def _extract_tool_call(self, cleaned: str) -> dict | None:
+        """CHANGE: centralized logic to obtain a tool call from model output."""
         tool_block = self.json_parser.extract_block(cleaned, "TOOL_CALL")
         if tool_block:
             parsed = self.json_parser.safe_parse(tool_block)
-            if parsed:
-                result = self.tool_executor.execute(
-                    parsed.get("name"), parsed.get("arguments", {})
-                )
+            if parsed and isinstance(parsed, dict) and "name" in parsed:
+                return parsed
 
-                self._save_assistant_message(json.dumps(result), user_message.id)
-                return result
-
-        # Check FINAL_SQL
-        final_sql = self._process_final_sql(cleaned)
-        if final_sql:
-            self._save_assistant_message(json.dumps(final_sql), user_message.id)
-            return final_sql
-
-        # If JSON contains SQL field directly
         implicit = self.json_parser.safe_parse(cleaned)
-        if implicit and "sql" in implicit:
-            self._save_assistant_message(json.dumps(implicit), user_message.id)
+        if (
+            implicit
+            and isinstance(implicit, dict)
+            and "name" in implicit
+            and "arguments" in implicit
+            and "sql" not in implicit
+        ):
             return implicit
 
-        # Otherwise: FAIL → model did not follow instructions
-        self._save_assistant_message(cleaned, user_message.id)
-        raise ValueError("Agent did not produce SQL")
+        return None
+
+    def _extract_final_sql(self, cleaned: str):
+        """CHANGE: small helper to parse FINAL_SQL block."""
+        final_block = self.json_parser.extract_block(cleaned, "FINAL_SQL")
+        if not final_block:
+            return None
+        return self.json_parser.parse_final_sql(final_block)
 
     def _save_user_message(self, text: str):
         return self.user_repo.save(content=text, model_name=self.current_model_name)
@@ -122,17 +204,3 @@ class SQLAssistantService:
         )
         with open(tools_path, "r", encoding="utf-8") as f:
             return json.load(f)
-
-    def _run_model(self, prompt):
-        return self.llm.run_text(prompt)
-
-    def _process_final_sql(self, cleaned):
-        final_block = self.json_parser.extract_block(cleaned, "FINAL_SQL")
-        if not final_block:
-            return None
-
-        final = self.json_parser.parse_final_sql(final_block)
-        if final:
-            return final
-
-        return {"error": "Invalid FINAL_SQL JSON"}

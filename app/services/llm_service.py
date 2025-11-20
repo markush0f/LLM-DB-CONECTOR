@@ -1,8 +1,8 @@
 import os
 import subprocess
+import json
 import time
 from app.core.logger import create_logger
-
 
 os.environ["OLLAMA_NO_ANSI"] = "1"
 os.environ["TERM"] = "dumb"
@@ -72,36 +72,42 @@ class LocalLLMConnector:
 
         final_prompt += user_prompt
 
-        cmd = [
-            "ollama",
-            "run",
-            self.model_name,
-            "--temperature",
-            str(self.temperature),
-            "--top-p",
-            str(self.top_p),
-        ]
+        # CHANGE: Fixed Ollama call (now uses stdin JSON instead of unsupported flags)
+        cmd = ["ollama", "run", self.model_name]
+
+        request_payload = {
+            "prompt": final_prompt,
+            "options": {
+                "temperature": self.temperature,
+                "top_p": self.top_p,
+                "num_predict": self.max_tokens,
+            },
+        }
 
         if self.seed is not None:
-            cmd.extend(["--seed", str(self.seed)])
+            request_payload["options"]["seed"] = self.seed
 
         try:
             start = time.time()
 
-            result = subprocess.run(
+            process = subprocess.Popen(
                 cmd,
-                input=final_prompt.encode("utf-8"),
-                capture_output=True,
-                timeout=self.timeout,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+
+            stdout, stderr = process.communicate(
+                json.dumps(request_payload).encode("utf-8"), timeout=self.timeout
             )
 
             elapsed = (time.time() - start) * 1000
             self.logger.info("LLM execution time: %.2f ms", elapsed)
 
-            stdout = self.clean_output(result.stdout.decode("utf-8"))
-            stderr = self.clean_output(result.stderr.decode("utf-8"))
+            clean_stdout = self.clean_output(stdout.decode("utf-8"))
+            clean_stderr = self.clean_output(stderr.decode("utf-8"))
 
-            return (stdout + "\n" + stderr).strip()
+            return (clean_stdout + "\n" + clean_stderr).strip()
 
         except subprocess.TimeoutExpired:
             return "ERROR: TIMEOUT"

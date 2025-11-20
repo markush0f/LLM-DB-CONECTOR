@@ -70,3 +70,6 @@ class ModelService:
         Set the active model by its ID.
         """
         return self.repo_active.set_active(model_id)
+
+    def delete_model(self, model_id: int):
+        return self.repo.delete(model_id)

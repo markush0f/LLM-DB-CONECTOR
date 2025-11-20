@@ -13,14 +13,19 @@ class JSONParser:
         return text.strip()
 
     def extract_block(self, text: str, marker: str):
-        pattern = rf"{marker}\s*(\n|:|{{)"
+        # FIX: allow TOOL_CALL     {
+        pattern = rf"{marker}\s*{{"
         match = re.search(pattern, text)
         if not match:
             return None
-        return text[match.end() :].strip()
+        return text[match.end() - 1 :].strip()
 
     def safe_parse(self, text: str):
         text = text.replace("```json", "").replace("```", "")
+
+        # FIX: unescape quotes
+        text = text.replace('\\"', '"')
+
         text = re.sub(r"//.*", "", text)
 
         start = text.find("{")
@@ -46,16 +51,13 @@ class JSONParser:
 
     def parse_final_sql(self, text: str):
 
-        # 1) Intento normal con safe_parse
         parsed = self.safe_parse(text)
 
         if isinstance(parsed, dict) and "sql" in parsed and "explanation" in parsed:
             return parsed
 
-        # 2) Modo avanzado: reconstruir cadenas con concatenaciones
         text = text.replace("```json", "").replace("```", "")
 
-        # Detectar el bloque "sql": "..." + "..."
         sql_value_match = re.search(
             r'"sql"\s*:\s*((?:"[^"]*"\s*\+\s*)*"[^"]*")',
             text,
@@ -68,7 +70,6 @@ class JSONParser:
         parts = re.findall(r'"([^"]*)"', sql_group)
         sql_value = "".join(parts)
 
-        # Extraer explanation normal
         explanation_match = re.search(
             r'"explanation"\s*:\s*"([^"]*)"',
             text,
