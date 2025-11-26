@@ -12,16 +12,13 @@ Modelos compatibles con Ollama. Por defecto se usa `qwen2.5-coder:14b`, pero pue
 
 ## 2. Configuración del entorno
 
-Crear un archivo `.env` en la raíz del backend con:
+Puedes gestionar las conexiones directamente desde el panel de administración o por API.
+El sistema permite:
 
-```
-DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/yourdb
-INTERNAL_DB_URL=sqlite:///./internal.db
-OLLAMA_HOST=http://localhost:11434
-LOG_LEVEL=INFO
-```
-
-Asegúrate de tener creada la base de datos y credenciales en PostgreSQL.
+* Crear conexiones nuevas
+* Guardar varias conexiones
+* Seleccionar cuál usar como activa
+* Cambiar entre conexiones en cualquier momento
 
 ## 3. Arquitectura del proyecto
 
