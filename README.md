@@ -20,6 +20,7 @@ El sistema permite:
 * Seleccionar cuál usar como activa
 * Cambiar entre conexiones en cualquier momento
 
+
 ## 3. Arquitectura del proyecto
 
 Arquitectura por capas, organizada de forma modular:
@@ -54,6 +55,13 @@ uvicorn app.main:app --reload
 ```
 
 Backend disponible en: [http://localhost:8000](http://localhost:8000)
+
+## 4.1. Acceder a la documentación interactiva (Swagger / Redoc)
+
+Una vez levantado el backend, puedes acceder a la documentación automática generada por FastAPI:
+
+* Documentación Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
+* Documentación Redoc: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
 ## 5. Configurar y ejecutar Ollama
 
