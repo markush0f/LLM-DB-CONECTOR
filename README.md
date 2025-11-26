@@ -1,155 +1,158 @@
-# SQL-AI-POSTGRESQL Agent (v0.1) (Local, Deterministic & Tool-Driven)
+# LLM SQL Agent – README
 
-This project is a local SQL generation agent built with Ollama and executed inside WSL. It analyzes your database metadata in real time and produces validated SQL using a strict tool-call protocol.
+## 1. Requisitos previos
 
-The backend is fully implemented. The frontend is under development and will be fully dockerized.
+* Python 3.12
+* Node.js 18+
+* PostgreSQL
+* Ollama instalado localmente
+* Virtualenv recomendado
 
----
+Modelos compatibles con Ollama. Por defecto se usa `qwen2.5-coder:14b`, pero puede cambiarse desde el panel o la API.
 
-## Features
+## 2. Configuración del entorno
 
-### Deterministic SQL Generation
+Crear un archivo `.env` en la raíz del backend con:
 
-* Schema and table discovery using `list_schemas` and `list_tables`.
-* Real metadata inspection through `get_columns`, `get_primary_keys`, and `get_foreign_keys`.
-* Query generation validated strictly against real schema information.
-* No invented schemas, tables, or columns.
-* Final SQL always returned inside a strict `FINAL_SQL` JSON structure.
-
-### Local AI Execution
-
-* Runs inside WSL.
-* Powered by Ollama using the `qwen2.5-coder:14b` model. (You can use whichever model you want.)
-* No cloud dependency.
-
-### Metadata-Driven
-
-* Dynamic introspection SQL scripts for PostgreSQL.
-* Includes column descriptions, previews, and constraints.
-
-### Persistent Connections
-
-* All database connections stored in SQLite.
-* Internal session handled with a lightweight singleton.
-
----
-
-## Automatic Versioned Backups (Every SQL Generation)
-
-Each time a new SQL query is generated through the `/llmsql/generate_sql` endpoint, the system automatically creates a versioned backup of the connected PostgreSQL database.
-
-**How it works:**
-
-* A full `.sql` dump is created on every generation request.
-* Backups follow the naming pattern:
-  `backup_YYYY-MM-DD_HH-MM-SS.sql`
-* Only the **last 5 backups** are kept.
-* When a new backup is created and there are already 5 stored, the oldest backup is automatically deleted.
-* Backups are saved in:
-  `./backups/`
-
-**Purpose:**
-This ensures safe SQL execution, allows rollback, and provides a version history of all database states tied to AI-generated SQL operations.
-
----
-
-## Tech Stack
-
-**Backend**: Python, FastAPI, SQLAlchemy, PostgreSQL, SQLite
-
-**AI Layer**: Ollama, Qwen 2.5 Coder 14B
-
-**Design Patterns**: Singleton, Strategy, Builder, Adapter, Proxy
-
----
-
-## How to Run the Project (Linux, WSL & Windows Compatible)
-
-### 1. Requirements
-
-* WSL (Ubuntu recommended)
-* Python 3.10+
-* PostgreSQL (local or remote)
-* Ollama installed inside WSL
-
-### 2. Start Ollama
-
-```bash
-ollama pull <model>
+```
+DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/yourdb
+INTERNAL_DB_URL=sqlite:///./internal.db
+OLLAMA_HOST=http://localhost:11434
+LOG_LEVEL=INFO
 ```
 
-### 3. Install Dependencies
+Asegúrate de tener creada la base de datos y credenciales en PostgreSQL.
 
-```bash
+## 3. Arquitectura del proyecto
+
+Arquitectura por capas, organizada de forma modular:
+
+* **Capa API**: Routers separados para SQL Agent, modelos, conexiones, cache, esquemas y mensajes.
+* **Capa de servicios**: Lógica del dominio, SQL Agent, cache de metadatos, gestión de modelos, mensajes y conexiones.
+* **Capa de repositorios**: Acceso a datos para modelos, mensajes, conexiones y cache.
+* **Capa de dominio**: Modelos y esquemas con validaciones y tipos de request/response.
+* **Capa de utilidades**: Parsers, builders de prompts y ejecutores de herramientas.
+* **Capa núcleo**: Logger, middlewares y proveedor de metadata cache.
+* **Frontend (Astro + React + Tailwind)**: Panel de administración para gestionar modelos, historial, logs y métricas.
+
+## 4. Ejecutar el backend
+
+Crear entorno virtual:
+
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Instalar dependencias:
+
+```
 pip install -r requirements.txt
 ```
 
-### 4. Run FastAPI Backend
+Levantar FastAPI:
 
-```bash
+```
 uvicorn app.main:app --reload
 ```
 
-### 5. Access API Documentation (Swagger)
+Backend disponible en: [http://localhost:8000](http://localhost:8000)
 
-Once the server is running, visit:
+## 5. Configurar y ejecutar Ollama
+
+Asegura que el servicio está corriendo:
 
 ```
-http://localhost:8000/docs
+ollama serve
 ```
 
-### 6. Test SQL Generation
+Cargar el modelo recomendado:
 
-Send a POST request to:
+```
+ollama pull qwen2.5-coder:14b
+```
+
+El modelo activo puede modificarse desde el panel o por API.
+
+## 6. Base de datos interna
+
+Incluye una base SQLite interna para historial, configuraciones y modelos activos. Se genera automáticamente al iniciar el backend.
+
+## 7. Ejecutar el panel de administración
+
+Entrar en la carpeta `frontend`:
+
+```
+cd frontend
+npm install
+npm run dev
+```
+
+Disponible en: [http://localhost:4321/admin](http://localhost:4321/admin)
+
+Permite gestionar:
+
+* Historial de mensajes
+* Eliminación y filtrado
+* Modelos activos
+* Estadísticas y métricas
+* Logs del SQL Agent
+* Configuración del sistema
+
+## 8. Probar el SQL Agent
+
+Enviar peticiones a:
 
 ```
 POST /llmsql/generate_sql
 ```
 
-Example body:
+Body:
 
-```json
+```
 {
-  "input": "Insert 10 sample customers."
+  "user_input": "Describe aquí tu operación en lenguaje natural"
 }
 ```
 
----
+El agente ejecuta detección de esquema, tablas, introspección, validación de metadata y finalmente genera SQL determinista.
 
-## Metadata Cache Implementation
-
-The agent includes an in-memory metadata cache to avoid repeated introspection calls. During a session, schemas, tables, and column details are stored efficiently so that repeated user requests do not trigger new tool calls.
-
-The cache structure:
+## 9. Eliminación de mensajes
 
 ```
-metadata_cache = {
-  schema_name: {
-    table_name: {
-      "columns": [...],
-      "primary_keys": [...],
-      "foreign_keys": [...]
-    }
-  }
-}
+DELETE /messages/user/{id}
+DELETE /messages/assistant/{id}
 ```
 
-This reduces latency, prevents unnecessary database queries, and speeds up SQL generation. A TTL or manual reset can be added as needed.
+## 10. Métricas y monitorización
 
----
+Incluye:
 
-## Planned Improvements
+* Logging avanzado
+* Tiempo de ejecución por paso
+* Control de loops
+* Cache hits/misses
+* Historial de modelos utilizados
 
-* Complete Docker support (frontend + backend + Ollama).
-* Frontend UI for schema visualization and agent reasoning.
-* SQL beautifier and dry-run validator.
-* Multi-database support (MySQL, SQL Server, Oracle).
-* Multi-model comparison tools.
+## 11. Personalización
 
----
+El proyecto permite:
 
-## Status
+* Añadir más modelos de Ollama
+* Mejorar el sistema de cache
+* Extender herramientas del agente
+* Cambiar prompts del sistema
+* Integrar otros motores SQL
+* Ajustar reglas internas del agente
 
-* **Backend**: v0.1
-* **Frontend**: In progress
-* **Deployment**: Local (WSL), Docker support planned soon
+## 12. Objetivo del proyecto
+
+Permitir que cualquier usuario trabaje con una base de datos sin escribir SQL, describiendo únicamente su intención. El agente se encarga de:
+
+* Interpretación de lenguaje natural
+* Gestión completa de metadata
+* Selección y validación de tablas
+* Generación y control del SQL
+* Estabilidad, coherencia y rendimiento
+
+Sistema diseñado para crecer en capacidades y velocidad, pensado para integrarse en plataformas más complejas que requieran automatización total del flujo SQL.
